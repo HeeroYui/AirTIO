@@ -5,7 +5,7 @@
  */
 
 #include "Manager.h"
-#include "InterfaceDirect.h"
+#include "Interface.h"
 #include <memory>
 #include <stdexcept>
 
@@ -13,7 +13,7 @@
 #include "io/Node.h"
 
 std::shared_ptr<airtio::Manager> airtio::Manager::create(const std::string& _applicationUniqueId) {
-	return std::make_shared<airtio::Manager>(_applicationUniqueId);
+	return std::shared_ptr<airtio::Manager>(new airtio::Manager(_applicationUniqueId));
 }
 
 airtio::Manager::Manager(const std::string& _applicationUniqueId) :
@@ -41,6 +41,7 @@ std::vector<std::pair<std::string,std::string> > airtio::Manager::getListStreamO
 	return output;
 }
 
+// TODO : Deprecated ...
 void airtio::Manager::setMasterOutputVolume(float _gainDB) {
 	if (_gainDB < m_masterVolumeRange.first) {
 		//throw std::range_error(std::string(_gainDB) + " is out of bonds : [" + m_masterVolumeRange.first + ".." + m_masterVolumeRange.second + "]");
@@ -51,15 +52,13 @@ void airtio::Manager::setMasterOutputVolume(float _gainDB) {
 		return;
 	}
 	m_masterVolume = _gainDB;
-	for (std::list<std::weak_ptr<airtio::InterfaceDirect> >::iterator it(m_listOpenInterface.begin());
-	     it != m_listOpenInterface.end();
-	     ++it) {
-		std::shared_ptr<airtio::InterfaceDirect> tmpElem = it->lock();
+	for (auto &it : m_listOpenInterface) {
+		std::shared_ptr<airtio::Interface> tmpElem = it.lock();
 		if (tmpElem == nullptr) {
 			continue;
 		}
 		// TODO : Deprecated ...
-		tmpElem->setMasterVolume(m_masterVolume);
+		//tmpElem->setMasterVolume(m_masterVolume);
 	}
 }
 
@@ -94,13 +93,12 @@ airtio::Manager::createOutput(float _freq,
 	// get the output or input channel :
 	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName, false);
 	// create user iterface:
-	std::shared_ptr<airtio::InterfaceDirect> interface;
-	interface = std::make_shared<airtio::InterfaceDirect>(_name, _freq, _map, _format, node);
-	interface->init();
+	std::shared_ptr<airtio::Interface> interface;
+	interface = airtio::Interface::create(_name, _freq, _map, _format, node);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	// TODO : DEPRECATED ...
-	interface->setMasterVolume(m_masterVolume);
+	//interface->setMasterVolume(m_masterVolume);
 	return interface;
 }
 
@@ -115,12 +113,11 @@ airtio::Manager::createInput(float _freq,
 	// get the output or input channel :
 	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName, true);
 	// create user iterface:
-	std::shared_ptr<airtio::InterfaceDirect> interface;
-	interface = std::make_shared<airtio::InterfaceDirect>(_name, _freq, _map, _format, node);
-	interface->init();
+	std::shared_ptr<airtio::Interface> interface;
+	interface = airtio::Interface::create(_name, _freq, _map, _format, node);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	// TODO : DEPRECATED ...
-	interface->setMasterVolume(m_masterVolume);
+	//interface->setMasterVolume(m_masterVolume);
 	return interface;
 }

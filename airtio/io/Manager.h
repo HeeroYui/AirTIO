@@ -11,12 +11,11 @@
 #include <vector>
 #include <list>
 #include <stdint.h>
-#include <std/chrono.hpp>
-#include <std/function.hpp>
-#include <audio_algo_core/format.hpp>
-#include <audio_algo_core/channel.hpp>
-#include <std/shared_ptr.hpp>
-#include <std/weak_ptr.hpp>
+#include <chrono>
+#include <functional>
+#include <airtalgo/format.h>
+#include <airtalgo/channel.h>
+#include <memory>
 
 namespace airtio {
 	namespace io {

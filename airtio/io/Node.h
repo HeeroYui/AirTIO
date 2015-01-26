@@ -15,9 +15,10 @@
 #include <functional>
 #include <airtalgo/format.h>
 #include <airtalgo/channel.h>
-#include "io/Manager.h"
+#include "Manager.h"
 #include <memory>
 #include <airtio/Interface.h>
+#include <airtaudio/Interface.h>
 
 namespace airtio {
 	namespace io {
@@ -42,15 +43,15 @@ namespace airtio {
 				void interfaceAdd(const std::shared_ptr<airtio::Interface>& _interface);
 				void interfaceRemove(const std::shared_ptr<airtio::Interface>& _interface);
 			private:
-				RtAudio m_adac; //!< Real audio interface
-				RtAudio::DeviceInfo m_info;
+				airtaudio::Interface m_adac; //!< Real audio interface
+				airtaudio::DeviceInfo m_info;
 				unsigned int m_rtaudioFrameSize;
 			public:
 				int rtAudioCallback(int16_t* _outputBuffer,
 				                    int16_t* _inputBuffer,
 				                    unsigned int _nBufferFrames,
 				                    double _streamTime,
-				                    RtAudioStreamStatus _status);
+				                    airtaudio::streamStatus _status);
 			private:
 				std::string m_streamName;
 			public:

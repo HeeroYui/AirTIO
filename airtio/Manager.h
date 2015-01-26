@@ -21,29 +21,29 @@ namespace airtio {
 	class Manager {
 		private:
 			const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
-			std::list<std::weak_ptr<airtio::InterfaceDirect> > m_listOpenInterface; //!< List of all open Stream.
+			std::vector<std::weak_ptr<airtio::Interface> > m_listOpenInterface; //!< List of all open Stream.
 		protected:
 			/**
 			 * @brief Constructor
 			 */
-			Manager() {};
+			Manager(const std::string& _applicationUniqueId);
 		public:
 			static std::shared_ptr<airtio::Manager> create(const std::string& _applicationUniqueId);
 			/**
 			 * @brief Destructor
 			 */
-			virtual ~Manager() {};
+			virtual ~Manager();
 		public:
 			/**
 			 * @brief Get all input audio stream description.
 			 * @return a list of all availlables input stream (name + description)
 			 */
-			virtual std::vector<std::pair<std::string,std::string> > getListStreamInput() = 0;
+			virtual std::vector<std::pair<std::string,std::string> > getListStreamInput();
 			/**
 			 * @brief Get all output audio stream description.
 			 * @return a list of all availlables output stream (name + description)
 			 */
-			virtual std::vector<std::pair<std::string,std::string> > getListStreamOutput() = 0;
+			virtual std::vector<std::pair<std::string,std::string> > getListStreamOutput();
 		protected:
 			float m_masterVolume;
 			std::pair<float,float> m_masterVolumeRange;

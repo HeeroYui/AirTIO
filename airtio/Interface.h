@@ -54,7 +54,7 @@ namespace airtio {
 			/**
 			 * @brief Destructor
 			 */
-			virtual ~Interface() {};
+			virtual ~Interface();
 			static std::shared_ptr<Interface> create(const std::string& _name,
 			                                         float _freq,
 			                                         const std::vector<airtalgo::channel>& _map,
@@ -156,11 +156,6 @@ namespace airtio {
 			
 			std::vector<int8_t> m_data;
 			float m_volume; //!< Local channel Volume
-			bool process(std::chrono::system_clock::time_point& _time,
-			             void* _input,
-			             size_t _inputNbChunk,
-			             void*& _output,
-			             size_t& _outputNbChunk);
 	};
 };
 
