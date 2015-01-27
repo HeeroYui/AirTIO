@@ -15,6 +15,9 @@
 #include <airtalgo/EndPointRead.h>
 
 
+#undef __class__
+#define __class__ "Interface"
+
 airtio::Interface::Interface(void) :
   m_node(nullptr),
   m_freq(8000),
@@ -120,20 +123,20 @@ airtio::Interface::~Interface() {
 }
 
 
-void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function, enum airtalgo::formatDataType _dataType) {
+void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_process->removeIfFirst<airtalgo::EndPoint>();
-	std::shared_ptr<airtalgo::Algo> algo = std::make_shared<airtalgo::EndPointCallback>(_function, _dataType);
+	std::shared_ptr<airtalgo::Algo> algo = std::make_shared<airtalgo::EndPointCallback>(_function);
 	AIRTIO_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
 	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	m_process->pushFront(algo);
 }
 
-void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function, enum airtalgo::formatDataType _dataType) {
+void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_process->removeIfLast<airtalgo::EndPoint>();
-	std::shared_ptr<airtalgo::Algo> algo = std::make_shared<airtalgo::EndPointCallback>(_function, _dataType);
+	std::shared_ptr<airtalgo::Algo> algo = std::make_shared<airtalgo::EndPointCallback>(_function);
 	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	m_process->pushBack(algo);
@@ -181,11 +184,7 @@ std::pair<float,float> airtio::Interface::getVolumeRange() const {
 	return std::make_pair(-120.0f, 0.0f);
 }
 
-void airtio::Interface::write(const std::vector<int16_t>& _value) {
-	write(&_value[0], _value.size());
-}
-
-void airtio::Interface::write(const int16_t* _value, size_t _nbChunk) {
+void airtio::Interface::write(const void* _value, size_t _nbChunk) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	std::shared_ptr<airtalgo::EndPointWrite> algo = m_process->get<airtalgo::EndPointWrite>(0);
 	if (algo == nullptr) {
@@ -194,6 +193,7 @@ void airtio::Interface::write(const int16_t* _value, size_t _nbChunk) {
 	algo->write(_value, _nbChunk);
 }
 
+#if 0
 // TODO : add API aCCess mutex for Read and write...
 std::vector<int16_t> airtio::Interface::read(size_t _nbChunk) {
 	// TODO :...
@@ -216,8 +216,9 @@ std::vector<int16_t> airtio::Interface::read(size_t _nbChunk) {
 	*/
 	return data;
 }
+#endif
 
-void airtio::Interface::read(const int16_t* _value, size_t _nbChunk) {
+void airtio::Interface::read(void* _value, size_t _nbChunk) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO :...
 	
@@ -256,64 +257,10 @@ std::chrono::system_clock::time_point airtio::Interface::getCurrentTime() const 
 
 
 
-void airtio::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, int32_t _nbChunk) {
+void airtio::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk) {
 	m_process->push(_time, _data, _nbChunk);
 }
 
-void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, int32_t _nbChunk, size_t _chunkSize) {
-	size_t nbChunk2 = _nbChunk;
-	m_process->pull(_time, _data, nbChunk2);//, _chunkSize);
-#if 0
-	// TODO : while enought data or fhush data:
-	memset(_data, 0, _nbChunk*_chunkSize);
-	AIRTIO_VERBOSE("        Interface DIRECT ");
-	while(m_data.size()<_nbChunk*_chunkSize) {
-		void* in = nullptr;
-		size_t nbChunkIn = _nbChunk - m_data.size()/_chunkSize;
-		void* out = nullptr;
-		size_t nbChunkOut;
-		if (nbChunkIn < 128) {
-			nbChunkIn = 128;
-		}
-		// TODO : maybe remove this for input data ...
-		for (int32_t iii=m_listAlgo.size()-1; iii >=0; --iii) {
-			if (m_listAlgo[iii] != nullptr) {
-				nbChunkIn = m_listAlgo[iii]->needInputData(nbChunkIn);
-			}
-		}
-		if (nbChunkIn < 32) {
-			nbChunkIn = 32;
-		}
-		//nbChunkIn *= 4;
-		// get data from the upstream
-		AIRTIO_VERBOSE("         * request " << nbChunkIn << " chunk");
-		m_process->process(_time, in, nbChunkIn, out, nbChunkOut);
-		AIRTIO_VERBOSE("         * get " << nbChunkOut << " chunk");
-		if (nbChunkOut > 0) {
-			size_t position = m_data.size();
-			m_data.resize(m_data.size() + nbChunkOut*_chunkSize);
-			memcpy(&m_data[position], out, nbChunkOut*_chunkSize);
-		} else {
-			// TODO : ERROR ...
-			break;
-		}
-	}
-	if (m_data.size()>=_nbChunk*_chunkSize) {
-		AIRTIO_VERBOSE("         * copy needed data");
-		memcpy(_data, &m_data[0], _nbChunk*_chunkSize);
-		m_data.erase(m_data.begin(), m_data.begin()+_nbChunk*_chunkSize);
-	} else {
-		AIRTIO_VERBOSE("         * soft underflow");
-		// ERROR
-		m_data.clear();
-	}
-	/*
-	process(_time, in, nbChunkIn, out, nbChunkOut);
-	if (nbChunkIn!=nbChunkOut) {
-		AIRTIO_ERROR(" wrong size : request=" << _nbChunk << " get=" << nbChunkOut);
-		return;
-	}
-	memcpy(_data, out, _nbChunk*_chunkSize);
-	*/
-#endif
+void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void*& _data, size_t& _nbChunk, size_t _chunkSize) {
+	m_process->pull(_time, _data, _nbChunk);//, _chunkSize);
 }

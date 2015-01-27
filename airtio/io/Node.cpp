@@ -9,6 +9,9 @@
 
 #include <memory>
 
+#undef __class__
+#define __class__ "io::Node"
+
 #ifndef INT16_MAX
 	#define INT16_MAX 0x7fff
 #endif
@@ -22,26 +25,11 @@
 	#define INT32_MIN (-INT32_MAX - 1L)
 #endif
 
-// RT audio out callback
-static int rtAudioCallbackStatic(void* _outputBuffer,
-                                 void* _inputBuffer,
-                                 unsigned int _nBufferFrames,
-                                 double _streamTime,
-                                 airtaudio::streamStatus _status,
-                                 void* _data) {
-	airtio::io::Node* interface = static_cast<airtio::io::Node*>(_data);
-	return interface->rtAudioCallback(static_cast<int16_t*>(_outputBuffer),
-	                                  static_cast<int16_t*>(_inputBuffer),
-	                                  _nBufferFrames,
-	                                  _streamTime,
-	                                  _status);
-}
-
-int airtio::io::Node::rtAudioCallback(int16_t* _outputBuffer,
-                                      int16_t* _inputBuffer,
-                                      unsigned int _nBufferFrames,
-                                      double _streamTime,
-                                      airtaudio::streamStatus _status) {
+int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
+                                          void* _inputBuffer,
+                                          unsigned int _nBufferFrames,
+                                          double _streamTime,
+                                          airtaudio::streamStatus _status) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	std::chrono::system_clock::time_point ttime = std::chrono::system_clock::time_point();//std::chrono::system_clock::now();
 	
@@ -49,13 +37,16 @@ int airtio::io::Node::rtAudioCallback(int16_t* _outputBuffer,
 		AIRTIO_VERBOSE("data Output");
 		std::vector<int32_t> output;
 		output.resize(_nBufferFrames*m_map.size(), 0);
-		std::vector<int16_t> outputTmp;
-		outputTmp.resize(_nBufferFrames*m_map.size());
-		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (m_list[iii] != nullptr) {
-				AIRTIO_VERBOSE("    IO : " << iii+1 << "/" << m_list.size() << " name="<< m_list[iii]->getName());
-				m_list[iii]->systemNeedOutputData(ttime, &outputTmp[0], _nBufferFrames, sizeof(int16_t)*m_map.size());
-				//m_list[iii]->systemNeedOutputData(ttime, _outputBuffer, _nBufferFrames, sizeof(int16_t)*m_map.size());
+		int16_t* outputTmp = nullptr;
+		void* outputTmp2 = nullptr;
+		size_t tmpSize = 0;
+		for (auto &it : m_list) {
+			if (it != nullptr) {
+				AIRTIO_VERBOSE("    IO : " /* << std::distance(m_list.begin(), it)*/ << "/" << m_list.size() << " name="<< it->getName());
+				tmpSize = _nBufferFrames;
+				it->systemNeedOutputData(ttime, outputTmp2, tmpSize, sizeof(int16_t)*m_map.size());
+				outputTmp = static_cast<int16_t*>(outputTmp2);
+				//it->systemNeedOutputData(ttime, _outputBuffer, _nBufferFrames, sizeof(int16_t)*m_map.size());
 				// Add data to the output tmp buffer :
 				for (size_t kkk=0; kkk<output.size(); ++kkk) {
 					output[kkk] += static_cast<int32_t>(outputTmp[kkk]);
@@ -64,17 +55,19 @@ int airtio::io::Node::rtAudioCallback(int16_t* _outputBuffer,
 				break;
 			}
 		}
+		int16_t* outputBuffer = static_cast<int16_t*>(_outputBuffer);
 		for (size_t kkk=0; kkk<output.size(); ++kkk) {
-			*_outputBuffer++ = static_cast<int16_t>(std::min(std::max(INT16_MIN, output[kkk]), INT16_MAX));
+			*outputBuffer++ = static_cast<int16_t>(std::min(std::max(INT16_MIN, output[kkk]), INT16_MAX));
 			//*_outputBuffer++ = static_cast<int16_t>(output[kkk]);
 		}
 	}
 	if (_inputBuffer != nullptr) {
 		AIRTIO_INFO("data Input");
+		int16_t* inputBuffer = static_cast<int16_t *>(_inputBuffer);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (m_list[iii] != nullptr) {
 				AIRTIO_INFO("    IO : " << iii+1 << "/" << m_list.size() << " name="<< m_list[iii]->getName());
-				m_list[iii]->systemNewInputData(ttime, _inputBuffer, _nBufferFrames);
+				m_list[iii]->systemNewInputData(ttime, inputBuffer, _nBufferFrames);
 			}
 		}
 	}
@@ -180,9 +173,27 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 	AIRTIO_INFO("Open output stream nbChannels=" << params.nChannels);
 	enum airtaudio::errorType err = airtaudio::errorNone;
 	if (m_isInput == true) {
-		err = m_adac.openStream( nullptr, &params, airtaudio::SINT16, m_frequency, &m_rtaudioFrameSize, &rtAudioCallbackStatic, (void *)this );
+		err = m_adac.openStream(nullptr, &params,
+		                        airtaudio::SINT16, m_frequency, &m_rtaudioFrameSize,
+		                        std::bind(&airtio::io::Node::rtAudioCallback,
+		                                  this,
+		                                  std::placeholders::_1,
+		                                  std::placeholders::_2,
+		                                  std::placeholders::_3,
+		                                  std::placeholders::_4,
+		                                  std::placeholders::_5)
+		                        );
 	} else {
-		err = m_adac.openStream( &params, nullptr, airtaudio::SINT16, m_frequency, &m_rtaudioFrameSize, &rtAudioCallbackStatic, (void *)this );
+		err = m_adac.openStream(&params, nullptr,
+		                        airtaudio::SINT16, m_frequency, &m_rtaudioFrameSize,
+		                        std::bind(&airtio::io::Node::rtAudioCallback,
+		                                  this,
+		                                  std::placeholders::_1,
+		                                  std::placeholders::_2,
+		                                  std::placeholders::_3,
+		                                  std::placeholders::_4,
+		                                  std::placeholders::_5)
+		                        );
 	}
 	if (err != airtaudio::errorNone) {
 		AIRTIO_ERROR("Create stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") << " can not create strem " << err);

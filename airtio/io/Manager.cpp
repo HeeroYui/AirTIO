@@ -8,6 +8,9 @@
 #include <memory>
 #include "Node.h"
 
+#undef __class__
+#define __class__ "io::Manager"
+
 std::shared_ptr<airtio::io::Manager> airtio::io::Manager::getInstance() {
 	static std::shared_ptr<airtio::io::Manager> manager(new Manager());
 	return manager;

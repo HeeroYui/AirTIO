@@ -47,11 +47,11 @@ namespace airtio {
 				airtaudio::DeviceInfo m_info;
 				unsigned int m_rtaudioFrameSize;
 			public:
-				int rtAudioCallback(int16_t* _outputBuffer,
-				                    int16_t* _inputBuffer,
-				                    unsigned int _nBufferFrames,
-				                    double _streamTime,
-				                    airtaudio::streamStatus _status);
+				int32_t rtAudioCallback(void* _outputBuffer,
+				                        void * _inputBuffer,
+				                        unsigned int _nBufferFrames,
+				                        double _streamTime,
+				                        airtaudio::streamStatus _status);
 			private:
 				std::string m_streamName;
 			public:

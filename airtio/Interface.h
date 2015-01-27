@@ -65,8 +65,8 @@ namespace airtio {
 			 * @brief When we want to implement a Callback Mode :
 			 */
 			//virtual void setWriteCallback(size_t _chunkSize, writeNeedDataFunction_int16_t _function) {};
-			virtual void setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function, enum airtalgo::formatDataType _dataType);
-			virtual void setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function, enum airtalgo::formatDataType _dataType);
+			virtual void setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function);
+			virtual void setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function);
 		public:
 			/**
 			 * @brief Start the Audio interface flow.
@@ -103,29 +103,17 @@ namespace airtio {
 			/**
 			 * @brief write some audio sample in the speakers
 			 * @param[in] _value Data To write on output
-			 */
-			// TODO : TimeOut ???
-			virtual void write(const std::vector<int16_t>& _value);
-			/**
-			 * @brief write some audio sample in the speakers
-			 * @param[in] _value Data To write on output
 			 * @param[in] _nbChunk Number of audio chunk to write
 			 */
 			// TODO : TimeOut ???
-			virtual void write(const int16_t* _value, size_t _nbChunk);
-			/**
-			 * @brief write some audio sample in the speakers
-			 * @param[in] _value Data To write on output
-			 */
-			// TODO : TimeOut ???
-			virtual std::vector<int16_t> read(size_t _nbChunk);
+			virtual void write(const void* _value, size_t _nbChunk);
 			/**
 			 * @brief read some audio sample from Microphone
 			 * @param[in] _value Data To write on output
 			 * @param[in] _nbChunk Number of audio chunk to write
 			 */
 			// TODO : TimeOut ???
-			virtual void read(const int16_t* _value, size_t _nbChunk);
+			virtual void read(void* _value, size_t _nbChunk);
 			/**
 			 * @brief Get number of chunk in the local buffer
 			 * @return Number of chunk
@@ -151,8 +139,8 @@ namespace airtio {
 			 */
 			virtual std::chrono::system_clock::time_point getCurrentTime() const;
 		private:
-			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, int32_t _nbChunk);
-			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, int32_t _nbChunk, size_t _chunkSize);
+			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk);
+			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void*& _data, size_t& _nbChunk, size_t _chunkSize);
 			
 			std::vector<int8_t> m_data;
 			float m_volume; //!< Local channel Volume

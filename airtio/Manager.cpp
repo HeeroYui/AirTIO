@@ -12,6 +12,9 @@
 #include "io/Manager.h"
 #include "io/Node.h"
 
+#undef __class__
+#define __class__ "Manager"
+
 std::shared_ptr<airtio::Manager> airtio::Manager::create(const std::string& _applicationUniqueId) {
 	return std::shared_ptr<airtio::Manager>(new airtio::Manager(_applicationUniqueId));
 }
