@@ -142,6 +142,14 @@ void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDat
 	m_process->pushBack(algo);
 }
 
+void airtio::Interface::setWriteCallback(airtalgo::needDataFunctionWrite _function) {
+	std::unique_lock<std::mutex> lock(m_mutex);
+	std::shared_ptr<airtalgo::EndPointWrite> algo = m_process->get<airtalgo::EndPointWrite>(0);
+	if (algo == nullptr) {
+		return;
+	}
+	algo->setCallback(_function);
+}
 
 void airtio::Interface::start(const std::chrono::system_clock::time_point& _time) {
 	std::unique_lock<std::mutex> lock(m_mutex);

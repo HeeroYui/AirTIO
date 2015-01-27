@@ -17,6 +17,7 @@
 #include <airtalgo/channel.h>
 #include <airtalgo/Process.h>
 #include <airtalgo/EndPointCallback.h>
+#include <airtalgo/EndPointWrite.h>
 #include <memory>
 
 namespace airtio {
@@ -64,7 +65,7 @@ namespace airtio {
 			/**
 			 * @brief When we want to implement a Callback Mode :
 			 */
-			//virtual void setWriteCallback(size_t _chunkSize, writeNeedDataFunction_int16_t _function) {};
+			virtual void setWriteCallback(airtalgo::needDataFunctionWrite _function);
 			virtual void setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function);
 			virtual void setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function);
 		public:

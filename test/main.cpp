@@ -34,11 +34,24 @@ class testOutWrite {
 			                                      "WriteMode");
 		}
 		void run() {
-			m_interface->start();
 			double phase=0;
 			std::vector<int16_t> data;
 			data.resize(1024*m_channelMap.size());
 			double baseCycle = 2.0*M_PI/48000.0 * 440.0;
+			// start fill buffer
+			for (int32_t kkk=0; kkk<10; ++kkk) {
+				for (int32_t iii=0; iii<data.size()/m_channelMap.size(); iii++) {
+					for (int32_t jjj=0; jjj<m_channelMap.size(); jjj++) {
+						data[m_channelMap.size()*iii+jjj] = cos(phase) * 30000.0;
+					}
+					phase += baseCycle;
+					if (phase >= 2*M_PI) {
+						phase -= 2*M_PI;
+					}
+				}
+				m_interface->write(&data[0], data.size()/m_channelMap.size());
+			}
+			m_interface->start();
 			for (int32_t kkk=0; kkk<100; ++kkk) {
 				for (int32_t iii=0; iii<data.size()/m_channelMap.size(); iii++) {
 					for (int32_t jjj=0; jjj<m_channelMap.size(); jjj++) {
@@ -61,8 +74,74 @@ TEST(TestALL, testOutputWrite) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
 	
-	APPL_INFO("test output (callback mode)");
+	APPL_INFO("test output (write mode)");
 	std::shared_ptr<testOutWrite> process = std::make_shared<testOutWrite>(manager);
+	process->run();
+	process.reset();
+	usleep(500000);
+}
+
+
+class testOutWriteCallback {
+	private:
+		std::shared_ptr<airtio::Manager> m_manager;
+		std::shared_ptr<airtio::Interface> m_interface;
+		double m_phase;
+	public:
+		testOutWriteCallback(std::shared_ptr<airtio::Manager> _manager) :
+		  m_manager(_manager),
+		  m_phase(0) {
+			std::vector<airtalgo::channel> channelMap;
+			//Set stereo output:
+			channelMap.push_back(airtalgo::channel_frontLeft);
+			channelMap.push_back(airtalgo::channel_frontRight);
+			m_interface = m_manager->createOutput(48000,
+			                                      channelMap,
+			                                      airtalgo::format_int16,
+			                                      "default",
+			                                      "WriteMode+Callback");
+			m_interface->setWriteCallback(std::bind(&testOutWriteCallback::onDataNeeded,
+			                                        this,
+			                                        std::placeholders::_1,
+			                                        std::placeholders::_2,
+			                                        std::placeholders::_3,
+			                                        std::placeholders::_4));
+		}
+		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
+		                  const size_t& _nbChunk,
+		                  const std::vector<airtalgo::channel>& _map,
+		                  enum airtalgo::format _type) {
+			if (_type != airtalgo::format_int16) {
+				APPL_ERROR("call wrong type ... (need int16_t)");
+			}
+			std::vector<int16_t> data;
+			data.resize(1024*_map.size());
+			double baseCycle = 2.0*M_PI/48000.0 * 440.0;
+			// start fill buffer
+			for (int32_t iii=0; iii<data.size()/_map.size(); iii++) {
+				for (int32_t jjj=0; jjj<_map.size(); jjj++) {
+					data[_map.size()*iii+jjj] = cos(m_phase) * 30000.0;
+				}
+				m_phase += baseCycle;
+				if (m_phase >= 2*M_PI) {
+					m_phase -= 2*M_PI;
+				}
+			}
+			m_interface->write(&data[0], data.size()/_map.size());
+		}
+		void run() {
+			m_interface->start();
+			usleep(1000000);
+			m_interface->stop();
+		}
+};
+
+TEST(TestALL, testOutputWriteWithCallback) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	
+	APPL_INFO("test output (write with callback event mode)");
+	std::shared_ptr<testOutWriteCallback> process = std::make_shared<testOutWriteCallback>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
