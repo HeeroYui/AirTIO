@@ -270,9 +270,11 @@ std::chrono::system_clock::time_point airtio::Interface::getCurrentTime() const 
 
 
 void airtio::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk) {
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_process->push(_time, _data, _nbChunk);
 }
 
 void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void*& _data, size_t& _nbChunk, size_t _chunkSize) {
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_process->pull(_time, _data, _nbChunk);//, _chunkSize);
 }

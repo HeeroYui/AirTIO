@@ -203,7 +203,7 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 airtio::io::Node::~Node() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	AIRTIO_INFO("-----------------------------------------------------------------");
-	AIRTIO_INFO("--                       DESTRO NODE                           --");
+	AIRTIO_INFO("--                      DESTROY NODE                           --");
 	AIRTIO_INFO("-----------------------------------------------------------------");
 	AIRTIO_INFO("close input stream");
 	if (m_adac.isStreamOpen() ) {
@@ -230,24 +230,30 @@ void airtio::io::Node::stop() {
 }
 
 void airtio::io::Node::interfaceAdd(const std::shared_ptr<airtio::Interface>& _interface) {
-	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		if (_interface == m_list[iii]) {
-			return;
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (_interface == m_list[iii]) {
+				return;
+			}
 		}
+		AIRTIO_INFO("ADD interface for stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
+		m_list.push_back(_interface);
 	}
-	AIRTIO_INFO("ADD interface for stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
-	m_list.push_back(_interface);
 	if (m_list.size() == 1) {
 		start();
 	}
 }
 
 void airtio::io::Node::interfaceRemove(const std::shared_ptr<airtio::Interface>& _interface) {
-	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		if (_interface == m_list[iii]) {
-			m_list.erase(m_list.begin()+iii);
-			AIRTIO_INFO("RM interface for stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
-			break;
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (_interface == m_list[iii]) {
+				m_list.erase(m_list.begin()+iii);
+				AIRTIO_INFO("RM interface for stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
+				break;
+			}
 		}
 	}
 	if (m_list.size() == 0) {
