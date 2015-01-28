@@ -21,8 +21,6 @@ def create(target):
 	myModule.add_module_depend(['airtaudio', 'airtalgo'])
 	myModule.add_export_path(tools.get_current_path(__file__))
 	
-	
-	
 	# add the currrent module at the 
 	return myModule
 

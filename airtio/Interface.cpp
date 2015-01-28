@@ -43,6 +43,7 @@ bool airtio::Interface::init(const std::string& _name,
 	
 	// Create convertion interface
 	if (m_node->isInput() == true) {
+		// TODO : Set an auto update of IO
 		if (m_map != m_node->getMap()) {
 			std::shared_ptr<airtalgo::ChannelReorder> algo = std::make_shared<airtalgo::ChannelReorder>();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_node->getMap(), m_node->getFormat(), m_node->getFrequency()));
@@ -81,6 +82,7 @@ bool airtio::Interface::init(const std::string& _name,
 			m_process->pushBack(algo);
 			AIRTIO_INFO("add default write node ...");
 		}
+		// TODO : Set an auto update of IO
 		if (m_format != m_node->getFormat()) {
 			std::shared_ptr<airtalgo::FormatUpdate> algo = std::make_shared<airtalgo::FormatUpdate>();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
@@ -118,8 +120,10 @@ std::shared_ptr<airtio::Interface> airtio::Interface::create(const std::string& 
 }
 
 airtio::Interface::~Interface() {
+	//stop(true, true);
 	std::unique_lock<std::mutex> lock(m_mutex);
 	//m_node->interfaceRemove(shared_from_this());
+	m_process.reset();
 }
 
 

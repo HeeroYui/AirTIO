@@ -215,8 +215,7 @@ TEST(TestALL, testOutputCallBack) {
 	usleep(500000);
 }
 
-
-#if 0
+/*
 class testInRead {
 	private:
 		std::vector<airtalgo::channel> m_channelMap;
@@ -249,7 +248,17 @@ class testInRead {
 			m_interface->stop();
 		}
 };
-#endif
+
+TEST(TestALL, testInputCallBack) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	APPL_INFO("test input (callback mode)");
+	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
+	process->run();
+	process.reset();
+	usleep(500000);
+}
+*/
 
 class testInCallback {
 	private:
@@ -314,8 +323,7 @@ TEST(TestALL, testInputCallBack) {
 }
 
 
-#if 0
-class testOutCallbackFloat {
+class testOutCallbackType {
 	private:
 		std::shared_ptr<airtio::Manager> m_manager;
 		std::shared_ptr<airtio::Interface> m_interface;
@@ -325,10 +333,10 @@ class testOutCallbackFloat {
 		float m_generateFreq;
 		
 	public:
-		testOutCallbackFloat(std::shared_ptr<airtio::Manager> _manager,
-		                     float _freq=48000.0f,
-		                     int32_t _nbChannels=2,
-		                     airtalgo::format _format=airtalgo::format_int16) :
+		testOutCallbackType(const std::shared_ptr<airtio::Manager>& _manager,
+		                    float _freq=48000.0f,
+		                    int32_t _nbChannels=2,
+		                    airtalgo::format _format=airtalgo::format_int16) :
 		  m_manager(_manager),
 		  m_phase(0),
 		  m_freq(_freq),
@@ -350,148 +358,182 @@ class testOutCallbackFloat {
 				APPL_ERROR("Can not generate with channel != 1,2,4");
 				return;
 			}
-			switch (_format) {
-				case airtalgo::format_int16:
-					m_interface = m_manager->createOutput(m_freq,
-					                                      channelMap,
-					                                      _format,
-					                                      "default",
-					                                      "WriteModeCallbackI16");
-					// set callback mode ...
-					APPL_ERROR("Set callback");
-					m_interface->setOutputCallbackInt16(1024, std::bind(&testOutCallbackFloat::onDataNeededI16, this, _1, _2, _3));
-					break;
-				case airtalgo::format_int16_on_int32:
-					m_interface = m_manager->createOutput(m_freq,
-					                                      channelMap,
-					                                      _format,
-					                                      "default",
-					                                      "WriteModeCallbackI16onI32");
-					// set callback mode ...
-					m_interface->setOutputCallbackInt32(1024, std::bind(&testOutCallbackFloat::onDataNeededI16_I32, this, _1, _2, _3));
-					break;
-				case airtalgo::format_int32:
-					m_interface = m_manager->createOutput(m_freq,
-					                                      channelMap,
-					                                      _format,
-					                                      "default",
-					                                      "WriteModeCallbackI32");
-					// set callback mode ...
-					m_interface->setOutputCallbackInt32(1024, std::bind(&testOutCallbackFloat::onDataNeededI32, this, _1, _2, _3));
-					break;
-				case airtalgo::format_float:
-					m_interface = m_manager->createOutput(m_freq,
-					                                      channelMap,
-					                                      _format,
-					                                      "default",
-					                                      "WriteModeCallbackFloat");
-					// set callback mode ...
-					m_interface->setOutputCallbackFloat(1024, std::bind(&testOutCallbackFloat::onDataNeededFloat, this, _1, _2, _3));
-					break;
+			m_interface = m_manager->createOutput(m_freq,
+			                                      channelMap,
+			                                      _format,
+			                                      "default",
+			                                      "WriteModeCallbackType");
+			// set callback mode ...
+			m_interface->setOutputCallback(1024,
+			                               std::bind(&testOutCallbackType::onDataNeeded,
+			                                         this,
+			                                         std::placeholders::_1,
+			                                         std::placeholders::_2,
+			                                         std::placeholders::_3,
+			                                         std::placeholders::_4,
+			                                         std::placeholders::_5));
+		}
+		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
+		                  const size_t& _nbChunk,
+		                  const std::vector<airtalgo::channel>& _map,
+		                  void* _data,
+		                  enum airtalgo::format _type) {
+			APPL_DEBUG("Get data ... " << _type << " map=" << _map << " chunk=" << _nbChunk);
+			double baseCycle = 2.0*M_PI/double(m_freq) * double(m_generateFreq);
+			if (_type == airtalgo::format_int16) {
+				int16_t* data = static_cast<int16_t*>(_data);
+				for (int32_t iii=0; iii<_nbChunk; iii++) {
+					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
+						data[_map.size()*iii+jjj] = cos(m_phase) * double(INT16_MAX);
+					}
+					m_phase += baseCycle;
+					if (m_phase >= 2*M_PI) {
+						m_phase -= 2*M_PI;
+					}
+				}
+			} else if (_type == airtalgo::format_int16_on_int32) {
+				int32_t* data = static_cast<int32_t*>(_data);
+				for (int32_t iii=0; iii<_nbChunk; iii++) {
+					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
+						data[_map.size()*iii+jjj] = cos(m_phase) * double(INT16_MAX);
+					}
+					m_phase += baseCycle;
+					if (m_phase >= 2*M_PI) {
+						m_phase -= 2*M_PI;
+					}
+				}
+			} else if (_type == airtalgo::format_int32) {
+				int32_t* data = static_cast<int32_t*>(_data);
+				for (int32_t iii=0; iii<_nbChunk; iii++) {
+					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
+						data[_map.size()*iii+jjj] = cos(m_phase) * double(INT32_MAX);
+					}
+					m_phase += baseCycle;
+					if (m_phase >= 2*M_PI) {
+						m_phase -= 2*M_PI;
+					}
+				}
+			} else if (_type == airtalgo::format_float) {
+				float* data = static_cast<float*>(_data);
+				for (int32_t iii=0; iii<_nbChunk; iii++) {
+					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
+						data[_map.size()*iii+jjj] = cos(m_phase);
+					}
+					m_phase += baseCycle;
+					if (m_phase >= 2*M_PI) {
+						m_phase -= 2*M_PI;
+					}
+				}
 			}
 		}
-		
-		~testOutCallbackFloat() {
-			
-		}
-		
-		std::vector<int16_t> onDataNeededI16(const std::chrono::system_clock::time_point& _playTime,
-		                                     const size_t& _nbChunk,
-		                                     const std::vector<airtalgo::channel>& _map) {
-			std::vector<int16_t> data;
-			data.resize(_nbChunk*_map.size());
-			double baseCycle = 2.0*M_PI/(double)m_freq * (double)m_generateFreq;
-			APPL_INFO("Get data ... " << _map.size());
-			
-			for (int32_t iii=0; iii<data.size()/_map.size(); iii++) {
-				for (int32_t jjj=0; jjj<_map.size(); jjj++) {
-					data[_map.size()*iii+jjj] = cos(m_phase) * (double)INT16_MAX;
-				}
-				m_phase += baseCycle;
-				if (m_phase >= 2*M_PI) {
-					m_phase -= 2*M_PI;
-				}
-			}
-			return data;
-		}
-		
-		std::vector<int32_t> onDataNeededI16_I32(const std::chrono::system_clock::time_point& _playTime,
-		                                         const size_t& _nbChunk,
-		                                         const std::vector<airtalgo::channel>& _map) {
-			std::vector<int32_t> data;
-			data.resize(_nbChunk*_map.size());
-			double baseCycle = 2.0*M_PI/(double)m_freq * (double)m_generateFreq;
-			APPL_VERBOSE("Get data ...");
-			
-			for (int32_t iii=0; iii<data.size()/_map.size(); iii++) {
-				for (int32_t jjj=0; jjj<_map.size(); jjj++) {
-					data[_map.size()*iii+jjj] = cos(m_phase) * (double)INT16_MAX;
-				}
-				m_phase += baseCycle;
-				if (m_phase >= 2*M_PI) {
-					m_phase -= 2*M_PI;
-				}
-			}
-			return data;
-		}
-		
-		std::vector<int32_t> onDataNeededI32(const std::chrono::system_clock::time_point& _playTime,
-		                                         const size_t& _nbChunk,
-		                                         const std::vector<airtalgo::channel>& _map) {
-			std::vector<int32_t> data;
-			data.resize(_nbChunk*_map.size());
-			double baseCycle = 2.0*M_PI/(double)m_freq * (double)m_generateFreq;
-			APPL_VERBOSE("Get data ...");
-			
-			for (int32_t iii=0; iii<data.size()/_map.size(); iii++) {
-				for (int32_t jjj=0; jjj<_map.size(); jjj++) {
-					data[_map.size()*iii+jjj] = cos(m_phase) * (double)INT32_MAX;
-				}
-				m_phase += baseCycle;
-				if (m_phase >= 2*M_PI) {
-					m_phase -= 2*M_PI;
-				}
-			}
-			return data;
-		}
-		
-		
-		
-		std::vector<float> onDataNeededFloat(const std::chrono::system_clock::time_point& _playTime,
-		                                     const size_t& _nbChunk,
-		                                     const std::vector<airtalgo::channel>& _map) {
-			std::vector<float> data;
-			data.resize(_nbChunk*_map.size());
-			double baseCycle = 2.0*M_PI/(double)m_freq * (double)m_generateFreq;
-			APPL_VERBOSE("Get data ...");
-			
-			for (int32_t iii=0; iii<data.size()/_map.size(); iii++) {
-				for (int32_t jjj=0; jjj<_map.size(); jjj++) {
-					data[_map.size()*iii+jjj] = cos(m_phase);
-				}
-				m_phase += baseCycle;
-				if (m_phase >= 2*M_PI) {
-					m_phase -= 2*M_PI;
-				}
-			}
-			return data;
-		}
-		
 		void run() {
-			if (m_interface != NULL) {
+			if (m_interface != nullptr) {
 				m_interface->start();
 				// wait 2 second ...
 				usleep(1000000);
 				m_interface->stop();
+				usleep(100000);
 			} else {
 				APPL_ERROR("Can not create interface !!!");
 			}
 		}
 };
-#endif
+
+TEST(TestALL, testResampling) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	std::vector<float> listFreq;
+	listFreq.push_back(4000);
+	listFreq.push_back(8000);
+	listFreq.push_back(16000);
+	listFreq.push_back(32000);
+	listFreq.push_back(48000);
+	listFreq.push_back(48001);
+	listFreq.push_back(64000);
+	listFreq.push_back(96000);
+	listFreq.push_back(11250);
+	listFreq.push_back(2250);
+	listFreq.push_back(44100);
+	listFreq.push_back(88200);
+	for (auto &it : listFreq) {
+		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, it, 2, airtalgo::format_int16);
+		process->run();
+		process.reset();
+		usleep(500000);
+	}
+}
 
 
+TEST(TestALL, testFormat) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	std::vector<airtalgo::format> listFormat;
+	listFormat.push_back(airtalgo::format_int16);
+	listFormat.push_back(airtalgo::format_int16_on_int32);
+	listFormat.push_back(airtalgo::format_int32);
+	listFormat.push_back(airtalgo::format_float);
+	for (auto &it : listFormat) {
+		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, 2, it);
+		process->run();
+		process.reset();
+		usleep(500000);
+	}
+}
 
+TEST(TestALL, testChannels) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	std::vector<int32_t> listChannel;
+	listChannel.push_back(1);
+	listChannel.push_back(2);
+	listChannel.push_back(4);
+	for (auto &it : listChannel) {
+		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, it, airtalgo::format_int16);
+		process->run();
+		process.reset();
+		usleep(500000);
+	}
+}
+
+
+TEST(TestALL, testChannelsFormatResampling) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	APPL_INFO("test convert flaot to output (callback mode)");
+	std::vector<float> listFreq;
+	listFreq.push_back(4000);
+	listFreq.push_back(8000);
+	listFreq.push_back(16000);
+	listFreq.push_back(32000);
+	listFreq.push_back(48000);
+	listFreq.push_back(48001);
+	listFreq.push_back(64000);
+	listFreq.push_back(96000);
+	listFreq.push_back(11250);
+	listFreq.push_back(2250);
+	listFreq.push_back(44100);
+	listFreq.push_back(88200);
+	std::vector<int32_t> listChannel;
+	listChannel.push_back(1);
+	listChannel.push_back(2);
+	listChannel.push_back(4);
+	std::vector<airtalgo::format> listFormat;
+	listFormat.push_back(airtalgo::format_int16);
+	listFormat.push_back(airtalgo::format_int16_on_int32);
+	listFormat.push_back(airtalgo::format_int32);
+	listFormat.push_back(airtalgo::format_float);
+	for (auto &itFreq : listFreq) {
+		for (auto &itChannel : listChannel) {
+			for (auto &itFormat : listFormat) {
+				APPL_INFO("freq=" << itFreq << " channel=" << itChannel << " format=" << getFormatString(itFormat));
+				std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, itFreq, itChannel, itFormat);
+				process->run();
+				process.reset();
+				usleep(500000);
+			}
+		}
+	}
+}
 
 
 int main(int argc, char **argv) {
@@ -533,75 +575,5 @@ int main(int argc, char **argv) {
 	etk::setArgZero(argv[0]);
 	etk::initDefaultFolder("exml_test");
 	return RUN_ALL_TESTS();
-	
-	#if 0
-	APPL_INFO("test output (Write mode)");
-	{
-		std::shared_ptr<testOutWrite> process = std::make_shared<testOutWrite>(manager);
-		process->run();
-		process.reset();
-	}
-	usleep(500000);
-	#endif
-	
-	#if 0
-	APPL_INFO("test input (Read mode)");
-	{
-		std::shared_ptr<testInRead> process = std::make_shared<testInRead>(manager);
-		process->run();
-		process.reset();
-	}
-	usleep(500000);
-	#endif
-	
-	#if 0
-	APPL_INFO("test input (callback mode)");
-	{
-		std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
-		process->run();
-		process.reset();
-	}
-	#endif
-	
-	
-	#if 0
-	APPL_INFO("test convert flaot to output (callback mode)");
-	std::vector<float> listFreq;
-	listFreq.push_back(4000);
-	listFreq.push_back(8000);
-	listFreq.push_back(16000);
-	listFreq.push_back(32000);
-	listFreq.push_back(48000);
-	listFreq.push_back(48001);
-	listFreq.push_back(64000);
-	listFreq.push_back(96000);
-	listFreq.push_back(11250);
-	listFreq.push_back(2250);
-	listFreq.push_back(44100);
-	listFreq.push_back(88200);
-
-	std::vector<int32_t> listChannel;
-	listChannel.push_back(1);
-	listChannel.push_back(2);
-	listChannel.push_back(4);
-	std::vector<airtalgo::format> listFormat;
-	listFormat.push_back(airtalgo::format_int16);
-	listFormat.push_back(airtalgo::format_int16_on_int32);
-	listFormat.push_back(airtalgo::format_int32);
-	listFormat.push_back(airtalgo::format_float);
-	for (int32_t iii=0; iii<listFreq.size(); ++iii) {
-		for (int32_t jjj=0; jjj<listChannel.size(); ++jjj) {
-			for (std::vector<airtalgo::format>::iterator formatIt = listFormat.begin(); formatIt != listFormat.end(); ++formatIt) {
-				float freq = listFreq[iii];
-				int32_t channel = listChannel[jjj];
-				APPL_INFO("freq=" << freq << " channel=" << channel << " format=" << getFormatString(*formatIt));
-				std::shared_ptr<testOutCallbackFloat> process = std::make_shared<testOutCallbackFloat>(manager, freq, channel, *formatIt);
-				process->run();
-				process.reset();
-				usleep(500000);
-			}
-		}
-	}
-	#endif
 }
 
