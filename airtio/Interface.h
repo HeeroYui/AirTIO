@@ -28,7 +28,7 @@ namespace airtio {
 		friend class io::Node;
 		friend class Manager;
 		protected:
-			mutable std::mutex m_mutex;
+			mutable std::recursive_mutex m_mutex;
 		protected:
 			std::shared_ptr<airtio::io::Node> m_node;
 			float m_freq;

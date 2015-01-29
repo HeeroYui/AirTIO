@@ -121,14 +121,14 @@ std::shared_ptr<airtio::Interface> airtio::Interface::create(const std::string& 
 
 airtio::Interface::~Interface() {
 	//stop(true, true);
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	//m_node->interfaceRemove(shared_from_this());
 	m_process.reset();
 }
 
 
 void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process->removeIfFirst<airtalgo::EndPoint>();
 	std::shared_ptr<airtalgo::Algo> algo = airtalgo::EndPointCallback::create(_function);
 	AIRTIO_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
@@ -138,7 +138,7 @@ void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataF
 }
 
 void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process->removeIfLast<airtalgo::EndPoint>();
 	std::shared_ptr<airtalgo::Algo> algo = airtalgo::EndPointCallback::create(_function);
 	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
@@ -147,7 +147,7 @@ void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDat
 }
 
 void airtio::Interface::setWriteCallback(airtalgo::needDataFunctionWrite _function) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	std::shared_ptr<airtalgo::EndPointWrite> algo = m_process->get<airtalgo::EndPointWrite>(0);
 	if (algo == nullptr) {
 		return;
@@ -156,35 +156,35 @@ void airtio::Interface::setWriteCallback(airtalgo::needDataFunctionWrite _functi
 }
 
 void airtio::Interface::start(const std::chrono::system_clock::time_point& _time) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("start [BEGIN]");
 	m_node->interfaceAdd(shared_from_this());
 	AIRTIO_DEBUG("start [ END ]");
 }
 
 void airtio::Interface::stop(bool _fast, bool _abort) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("stop [BEGIN]");
 	m_node->interfaceRemove(shared_from_this());
 	AIRTIO_DEBUG("stop [ END]");
 }
 
 void airtio::Interface::abort() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("abort [BEGIN]");
 	// TODO :...
 	AIRTIO_DEBUG("abort [ END ]");
 }
 
 void airtio::Interface::setVolume(float _gainDB) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("setVolume [BEGIN]");
 	// TODO :...
 	AIRTIO_DEBUG("setVolume [ END ]");
 }
 
 float airtio::Interface::getVolume() const {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("getVolume [BEGIN]");
 	// TODO :...
 	AIRTIO_DEBUG("getVolume [ END ]");
@@ -192,12 +192,12 @@ float airtio::Interface::getVolume() const {
 }
 
 std::pair<float,float> airtio::Interface::getVolumeRange() const {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	return std::make_pair(-120.0f, 0.0f);
 }
 
 void airtio::Interface::write(const void* _value, size_t _nbChunk) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	std::shared_ptr<airtalgo::EndPointWrite> algo = m_process->get<airtalgo::EndPointWrite>(0);
 	if (algo == nullptr) {
 		return;
@@ -231,37 +231,37 @@ std::vector<int16_t> airtio::Interface::read(size_t _nbChunk) {
 #endif
 
 void airtio::Interface::read(void* _value, size_t _nbChunk) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	// TODO :...
 	
 }
 
 size_t airtio::Interface::size() const {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	// TODO :...
 	return 0;
 }
 
 void airtio::Interface::setBufferSize(size_t _nbChunk) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	// TODO :...
 	
 }
 
 void airtio::Interface::setBufferSize(const std::chrono::duration<int64_t, std::micro>& _time) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	// TODO :...
 	
 }
 
 void airtio::Interface::clearInternalBuffer() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	// TODO :...
 	
 }
 
 std::chrono::system_clock::time_point airtio::Interface::getCurrentTime() const {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	// TODO :...
 	return std::chrono::system_clock::time_point();
 	return std::chrono::system_clock::now();
@@ -270,11 +270,11 @@ std::chrono::system_clock::time_point airtio::Interface::getCurrentTime() const 
 
 
 void airtio::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
 	m_process->push(_time, _data, _nbChunk);
 }
 
 void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void*& _data, size_t& _nbChunk, size_t _chunkSize) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
 	m_process->pull(_time, _data, _nbChunk);//, _chunkSize);
 }
