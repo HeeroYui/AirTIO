@@ -119,13 +119,13 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 	// display property :
 	{
 		AIRTIO_INFO("Device " << deviceId << " property :");
-		AIRTIO_INFO("    probe=" << (m_info.probed==true?"true":"false"));
+		AIRTIO_INFO("    probe=" << m_info.probed);
 		AIRTIO_INFO("    name=" << m_info.name);
 		AIRTIO_INFO("    outputChannels=" << m_info.outputChannels);
 		AIRTIO_INFO("    inputChannels=" << m_info.inputChannels);
 		AIRTIO_INFO("    duplexChannels=" << m_info.duplexChannels);
-		AIRTIO_INFO("    isDefaultOutput=" << (m_info.isDefaultOutput==true?"true":"false"));
-		AIRTIO_INFO("    isDefaultInput=" << (m_info.isDefaultInput==true?"true":"false"));
+		AIRTIO_INFO("    isDefaultOutput=" << m_info.isDefaultOutput);
+		AIRTIO_INFO("    isDefaultInput=" << m_info.isDefaultInput);
 		//std::string rrate;
 		std::stringstream rrate;
 		for (int32_t jjj=0; jjj<m_info.sampleRates.size(); ++jjj) {

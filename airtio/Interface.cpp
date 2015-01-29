@@ -45,21 +45,21 @@ bool airtio::Interface::init(const std::string& _name,
 	if (m_node->isInput() == true) {
 		// TODO : Set an auto update of IO
 		if (m_map != m_node->getMap()) {
-			std::shared_ptr<airtalgo::ChannelReorder> algo = std::make_shared<airtalgo::ChannelReorder>();
+			std::shared_ptr<airtalgo::ChannelReorder> algo = airtalgo::ChannelReorder::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_node->getMap(), m_node->getFormat(), m_node->getFrequency()));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_node->getFrequency()));
 			m_process->pushBack(algo);
 			AIRTIO_INFO("convert " << m_node->getMap() << " -> " << m_map);
 		}
 		if (m_freq != m_node->getFrequency()) {
-			std::shared_ptr<airtalgo::Resampler> algo = std::make_shared<airtalgo::Resampler>();
+			std::shared_ptr<airtalgo::Resampler> algo = airtalgo::Resampler::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_node->getFrequency()));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_freq));
 			m_process->pushBack(algo);
 			AIRTIO_INFO("convert " << m_node->getFrequency() << " -> " << m_freq);
 		}
 		if (m_format != m_node->getFormat()) {
-			std::shared_ptr<airtalgo::FormatUpdate> algo = std::make_shared<airtalgo::FormatUpdate>();
+			std::shared_ptr<airtalgo::FormatUpdate> algo = airtalgo::FormatUpdate::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_freq));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 			m_process->pushBack(algo);
@@ -67,7 +67,7 @@ bool airtio::Interface::init(const std::string& _name,
 		}
 		// by default we add a read node
 		if (true) {
-			std::shared_ptr<airtalgo::EndPointRead> algo = std::make_shared<airtalgo::EndPointRead>();
+			std::shared_ptr<airtalgo::EndPointRead> algo = airtalgo::EndPointRead::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 			m_process->pushBack(algo);
@@ -76,7 +76,7 @@ bool airtio::Interface::init(const std::string& _name,
 	} else {
 		// by default we add a write node:
 		if (true) {
-			std::shared_ptr<airtalgo::EndPointWrite> algo = std::make_shared<airtalgo::EndPointWrite>();
+			std::shared_ptr<airtalgo::EndPointWrite> algo = airtalgo::EndPointWrite::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 			m_process->pushBack(algo);
@@ -84,21 +84,21 @@ bool airtio::Interface::init(const std::string& _name,
 		}
 		// TODO : Set an auto update of IO
 		if (m_format != m_node->getFormat()) {
-			std::shared_ptr<airtalgo::FormatUpdate> algo = std::make_shared<airtalgo::FormatUpdate>();
+			std::shared_ptr<airtalgo::FormatUpdate> algo = airtalgo::FormatUpdate::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_freq));
 			m_process->pushBack(algo);
 			AIRTIO_INFO("convert " << m_format << " -> " << m_node->getFormat());
 		}
 		if (m_freq != m_node->getFrequency()) {
-			std::shared_ptr<airtalgo::Resampler> algo = std::make_shared<airtalgo::Resampler>();
+			std::shared_ptr<airtalgo::Resampler> algo = airtalgo::Resampler::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_freq));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_node->getFrequency()));
 			m_process->pushBack(algo);
 			AIRTIO_INFO("convert " << m_freq << " -> " << m_node->getFrequency());
 		}
 		if (m_map != m_node->getMap()) {
-			std::shared_ptr<airtalgo::ChannelReorder> algo = std::make_shared<airtalgo::ChannelReorder>();
+			std::shared_ptr<airtalgo::ChannelReorder> algo = airtalgo::ChannelReorder::create();
 			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_node->getFormat(), m_node->getFrequency()));
 			algo->setOutputFormat(airtalgo::IOFormatInterface(m_node->getMap(), m_node->getFormat(), m_node->getFrequency()));
 			m_process->pushBack(algo);
@@ -130,7 +130,7 @@ airtio::Interface::~Interface() {
 void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_process->removeIfFirst<airtalgo::EndPoint>();
-	std::shared_ptr<airtalgo::Algo> algo = std::make_shared<airtalgo::EndPointCallback>(_function);
+	std::shared_ptr<airtalgo::Algo> algo = airtalgo::EndPointCallback::create(_function);
 	AIRTIO_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
 	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
@@ -140,7 +140,7 @@ void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataF
 void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_process->removeIfLast<airtalgo::EndPoint>();
-	std::shared_ptr<airtalgo::Algo> algo = std::make_shared<airtalgo::EndPointCallback>(_function);
+	std::shared_ptr<airtalgo::Algo> algo = airtalgo::EndPointCallback::create(_function);
 	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	m_process->pushBack(algo);
