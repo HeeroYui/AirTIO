@@ -44,44 +44,39 @@ namespace airtio {
 			 * @return a list of all availlables output stream (name + description)
 			 */
 			virtual std::vector<std::pair<std::string,std::string> > getListStreamOutput();
-		protected:
-			float m_masterVolume;
-			std::pair<float,float> m_masterVolumeRange;
-		public:
-			/**
-			 * @brief Set the output volume master of the Audio interface
-			 * @param[in] _gainDB Gain in decibel to apply in volume Master
-			 */
-			virtual void setMasterOutputVolume(float _gainDB);
-			/**
-			 * @brief Get the output volume master of the Audio interface
-			 * @return The gain in decibel applyied in volume Master
-			 */
-			virtual float getMasterOutputVolume();
-			/**
-			 * @brief Get the output volume master range of the Audio interface
-			 * @return The gain in decibel range of the output volume Master
-			 */
-			virtual std::pair<float,float> getMasterOutputVolumeRange();
 			
 			/**
-			 * @brief Set the section volume of the Audio interface
-			 * @param[in] _gainDB Gain in decibel to apply in volume section
-			 * @param[in] _section section name to apply volume (a section is : tts, reco, player, interjection ...)
+			 * @brief Set a parameter in the stream flow
+			 * @param[in] _flow Low level Flow name (see json config file)
+			 * @param[in] _filter name of the filter (if you added some personels)
+			 * @param[in] _parameter Parameter name.
+			 * @param[in] _value Value to set.
+			 * @return true set done
+			 * @return false An error occured
+			 * @example : setParameter("speaker", "volume", "MASTER", "-3dB");
+			 * @example : setParameter("microphone", "LowPassFilter", "cutFrequency", "1000Hz");
 			 */
-			virtual void setSectionVolume(const std::string& _section, float _gainDB);
+			virtual bool setParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter, const std::string& _value);
 			/**
-			 * @brief Get the section volume of the Audio interface
-			 * @param[in] _section section name to apply volume (a section is : tts, reco, player, interjection ...)
-			 * @return The gain in decibel applyied in volume section
+			 * @brief Get a parameter value
+			 * @param[in] _flow Low level Flow name (see json config file)
+			 * @param[in] _filter name of the filter (if you added some personels)
+			 * @param[in] _parameter Parameter name.
+			 * @return The requested value.
+			 * @example : getParameter("speaker", "volume", "MASTER"); can return something like "-3dB"
+			 * @example : getParameter("microphone", "LowPassFilter", "cutFrequency"); can return something like "[-120..0]dB"
 			 */
-			virtual float getSectionVolume(const std::string& _section);
+			virtual std::string getParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const;
 			/**
-			 * @brief Get the section volume range of the Audio interface
-			 * @param[in] _section section name to apply volume (a section is : tts, reco, player, interjection ...)
-			 * @return The gain in decibel range of the section volume
+			 * @brief Get a parameter value
+			 * @param[in] _flow Low level Flow name (see json config file)
+			 * @param[in] _filter name of the filter (if you added some personels)
+			 * @param[in] _parameter Parameter name.
+			 * @return The requested value.
+			 * @example : getParameter("speaker", "volume", "MASTER"); can return something like "[-120..0]dB"
+			 * @example : getParameter("microphone", "LowPassFilter", "cutFreqiency"); can return something like "]100..10000]Hz"
 			 */
-			virtual std::pair<float,float> getSectionVolumeRange(const std::string& _section);
+			virtual std::string getParameterProperty(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const;
 			
 			/**
 			 * @brief Create output Interface

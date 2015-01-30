@@ -44,6 +44,34 @@ std::vector<std::pair<std::string,std::string> > airtio::Manager::getListStreamO
 	return output;
 }
 
+
+bool setParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter, const std::string& _value) {
+	AIRTIO_DEBUG("setParameter [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "':'" << _value << "'");
+	bool out = false;
+	if (    _filter == "volume"
+	     && _parameter != "FLOW") {
+		AIRTIO_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
+	}
+	AIRTIO_TODO("    IMPLEMENT");
+	AIRTIO_DEBUG("setParameter [ END ] : '" << out << "'");
+	return out;
+}
+std::string getParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
+	AIRTIO_DEBUG("getParameter [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "'");
+	std::string out;
+	AIRTIO_TODO("    IMPLEMENT");
+	AIRTIO_DEBUG("getParameter [ END ] : '" << out << "'");
+	return out;
+}
+
+std::string getParameterProperty(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
+	AIRTIO_DEBUG("getParameterProperty [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "'");
+	std::string out;
+	AIRTIO_TODO("    IMPLEMENT");
+	AIRTIO_DEBUG("getParameterProperty [ END ] : '" << out << "'");
+	return out;
+}
+
 // TODO : Deprecated ...
 void airtio::Manager::setMasterOutputVolume(float _gainDB) {
 	if (_gainDB < m_masterVolumeRange.first) {

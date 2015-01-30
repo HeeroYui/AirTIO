@@ -176,24 +176,30 @@ void airtio::Interface::abort() {
 	AIRTIO_DEBUG("abort [ END ]");
 }
 
-void airtio::Interface::setVolume(float _gainDB) {
-	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	AIRTIO_DEBUG("setVolume [BEGIN]");
-	// TODO :...
-	AIRTIO_DEBUG("setVolume [ END ]");
+bool airtio::Interface::setParameter(const std::string& _filter, const std::string& _parameter, const std::string& _value) {
+	AIRTIO_DEBUG("setParameter [BEGIN] : '" << _filter << "':'" << _parameter << "':'" << _value << "'");
+	bool out = false;
+	if (    _filter == "volume"
+	     && _parameter != "FLOW") {
+		AIRTIO_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
+	}
+	AIRTIO_TODO("    IMPLEMENT");
+	AIRTIO_DEBUG("setParameter [ END ] : '" << out << "'");
+	return out;
 }
-
-float airtio::Interface::getVolume() const {
-	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	AIRTIO_DEBUG("getVolume [BEGIN]");
-	// TODO :...
-	AIRTIO_DEBUG("getVolume [ END ]");
-	return 0;
+std::string airtio::Interface::getParameter(const std::string& _filter, const std::string& _parameter) const {
+	AIRTIO_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
+	std::string out;
+	AIRTIO_TODO("    IMPLEMENT");
+	AIRTIO_DEBUG("getParameter [ END ] : '" << out << "'");
+	return out;
 }
-
-std::pair<float,float> airtio::Interface::getVolumeRange() const {
-	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	return std::make_pair(-120.0f, 0.0f);
+std::string airtio::Interface::getParameterProperty(const std::string& _filter, const std::string& _parameter) const {
+	AIRTIO_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
+	std::string out;
+	AIRTIO_TODO("    IMPLEMENT");
+	AIRTIO_DEBUG("getParameterProperty [ END ] : '" << out << "'");
+	return out;
 }
 
 void airtio::Interface::write(const void* _value, size_t _nbChunk) {
@@ -274,7 +280,9 @@ void airtio::Interface::systemNewInputData(std::chrono::system_clock::time_point
 	m_process->push(_time, _data, _nbChunk);
 }
 
-void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void*& _data, size_t& _nbChunk, size_t _chunkSize) {
+void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize) {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
-	m_process->pull(_time, _data, _nbChunk);//, _chunkSize);
+	m_process->pull(_time, _data, _nbChunk, _chunkSize);
 }
+
+bool airtio::Interface::systemSetVolume(const std::string& _parameter, const std::string& _value);

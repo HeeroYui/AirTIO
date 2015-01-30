@@ -87,20 +87,34 @@ namespace airtio {
 			 */
 			virtual void abort();
 			/**
-			 * @brief Set the volume of this interface
-			 * @param[in] _gainDB Gain in decibel to apply
+			 * @brief Set a parameter in the stream flow
+			 * @param[in] _filter name of the filter (if you added some personels)
+			 * @param[in] _parameter Parameter name.
+			 * @param[in] _value Value to set.
+			 * @return true set done
+			 * @return false An error occured
+			 * @example : setParameter("volume", "FLOW", "-3dB");
+			 * @example : setParameter("LowPassFilter", "cutFrequency", "1000Hz");
 			 */
-			virtual void setVolume(float _gainDB);
+			virtual bool setParameter(const std::string& _filter, const std::string& _parameter, const std::string& _value);
 			/**
-			 * @brief Get the volume of this interface
-			 * @return The gain in decibel applyied
+			 * @brief Get a parameter value
+			 * @param[in] _filter name of the filter (if you added some personels)
+			 * @param[in] _parameter Parameter name.
+			 * @return The requested value.
+			 * @example : getParameter("volume", "FLOW"); can return something like "-3dB"
+			 * @example : getParameter("LowPassFilter", "cutFrequency"); can return something like "[-120..0]dB"
 			 */
-			virtual float getVolume() const;
+			virtual std::string getParameter(const std::string& _filter, const std::string& _parameter) const;
 			/**
-			 * @brief Get the volume range of this interface
-			 * @return The gain in decibel range of this interface
+			 * @brief Get a parameter value
+			 * @param[in] _filter name of the filter (if you added some personels)
+			 * @param[in] _parameter Parameter name.
+			 * @return The requested value.
+			 * @example : getParameter("volume", "FLOW"); can return something like "[-120..0]dB"
+			 * @example : getParameter("LowPassFilter", "cutFreqiency"); can return something like "]100..10000]Hz"
 			 */
-			virtual std::pair<float,float> getVolumeRange() const;
+			virtual std::string getParameterProperty(const std::string& _filter, const std::string& _parameter) const;
 			/**
 			 * @brief write some audio sample in the speakers
 			 * @param[in] _value Data To write on output
@@ -141,9 +155,8 @@ namespace airtio {
 			virtual std::chrono::system_clock::time_point getCurrentTime() const;
 		private:
 			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk);
-			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void*& _data, size_t& _nbChunk, size_t _chunkSize);
-			
-			std::vector<int8_t> m_data;
+			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
+			virtual bool systemSetVolume(const std::string& _parameter, const std::string& _value);
 			float m_volume; //!< Local channel Volume
 	};
 };

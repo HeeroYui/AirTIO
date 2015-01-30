@@ -37,20 +37,20 @@ int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
 		AIRTIO_VERBOSE("data Output");
 		std::vector<int32_t> output;
 		output.resize(_nBufferFrames*m_map.size(), 0);
-		int16_t* outputTmp = nullptr;
-		void* outputTmp2 = nullptr;
-		size_t tmpSize = 0;
+		const int16_t* outputTmp = nullptr;
+		std::vector<uint8_t> outputTmp2;
+		outputTmp2.resize(sizeof(int16_t)*m_map.size()*_nBufferFrames, 0);
 		for (auto &it : m_list) {
 			if (it != nullptr) {
+				// clear datas ...
+				memset(&outputTmp2[0], 0, sizeof(int16_t)*m_map.size()*_nBufferFrames);
 				AIRTIO_VERBOSE("    IO : " /* << std::distance(m_list.begin(), it)*/ << "/" << m_list.size() << " name="<< it->getName());
-				tmpSize = _nBufferFrames;
-				it->systemNeedOutputData(ttime, outputTmp2, tmpSize, sizeof(int16_t)*m_map.size());
-				outputTmp = static_cast<int16_t*>(outputTmp2);
+				it->systemNeedOutputData(ttime, &outputTmp2[0], _nBufferFrames, sizeof(int16_t)*m_map.size());
+				outputTmp = reinterpret_cast<const int16_t*>(&outputTmp2[0]);
 				//it->systemNeedOutputData(ttime, _outputBuffer, _nBufferFrames, sizeof(int16_t)*m_map.size());
 				// Add data to the output tmp buffer :
 				for (size_t kkk=0; kkk<output.size(); ++kkk) {
 					output[kkk] += static_cast<int32_t>(outputTmp[kkk]);
-					//*_outputBuffer++ = static_cast<int16_t>(outputTmp[kkk]);
 				}
 				break;
 			}
@@ -58,7 +58,6 @@ int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
 		int16_t* outputBuffer = static_cast<int16_t*>(_outputBuffer);
 		for (size_t kkk=0; kkk<output.size(); ++kkk) {
 			*outputBuffer++ = static_cast<int16_t>(std::min(std::max(INT16_MIN, output[kkk]), INT16_MAX));
-			//*_outputBuffer++ = static_cast<int16_t>(output[kkk]);
 		}
 	}
 	if (_inputBuffer != nullptr) {
