@@ -32,6 +32,7 @@ class testOutWrite {
 			                                      airtalgo::format_int16,
 			                                      "default",
 			                                      "WriteMode");
+			m_interface->setReadwrite();
 		}
 		void run() {
 			double phase=0;
@@ -100,6 +101,7 @@ class testOutWriteCallback {
 			                                      airtalgo::format_int16,
 			                                      "default",
 			                                      "WriteMode+Callback");
+			m_interface->setReadwrite();
 			m_interface->setWriteCallback(std::bind(&testOutWriteCallback::onDataNeeded,
 			                                        this,
 			                                        std::placeholders::_1,
@@ -232,6 +234,7 @@ class testInRead {
 			                                     airtalgo::format_int16,
 			                                     "default",
 			                                     "WriteMode");
+			m_interface->setReadwrite();
 		}
 		void run() {
 			m_interface->start();
@@ -468,10 +471,10 @@ TEST(TestALL, testFormat) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
 	std::vector<airtalgo::format> listFormat;
-	listFormat.push_back(airtalgo::format_int16);
-	listFormat.push_back(airtalgo::format_int16_on_int32);
+	//listFormat.push_back(airtalgo::format_int16);
+	//listFormat.push_back(airtalgo::format_int16_on_int32);
 	listFormat.push_back(airtalgo::format_int32);
-	listFormat.push_back(airtalgo::format_float);
+	//listFormat.push_back(airtalgo::format_float);
 	for (auto &it : listFormat) {
 		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, 2, it);
 		process->run();

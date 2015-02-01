@@ -61,13 +61,29 @@ namespace airtio {
 			                                         const std::vector<airtalgo::channel>& _map,
 			                                         airtalgo::format _format,
 			                                         const std::shared_ptr<airtio::io::Node>& _node);
-		public:
 			/**
-			 * @brief When we want to implement a Callback Mode :
+			 * @brief set the read/write mode enable.
+			 */
+			virtual void setReadwrite();
+			/**
+			 * @brief When we want to implement a Callback Mode:
 			 */
 			virtual void setWriteCallback(airtalgo::needDataFunctionWrite _function);
 			virtual void setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function);
 			virtual void setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function);
+			/**
+			 * @brief Add a volume group of the current channel.
+			 * @note If you do not call this function with the group "FLOW" you chan not have a channel volume.
+			 * @note the set volume stage can not be set after the start.
+			 * @param[in] _name Name of the group classicle common group:
+			 *                      - FLOW for channel volume.
+			 *                      - MEDIA for multimedia volume control (audio player, player video, web streaming ...).
+			 *                      - TTS for Test-to-speech volume control.
+			 *                      - COMMUNICATION for user communication volume control.
+			 *                      - NOTIFICATION for urgent notification volume control.
+			 *                      - NOISE for small nose volume control.
+			 */
+			virtual void addVolumeGroup(const std::string& _name) {}
 		public:
 			/**
 			 * @brief Start the Audio interface flow.

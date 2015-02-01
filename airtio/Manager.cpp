@@ -11,6 +11,7 @@
 
 #include "io/Manager.h"
 #include "io/Node.h"
+#include "debug.h"
 
 #undef __class__
 #define __class__ "Manager"
@@ -21,9 +22,7 @@ std::shared_ptr<airtio::Manager> airtio::Manager::create(const std::string& _app
 
 airtio::Manager::Manager(const std::string& _applicationUniqueId) :
   m_applicationUniqueId(_applicationUniqueId),
-  m_listOpenInterface(),
-  m_masterVolume(0.0f),
-  m_masterVolumeRange(std::make_pair(-120.0f, 0.0f)) {
+  m_listOpenInterface() {
 	
 }
 
@@ -45,7 +44,7 @@ std::vector<std::pair<std::string,std::string> > airtio::Manager::getListStreamO
 }
 
 
-bool setParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter, const std::string& _value) {
+bool airtio::Manager::setParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter, const std::string& _value) {
 	AIRTIO_DEBUG("setParameter [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "':'" << _value << "'");
 	bool out = false;
 	if (    _filter == "volume"
@@ -56,7 +55,7 @@ bool setParameter(const std::string& _flow, const std::string& _filter, const st
 	AIRTIO_DEBUG("setParameter [ END ] : '" << out << "'");
 	return out;
 }
-std::string getParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
+std::string airtio::Manager::getParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
 	AIRTIO_DEBUG("getParameter [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "'");
 	std::string out;
 	AIRTIO_TODO("    IMPLEMENT");
@@ -64,53 +63,12 @@ std::string getParameter(const std::string& _flow, const std::string& _filter, c
 	return out;
 }
 
-std::string getParameterProperty(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
+std::string airtio::Manager::getParameterProperty(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
 	AIRTIO_DEBUG("getParameterProperty [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "'");
 	std::string out;
 	AIRTIO_TODO("    IMPLEMENT");
 	AIRTIO_DEBUG("getParameterProperty [ END ] : '" << out << "'");
 	return out;
-}
-
-// TODO : Deprecated ...
-void airtio::Manager::setMasterOutputVolume(float _gainDB) {
-	if (_gainDB < m_masterVolumeRange.first) {
-		//throw std::range_error(std::string(_gainDB) + " is out of bonds : [" + m_masterVolumeRange.first + ".." + m_masterVolumeRange.second + "]");
-		return;
-	}
-	if (_gainDB > m_masterVolumeRange.second) {
-		//throw std::range_error(std::string(_gainDB) + " is out of bonds : [" + m_masterVolumeRange.first + ".." + m_masterVolumeRange.second + "]");
-		return;
-	}
-	m_masterVolume = _gainDB;
-	for (auto &it : m_listOpenInterface) {
-		std::shared_ptr<airtio::Interface> tmpElem = it.lock();
-		if (tmpElem == nullptr) {
-			continue;
-		}
-		// TODO : Deprecated ...
-		//tmpElem->setMasterVolume(m_masterVolume);
-	}
-}
-
-float airtio::Manager::getMasterOutputVolume() {
-	return m_masterVolume;
-}
-
-std::pair<float,float> airtio::Manager::getMasterOutputVolumeRange() {
-	return m_masterVolumeRange;
-}
-
-void airtio::Manager::setSectionVolume(const std::string& _section, float _gainDB) {
-	
-}
-
-float airtio::Manager::getSectionVolume(const std::string& _section) {
-	return 0.0f;
-}
-
-std::pair<float,float> airtio::Manager::getSectionVolumeRange(const std::string& _section) {
-	return std::make_pair(0.0f, 0.0f);
 }
 
 std::shared_ptr<airtio::Interface>

@@ -1,0 +1,30 @@
+{
+	microphone:{ # name of the device
+		io:"input", # input or output
+		map-on:{ # select hardware interface and name
+			interface:"alsa", # interface : "alsa", "pulse", "core", ...
+			name:"default", # name of the interface
+		},
+		frequency:48000, # frequency to open device
+		channel-map:[ # mapping of the harware device (to change map if needed)
+			"front-left", "front-right",
+			"read-left", "rear-right",
+		],
+		type:"int16", # format to open device (int8, int16, int16-on-ont32, int24, int32, float)
+		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
+	},
+	speaker:{
+		io:"output",
+		map-on:{
+			interface:"alsa",
+			name:"default",
+		},
+		frequency:48000,
+		channel-map:[
+			"front-left", "front-right",
+		],
+		type:"int16",
+		nb-chunk:1024,
+		volume-name:"MASTER"
+	}
+}

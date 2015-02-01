@@ -13,6 +13,7 @@
 #include <airtalgo/EndPointCallback.h>
 #include <airtalgo/EndPointWrite.h>
 #include <airtalgo/EndPointRead.h>
+#include <airtalgo/Volume.h>
 
 
 #undef __class__
@@ -43,6 +44,13 @@ bool airtio::Interface::init(const std::string& _name,
 	
 	// Create convertion interface
 	if (m_node->isInput() == true) {
+		// add all time the volume stage :
+		std::shared_ptr<airtalgo::Volume> algo = airtalgo::Volume::create();
+		algo->setInputFormat(airtalgo::IOFormatInterface(m_node->getMap(), m_node->getFormat(), m_node->getFrequency()));
+		algo->setName("volume");
+		m_process->pushBack(algo);
+		AIRTIO_INFO("add basic volume stage");
+		/*
 		// TODO : Set an auto update of IO
 		if (m_map != m_node->getMap()) {
 			std::shared_ptr<airtalgo::ChannelReorder> algo = airtalgo::ChannelReorder::create();
@@ -65,23 +73,15 @@ bool airtio::Interface::init(const std::string& _name,
 			m_process->pushBack(algo);
 			AIRTIO_INFO("convert " << m_node->getFormat() << " -> " << m_format);
 		}
-		// by default we add a read node
-		if (true) {
-			std::shared_ptr<airtalgo::EndPointRead> algo = airtalgo::EndPointRead::create();
-			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
-			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
-			m_process->pushBack(algo);
-			AIRTIO_INFO("add default read node ...");
-		}
+		*/
 	} else {
-		// by default we add a write node:
-		if (true) {
-			std::shared_ptr<airtalgo::EndPointWrite> algo = airtalgo::EndPointWrite::create();
-			algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
-			algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
-			m_process->pushBack(algo);
-			AIRTIO_INFO("add default write node ...");
-		}
+		// add all time the volume stage :
+		std::shared_ptr<airtalgo::Volume> algo = airtalgo::Volume::create();
+		algo->setOutputFormat(airtalgo::IOFormatInterface(m_node->getMap(), m_node->getFormat(), m_node->getFrequency()));
+		algo->setName("volume");
+		m_process->pushBack(algo);
+		AIRTIO_INFO("add basic volume stage");
+		/*
 		// TODO : Set an auto update of IO
 		if (m_format != m_node->getFormat()) {
 			std::shared_ptr<airtalgo::FormatUpdate> algo = airtalgo::FormatUpdate::create();
@@ -104,6 +104,7 @@ bool airtio::Interface::init(const std::string& _name,
 			m_process->pushBack(algo);
 			AIRTIO_INFO("convert " << m_map << " -> " << m_node->getMap());
 		}
+		*/
 	}
 	//m_node->interfaceAdd(shared_from_this());
 	return true;
@@ -125,7 +126,31 @@ airtio::Interface::~Interface() {
 	//m_node->interfaceRemove(shared_from_this());
 	m_process.reset();
 }
-
+/*
+bool airtio::Interface::hasEndPoint() {
+	
+}
+*/
+void airtio::Interface::setReadwrite() {
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
+	if (m_process->hasType<airtalgo::EndPoint>() ) {
+		AIRTIO_ERROR("Endpoint is already present ==> can not change");
+		return;
+	}
+	if (m_node->isInput() == true) {
+		m_process->removeIfLast<airtalgo::EndPoint>();
+		std::shared_ptr<airtalgo::EndPointRead> algo = airtalgo::EndPointRead::create();
+		///algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
+		algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
+		m_process->pushBack(algo);
+	} else {
+		m_process->removeIfFirst<airtalgo::EndPoint>();
+		std::shared_ptr<airtalgo::EndPointWrite> algo = airtalgo::EndPointWrite::create();
+		algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
+		//algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
+		m_process->pushBack(algo);
+	}
+}
 
 void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
@@ -133,7 +158,7 @@ void airtio::Interface::setOutputCallback(size_t _chunkSize, airtalgo::needDataF
 	std::shared_ptr<airtalgo::Algo> algo = airtalgo::EndPointCallback::create(_function);
 	AIRTIO_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
 	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
-	algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
+	//algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	m_process->pushFront(algo);
 }
 
@@ -141,7 +166,7 @@ void airtio::Interface::setInputCallback(size_t _chunkSize, airtalgo::haveNewDat
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process->removeIfLast<airtalgo::EndPoint>();
 	std::shared_ptr<airtalgo::Algo> algo = airtalgo::EndPointCallback::create(_function);
-	algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
+	//algo->setInputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	algo->setOutputFormat(airtalgo::IOFormatInterface(m_map, m_format, m_freq));
 	m_process->pushBack(algo);
 }
@@ -158,6 +183,7 @@ void airtio::Interface::setWriteCallback(airtalgo::needDataFunctionWrite _functi
 void airtio::Interface::start(const std::chrono::system_clock::time_point& _time) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("start [BEGIN]");
+	m_process->updateInterAlgo();
 	m_node->interfaceAdd(shared_from_this());
 	AIRTIO_DEBUG("start [ END ]");
 }
@@ -165,6 +191,7 @@ void airtio::Interface::start(const std::chrono::system_clock::time_point& _time
 void airtio::Interface::stop(bool _fast, bool _abort) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	AIRTIO_DEBUG("stop [BEGIN]");
+	m_process->removeAlgoDynamic();
 	m_node->interfaceRemove(shared_from_this());
 	AIRTIO_DEBUG("stop [ END]");
 }
@@ -285,4 +312,6 @@ void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_poi
 	m_process->pull(_time, _data, _nbChunk, _chunkSize);
 }
 
-bool airtio::Interface::systemSetVolume(const std::string& _parameter, const std::string& _value);
+bool airtio::Interface::systemSetVolume(const std::string& _parameter, const std::string& _value) {
+	return false;
+}
