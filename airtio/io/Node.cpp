@@ -36,21 +36,21 @@ int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
 	if (_outputBuffer != nullptr) {
 		AIRTIO_VERBOSE("data Output");
 		std::vector<int32_t> output;
-		output.resize(_nBufferFrames*m_map.size(), 0);
-		const int16_t* outputTmp = nullptr;
+		output.resize(_nBufferFrames*m_interfaceFormat.getMap().size(), 0);
+		const int32_t* outputTmp = nullptr;
 		std::vector<uint8_t> outputTmp2;
-		outputTmp2.resize(sizeof(int16_t)*m_map.size()*_nBufferFrames, 0);
+		outputTmp2.resize(sizeof(int32_t)*m_interfaceFormat.getMap().size()*_nBufferFrames, 0);
 		for (auto &it : m_list) {
 			if (it != nullptr) {
 				// clear datas ...
-				memset(&outputTmp2[0], 0, sizeof(int16_t)*m_map.size()*_nBufferFrames);
+				memset(&outputTmp2[0], 0, sizeof(int32_t)*m_interfaceFormat.getMap().size()*_nBufferFrames);
 				AIRTIO_VERBOSE("    IO : " /* << std::distance(m_list.begin(), it)*/ << "/" << m_list.size() << " name="<< it->getName());
-				it->systemNeedOutputData(ttime, &outputTmp2[0], _nBufferFrames, sizeof(int16_t)*m_map.size());
-				outputTmp = reinterpret_cast<const int16_t*>(&outputTmp2[0]);
+				it->systemNeedOutputData(ttime, &outputTmp2[0], _nBufferFrames, sizeof(int32_t)*m_interfaceFormat.getMap().size());
+				outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
 				//it->systemNeedOutputData(ttime, _outputBuffer, _nBufferFrames, sizeof(int16_t)*m_map.size());
 				// Add data to the output tmp buffer :
 				for (size_t kkk=0; kkk<output.size(); ++kkk) {
-					output[kkk] += static_cast<int32_t>(outputTmp[kkk]);
+					output[kkk] += outputTmp[kkk];
 				}
 				break;
 			}
@@ -80,8 +80,6 @@ std::shared_ptr<airtio::io::Node> airtio::io::Node::create(const std::string& _s
 
 airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
   m_streamName(_streamName),
-  m_frequency(48000),
-  m_format(airtalgo::format_int16),
   m_isInput(_isInput) {
 	AIRTIO_INFO("-----------------------------------------------------------------");
 	AIRTIO_INFO("--                       CREATE NODE                           --");
@@ -92,16 +90,26 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 	if (m_streamName == "") {
 		m_streamName = "default";
 	}
+	std::vector<airtalgo::channel> map;
 	// set default channel property :
-	m_map.push_back(airtalgo::channel_frontLeft);
-	m_map.push_back(airtalgo::channel_frontRight);
+	map.push_back(airtalgo::channel_frontLeft);
+	map.push_back(airtalgo::channel_frontRight);
 	
+	m_hardwareFormat.set(map, airtalgo::format_int16, 48000);
+	if (m_isInput == true) {
+		// for input we just transfert audio with no transformation
+		m_interfaceFormat.set(map, airtalgo::format_int16, 48000);
+	} else {
+		// for output we will do a mix ...
+		m_interfaceFormat.set(map, airtalgo::format_int16_on_int32, 48000);
+	}
+
 	// search device ID :
 	AIRTIO_INFO("Open :");
 	AIRTIO_INFO("    m_streamName=" << m_streamName);
-	AIRTIO_INFO("    m_freq=" << m_frequency);
-	AIRTIO_INFO("    m_map=" << m_map);
-	AIRTIO_INFO("    m_format=" << m_format);
+	AIRTIO_INFO("    m_freq=" << m_hardwareFormat.getFrequency());
+	AIRTIO_INFO("    m_map=" << m_hardwareFormat.getMap());
+	AIRTIO_INFO("    m_format=" << m_hardwareFormat.getFormat());
 	AIRTIO_INFO("    m_isInput=" << m_isInput);
 	int32_t deviceId = 0;
 	AIRTIO_INFO("Device list:");
@@ -173,7 +181,7 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 	enum airtaudio::errorType err = airtaudio::errorNone;
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
-		                        airtaudio::SINT16, m_frequency, &m_rtaudioFrameSize,
+		                        airtaudio::SINT16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std::bind(&airtio::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
@@ -184,7 +192,7 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 		                        );
 	} else {
 		err = m_adac.openStream(&params, nullptr,
-		                        airtaudio::SINT16, m_frequency, &m_rtaudioFrameSize,
+		                        airtaudio::SINT16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std::bind(&airtio::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,

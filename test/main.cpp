@@ -381,7 +381,7 @@ class testOutCallbackType {
 		                  const std::vector<airtalgo::channel>& _map,
 		                  void* _data,
 		                  enum airtalgo::format _type) {
-			APPL_DEBUG("Get data ... " << _type << " map=" << _map << " chunk=" << _nbChunk);
+			//APPL_DEBUG("Get data ... " << _type << " map=" << _map << " chunk=" << _nbChunk);
 			double baseCycle = 2.0*M_PI/double(m_freq) * double(m_generateFreq);
 			if (_type == airtalgo::format_int16) {
 				int16_t* data = static_cast<int16_t*>(_data);
@@ -442,61 +442,50 @@ class testOutCallbackType {
 		}
 };
 
-TEST(TestALL, testResampling) {
+
+class testResampling : public ::testing::TestWithParam<float> {};
+TEST_P(testResampling, base) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
-	std::vector<float> listFreq;
-	listFreq.push_back(4000);
-	listFreq.push_back(8000);
-	listFreq.push_back(16000);
-	listFreq.push_back(32000);
-	listFreq.push_back(48000);
-	listFreq.push_back(48001);
-	listFreq.push_back(64000);
-	listFreq.push_back(96000);
-	listFreq.push_back(11250);
-	listFreq.push_back(2250);
-	listFreq.push_back(44100);
-	listFreq.push_back(88200);
-	for (auto &it : listFreq) {
-		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, it, 2, airtalgo::format_int16);
-		process->run();
-		process.reset();
-		usleep(500000);
-	}
+	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, GetParam(), 2, airtalgo::format_int16);
+	process->run();
+	process.reset();
+	usleep(500000);
 }
 
+INSTANTIATE_TEST_CASE_P(InstantiationName,
+                        testResampling,
+                        ::testing::Values(4000, 8000, 16000, 32000, 48000, 48001, 64000, 96000, 11250, 2250, 44100, 88200));
 
-TEST(TestALL, testFormat) {
+
+class testFormat : public ::testing::TestWithParam<airtalgo::format> {};
+TEST_P(testFormat, base) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
-	std::vector<airtalgo::format> listFormat;
-	//listFormat.push_back(airtalgo::format_int16);
-	//listFormat.push_back(airtalgo::format_int16_on_int32);
-	listFormat.push_back(airtalgo::format_int32);
-	//listFormat.push_back(airtalgo::format_float);
-	for (auto &it : listFormat) {
-		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, 2, it);
-		process->run();
-		process.reset();
-		usleep(500000);
-	}
+	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, 2, GetParam());
+	process->run();
+	process.reset();
+	usleep(500000);
 }
+INSTANTIATE_TEST_CASE_P(InstantiationName,
+                        testFormat,
+                        ::testing::Values(airtalgo::format_int16, airtalgo::format_int16_on_int32, airtalgo::format_int32, airtalgo::format_float));
 
-TEST(TestALL, testChannels) {
+
+class testChannels : public ::testing::TestWithParam<int32_t> {};
+TEST_P(testChannels, base) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
-	std::vector<int32_t> listChannel;
-	listChannel.push_back(1);
-	listChannel.push_back(2);
-	listChannel.push_back(4);
-	for (auto &it : listChannel) {
-		std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, it, airtalgo::format_int16);
-		process->run();
-		process.reset();
-		usleep(500000);
-	}
+	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, GetParam(), airtalgo::format_int16);
+	process->run();
+	process.reset();
+	usleep(500000);
 }
+INSTANTIATE_TEST_CASE_P(InstantiationName,
+                        testChannels,
+                        ::testing::Values(1,2,4));
+
+
 
 
 TEST(TestALL, testChannelsFormatResampling) {

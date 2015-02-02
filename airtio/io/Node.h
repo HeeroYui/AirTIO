@@ -19,6 +19,7 @@
 #include <memory>
 #include <airtio/Interface.h>
 #include <airtaudio/Interface.h>
+#include <airtalgo/IOFormatInterface.h>
 
 namespace airtio {
 	namespace io {
@@ -59,23 +60,13 @@ namespace airtio {
 					return m_streamName;
 				}
 			private:
-				std::vector<airtalgo::channel> m_map;
+				airtalgo::IOFormatInterface m_interfaceFormat;
 			public:
-				const std::vector<airtalgo::channel>& getMap() {
-					return m_map;
+				const airtalgo::IOFormatInterface& getInterfaceFormat() {
+					return m_interfaceFormat;
 				}
 			private:
-				float m_frequency;
-			public:
-				float getFrequency() {
-					return m_frequency;
-				}
-			private:
-				airtalgo::format m_format;
-			public:
-				airtalgo::format getFormat() {
-					return m_format;
-				}
+				airtalgo::IOFormatInterface m_hardwareFormat;
 			private:
 				bool m_isInput;
 			public:
