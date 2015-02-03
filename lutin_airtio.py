@@ -18,7 +18,7 @@ def create(target):
 		'airtio/io/Manager.cpp'
 		])
 	
-	myModule.add_module_depend(['airtaudio', 'airtalgo'])
+	myModule.add_module_depend(['airtaudio', 'airtalgo', 'ejson'])
 	myModule.add_export_path(tools.get_current_path(__file__))
 	
 	# add the currrent module at the 

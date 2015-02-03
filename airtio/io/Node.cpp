@@ -74,39 +74,115 @@ int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
 }
 
 
-std::shared_ptr<airtio::io::Node> airtio::io::Node::create(const std::string& _streamName, bool _isInput) {
-	return std::shared_ptr<airtio::io::Node>(new airtio::io::Node(_streamName, _isInput));
+std::shared_ptr<airtio::io::Node> airtio::io::Node::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+	return std::shared_ptr<airtio::io::Node>(new airtio::io::Node(_name, _config));
 }
 
-airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
-  m_streamName(_streamName),
-  m_isInput(_isInput) {
+airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+  m_config(_config),
+  m_name(_name),
+  m_isInput(false) {
 	AIRTIO_INFO("-----------------------------------------------------------------");
 	AIRTIO_INFO("--                       CREATE NODE                           --");
 	AIRTIO_INFO("-----------------------------------------------------------------");
-	// intanciate specific API ...
-	m_adac.instanciate();
+	/**
+		io:"input", # input or output
+		map-on:{ # select hardware interface and name
+			interface:"alsa", # interface : "alsa", "pulse", "core", ...
+			name:"default", # name of the interface
+		},
+		frequency:48000, # frequency to open device
+		channel-map:[ # mapping of the harware device (to change map if needed)
+			"front-left", "front-right",
+			"read-left", "rear-right",
+		],
+		type:"int16", # format to open device (int8, int16, int16-on-ont32, int24, int32, float)
+		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
+	*/
+	m_isInput = m_config->getStringValue("io") == "input";
+	enum airtaudio::api::type typeInterface = airtaudio::api::LINUX_ALSA;
+	std::string streamName = "default";
+	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
+	if (tmpObject == nullptr) {
+		AIRTIO_WARNING("missing node : 'map-on' ==> auto map : 'alsa:default'");
+	} else {
+		std::string value = tmpObject->getStringValue("interface", "default");
+		if (value == "alsa") {
+			typeInterface = airtaudio::api::LINUX_ALSA;
+		} else if (value == "pulse") {
+			typeInterface = airtaudio::api::LINUX_PULSE;
+		} else if (value == "b") {
+			typeInterface = airtaudio::api::LINUX_OSS;
+		} else if (value == "jack") {
+			typeInterface = airtaudio::api::UNIX_JACK;
+		} else if (value == "mac-core") {
+			typeInterface = airtaudio::api::MACOSX_CORE;
+		} else if (value == "ios-core") {
+			typeInterface = airtaudio::api::IOS_CORE;
+		} else if (value == "asio") {
+			typeInterface = airtaudio::api::WINDOWS_ASIO;
+		} else if (value == "ds") {
+			typeInterface = airtaudio::api::WINDOWS_DS;
+		} else if (value == "dummy") {
+			typeInterface = airtaudio::api::RTAUDIO_DUMMY;
+		} else if (value == "java") {
+			typeInterface = airtaudio::api::ANDROID_JAVA;
+		} else if (value == "user-1") {
+			typeInterface = airtaudio::api::USER_INTERFACE_1;
+		} else if (value == "user-2") {
+			typeInterface = airtaudio::api::USER_INTERFACE_2;
+		} else if (value == "user-3") {
+			typeInterface = airtaudio::api::USER_INTERFACE_3;
+		} else if (value == "user-4") {
+			typeInterface = airtaudio::api::USER_INTERFACE_4;
+		} else {
+			AIRTIO_WARNING("Unknow interface : '" << value << "'");
+		}
+		streamName = tmpObject->getStringValue("name", "default");
+	}
+	int32_t frequency = m_config->getNumberValue("frequency", 48000);
+	std::string type = m_config->getStringValue("type", "int16");
+	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
+	std::string volumeName = m_config->getStringValue("volume-name", "");
+	if (volumeName != "") {
+		AIRTIO_INFO("add node volume stage : '" << volumeName << "'");
+		m_volume = std::make_shared<airtalgo::VolumeElement>(volumeName);
+	}
 	
-	if (m_streamName == "") {
-		m_streamName = "default";
+	
+	enum airtalgo::format formatType = airtalgo::format_int16;
+	if (type == "int16") {
+		formatType = airtalgo::format_int16;
+	} else {
+		AIRTIO_WARNING("not managed type : '" << type << "'");
+	}
+	// TODO : MAP ...
+	
+	// intanciate specific API ...
+	m_adac.instanciate(typeInterface);
+	// TODO : Check return ...
+	
+	if (streamName == "") {
+		streamName = "default";
 	}
 	std::vector<airtalgo::channel> map;
 	// set default channel property :
 	map.push_back(airtalgo::channel_frontLeft);
 	map.push_back(airtalgo::channel_frontRight);
 	
-	m_hardwareFormat.set(map, airtalgo::format_int16, 48000);
+	m_hardwareFormat.set(map, formatType, frequency);
+	// TODO : Better view of interface type float -> float, int16 -> int16/int32,  ...
 	if (m_isInput == true) {
 		// for input we just transfert audio with no transformation
-		m_interfaceFormat.set(map, airtalgo::format_int16, 48000);
+		m_interfaceFormat.set(map, airtalgo::format_int16, frequency);
 	} else {
 		// for output we will do a mix ...
-		m_interfaceFormat.set(map, airtalgo::format_int16_on_int32, 48000);
+		m_interfaceFormat.set(map, airtalgo::format_int16_on_int32, frequency);
 	}
 
 	// search device ID :
 	AIRTIO_INFO("Open :");
-	AIRTIO_INFO("    m_streamName=" << m_streamName);
+	AIRTIO_INFO("    m_streamName=" << streamName);
 	AIRTIO_INFO("    m_freq=" << m_hardwareFormat.getFrequency());
 	AIRTIO_INFO("    m_map=" << m_hardwareFormat.getMap());
 	AIRTIO_INFO("    m_format=" << m_hardwareFormat.getFormat());
@@ -116,7 +192,7 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 	for (int32_t iii=0; iii<m_adac.getDeviceCount(); ++iii) {
 		m_info = m_adac.getDeviceInfo(iii);
 		AIRTIO_INFO("    " << iii << " name :" << m_info.name);
-		if (m_info.name == m_streamName) {
+		if (m_info.name == streamName) {
 			AIRTIO_INFO("        Select ...");
 			deviceId = iii;
 		}
@@ -165,7 +241,6 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 	}
 	
 	// open Audio device:
-	unsigned int nbChunk= 1024;
 	airtaudio::StreamParameters params;
 	params.deviceId = deviceId;
 	if (m_isInput == true) {
@@ -203,7 +278,7 @@ airtio::io::Node::Node(const std::string& _streamName, bool _isInput) :
 		                        );
 	}
 	if (err != airtaudio::errorNone) {
-		AIRTIO_ERROR("Create stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") << " can not create strem " << err);
+		AIRTIO_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
 	}
 }
 
@@ -220,19 +295,19 @@ airtio::io::Node::~Node() {
 
 void airtio::io::Node::start() {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	AIRTIO_INFO("Start stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
+	AIRTIO_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum airtaudio::errorType err = m_adac.startStream();
 	if (err != airtaudio::errorNone) {
-		AIRTIO_ERROR("Start stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
+		AIRTIO_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
 	}
 }
 
 void airtio::io::Node::stop() {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	AIRTIO_INFO("Stop stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
+	AIRTIO_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum airtaudio::errorType err = m_adac.stopStream();
 	if (err != airtaudio::errorNone) {
-		AIRTIO_ERROR("Stop stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
+		AIRTIO_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
 	}
 }
 
@@ -244,7 +319,7 @@ void airtio::io::Node::interfaceAdd(const std::shared_ptr<airtio::Interface>& _i
 				return;
 			}
 		}
-		AIRTIO_INFO("ADD interface for stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
+		AIRTIO_INFO("ADD interface for stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 		m_list.push_back(_interface);
 	}
 	if (m_list.size() == 1) {
@@ -258,7 +333,7 @@ void airtio::io::Node::interfaceRemove(const std::shared_ptr<airtio::Interface>&
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				m_list.erase(m_list.begin()+iii);
-				AIRTIO_INFO("RM interface for stream : '" << m_streamName << "' mode=" << (m_isInput?"input":"output") );
+				AIRTIO_INFO("RM interface for stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 				break;
 			}
 		}

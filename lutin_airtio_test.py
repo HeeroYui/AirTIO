@@ -15,6 +15,7 @@ def create(target):
 		'test/debug.cpp'
 		])
 	
+	myModule.copy_folder('data/*')
 	myModule.add_module_depend(['airtio', 'gtest', 'etk'])
 	
 	# add the currrent module at the 

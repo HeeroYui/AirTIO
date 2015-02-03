@@ -80,7 +80,7 @@ airtio::Manager::createOutput(float _freq,
 	// get global hardware interface:
 	std::shared_ptr<airtio::io::Manager> manager = airtio::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName, false);
+	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName);//, false);
 	// create user iterface:
 	std::shared_ptr<airtio::Interface> interface;
 	interface = airtio::Interface::create(_name, _freq, _map, _format, node);
@@ -100,7 +100,7 @@ airtio::Manager::createInput(float _freq,
 	// get global hardware interface:
 	std::shared_ptr<airtio::io::Manager> manager = airtio::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName, true);
+	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName);//, true);
 	// create user iterface:
 	std::shared_ptr<airtio::Interface> interface;
 	interface = airtio::Interface::create(_name, _freq, _map, _format, node);

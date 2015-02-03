@@ -47,6 +47,11 @@ bool airtio::Interface::init(const std::string& _name,
 		algo->setName("volume");
 		m_process->pushBack(algo);
 		AIRTIO_INFO("add basic volume stage (1)");
+		std::shared_ptr<airtalgo::VolumeElement> tmpVolume = m_node->getVolume();
+		if (tmpVolume != nullptr) {
+			AIRTIO_INFO(" add volume for node");
+			algo->addVolumeStage(tmpVolume);
+		}
 	} else {
 		// add all time the volume stage :
 		std::shared_ptr<airtalgo::Volume> algo = airtalgo::Volume::create();
@@ -54,6 +59,11 @@ bool airtio::Interface::init(const std::string& _name,
 		algo->setName("volume");
 		m_process->pushBack(algo);
 		AIRTIO_INFO("add basic volume stage (2)");
+		std::shared_ptr<airtalgo::VolumeElement> tmpVolume = m_node->getVolume();
+		if (tmpVolume != nullptr) {
+			AIRTIO_INFO(" add volume for node");
+			algo->addVolumeStage(tmpVolume);
+		}
 	}
 	return true;
 }
@@ -160,22 +170,38 @@ bool airtio::Interface::setParameter(const std::string& _filter, const std::stri
 	if (    _filter == "volume"
 	     && _parameter != "FLOW") {
 		AIRTIO_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
+		return false;
 	}
-	AIRTIO_TODO("    IMPLEMENT");
+	std::shared_ptr<airtalgo::Algo> algo = m_process->get<airtalgo::Algo>(_filter);
+	if (algo == nullptr) {
+		AIRTIO_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
+		return false;
+	}
+	out = algo->setParameter(_parameter, _value);
 	AIRTIO_DEBUG("setParameter [ END ] : '" << out << "'");
 	return out;
 }
 std::string airtio::Interface::getParameter(const std::string& _filter, const std::string& _parameter) const {
 	AIRTIO_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
-	AIRTIO_TODO("    IMPLEMENT");
+	std::shared_ptr<airtalgo::Algo> algo = m_process->get<airtalgo::Algo>(_filter);
+	if (algo == nullptr) {
+		AIRTIO_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
+		return "[ERROR]";
+	}
+	out = algo->getParameter(_parameter);
 	AIRTIO_DEBUG("getParameter [ END ] : '" << out << "'");
 	return out;
 }
 std::string airtio::Interface::getParameterProperty(const std::string& _filter, const std::string& _parameter) const {
 	AIRTIO_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
-	AIRTIO_TODO("    IMPLEMENT");
+	std::shared_ptr<airtalgo::Algo> algo = m_process->get<airtalgo::Algo>(_filter);
+	if (algo == nullptr) {
+		AIRTIO_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
+		return "[ERROR]";
+	}
+	out = algo->getParameterProperty(_parameter);
 	AIRTIO_DEBUG("getParameterProperty [ END ] : '" << out << "'");
 	return out;
 }
@@ -256,7 +282,23 @@ std::chrono::system_clock::time_point airtio::Interface::getCurrentTime() const 
 	return std::chrono::system_clock::now();
 }
 
-
+void airtio::Interface::addVolumeGroup(const std::string& _name) {
+	std::unique_lock<std::recursive_mutex> lock(m_mutex);
+	AIRTIO_DEBUG("addVolumeGroup(" << _name << ")");
+	std::shared_ptr<airtalgo::Volume> algo = m_process->get<airtalgo::Volume>("volume");
+	if (algo == nullptr) {
+		AIRTIO_ERROR("addVolumeGroup(" << _name << ") ==> no volume stage ... can not add it ...");
+		return;
+	}
+	if (_name == "FLOW") {
+		// Local volume name
+		algo->addVolumeStage(std::make_shared<airtalgo::VolumeElement>(_name));
+	} else {
+		// get manager unique instance:
+		std::shared_ptr<airtio::io::Manager> mng = airtio::io::Manager::getInstance();
+		algo->addVolumeStage(mng->getVolumeGroup(_name));
+	}
+}
 
 void airtio::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);

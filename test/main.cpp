@@ -30,7 +30,7 @@ class testOutWrite {
 			m_interface = m_manager->createOutput(48000,
 			                                      m_channelMap,
 			                                      airtalgo::format_int16,
-			                                      "default",
+			                                      "speaker",
 			                                      "WriteMode");
 			m_interface->setReadwrite();
 		}
@@ -99,7 +99,7 @@ class testOutWriteCallback {
 			m_interface = m_manager->createOutput(48000,
 			                                      channelMap,
 			                                      airtalgo::format_int16,
-			                                      "default",
+			                                      "speaker",
 			                                      "WriteMode+Callback");
 			m_interface->setReadwrite();
 			m_interface->setWriteCallback(std::bind(&testOutWriteCallback::onDataNeeded,
@@ -166,7 +166,7 @@ class testOutCallback {
 			m_interface = m_manager->createOutput(48000,
 			                                      channelMap,
 			                                      airtalgo::format_int16,
-			                                      "default",
+			                                      "speaker",
 			                                      "WriteModeCallback");
 			// set callback mode ...
 			m_interface->setOutputCallback(1024,
@@ -232,7 +232,7 @@ class testInRead {
 			m_interface = m_manager->createInput(48000,
 			                                     m_channelMap,
 			                                     airtalgo::format_int16,
-			                                     "default",
+			                                     "microphone",
 			                                     "WriteMode");
 			m_interface->setReadwrite();
 		}
@@ -279,7 +279,7 @@ class testInCallback {
 			m_interface = m_manager->createInput(48000,
 			                                     channelMap,
 			                                     airtalgo::format_int16,
-			                                     "default",
+			                                     "microphone",
 			                                     "WriteModeCallback");
 			// set callback mode ...
 			m_interface->setInputCallback(1024,
@@ -364,7 +364,7 @@ class testOutCallbackType {
 			m_interface = m_manager->createOutput(m_freq,
 			                                      channelMap,
 			                                      _format,
-			                                      "default",
+			                                      "speaker",
 			                                      "WriteModeCallbackType");
 			// set callback mode ...
 			m_interface->setOutputCallback(1024,
@@ -487,6 +487,90 @@ INSTANTIATE_TEST_CASE_P(InstantiationName,
 
 
 
+class testCallbackVolume {
+	private:
+		std::shared_ptr<airtio::Manager> m_manager;
+		std::shared_ptr<airtio::Interface> m_interface;
+		double m_phase;
+	public:
+		testCallbackVolume(std::shared_ptr<airtio::Manager> _manager) :
+		  m_manager(_manager),
+		  m_phase(0) {
+			//Set stereo output:
+			std::vector<airtalgo::channel> channelMap;
+			channelMap.push_back(airtalgo::channel_frontLeft);
+			channelMap.push_back(airtalgo::channel_frontRight);
+			m_interface = m_manager->createOutput(48000,
+			                                      channelMap,
+			                                      airtalgo::format_int16,
+			                                      "speaker",
+			                                      "WriteModeCallback");
+			// set callback mode ...
+			m_interface->setOutputCallback(1024,
+			                               std::bind(&testCallbackVolume::onDataNeeded,
+			                                         this,
+			                                         std::placeholders::_1,
+			                                         std::placeholders::_2,
+			                                         std::placeholders::_3,
+			                                         std::placeholders::_4,
+			                                         std::placeholders::_5));
+			m_interface->addVolumeGroup("MEDIA");
+			m_interface->addVolumeGroup("FLOW");
+		}
+		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
+		                  const size_t& _nbChunk,
+		                  const std::vector<airtalgo::channel>& _map,
+		                  void* _data,
+		                  enum airtalgo::format _type) {
+			if (_type != airtalgo::format_int16) {
+				APPL_ERROR("call wrong type ... (need int16_t)");
+			}
+			int16_t* data = static_cast<int16_t*>(_data);
+			double baseCycle = 2.0*M_PI/(double)48000 * (double)550;
+			for (int32_t iii=0; iii<_nbChunk; iii++) {
+				for (int32_t jjj=0; jjj<_map.size(); jjj++) {
+					data[_map.size()*iii+jjj] = cos(m_phase) * 30000;
+				}
+				m_phase += baseCycle;
+				if (m_phase >= 2*M_PI) {
+					m_phase -= 2*M_PI;
+				}
+			}
+		}
+		void run() {
+			m_interface->start();
+			usleep(1000000);
+			m_interface->setParameter("volume", "FLOW", "-3dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "-6dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "-9dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "-12dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "-3dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "3dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "6dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "9dB");
+			usleep(500000);
+			m_interface->setParameter("volume", "FLOW", "0dB");
+			usleep(1000000);
+			m_interface->stop();
+		}
+};
+
+
+TEST(testALL, testVolume) {
+	std::shared_ptr<airtio::Manager> manager;
+	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
+	process->run();
+	process.reset();
+	usleep(500000);
+}
 
 TEST(TestALL, testChannelsFormatResampling) {
 	std::shared_ptr<airtio::Manager> manager;

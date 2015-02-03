@@ -81,9 +81,9 @@ namespace airtio {
 			 *                      - TTS for Test-to-speech volume control.
 			 *                      - COMMUNICATION for user communication volume control.
 			 *                      - NOTIFICATION for urgent notification volume control.
-			 *                      - NOISE for small nose volume control.
+			 *                      - NOISE for small noise volume control.
 			 */
-			virtual void addVolumeGroup(const std::string& _name) {}
+			virtual void addVolumeGroup(const std::string& _name);
 		public:
 			/**
 			 * @brief Start the Audio interface flow.

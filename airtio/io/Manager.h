@@ -15,7 +15,9 @@
 #include <functional>
 #include <airtalgo/format.h>
 #include <airtalgo/channel.h>
+#include <ejson/ejson.h>
 #include <memory>
+#include <airtalgo/Volume.h>
 
 namespace airtio {
 	namespace io {
@@ -25,7 +27,7 @@ namespace airtio {
 				/**
 				 * @brief Constructor
 				 */
-				Manager() {};
+				Manager();
 			public:
 				static std::shared_ptr<Manager> getInstance();
 				/**
@@ -33,10 +35,15 @@ namespace airtio {
 				 */
 				virtual ~Manager() {};
 			private:
-				std::vector<std::weak_ptr<airtio::io::Node> > m_list;
+				ejson::Document m_config; // harware configuration
+				std::vector<std::shared_ptr<airtio::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
+				std::vector<std::weak_ptr<airtio::io::Node> > m_list; //!< List of all IO node
 			public:
-				std::shared_ptr<airtio::io::Node> getNode(const std::string& _streamName, bool _isInput);
-				
+				std::shared_ptr<airtio::io::Node> getNode(const std::string& _name);
+			private:
+				std::vector<std::shared_ptr<airtalgo::VolumeElement>> m_volumeGroup;
+			public:
+				std::shared_ptr<airtalgo::VolumeElement> getVolumeGroup(const std::string& _name);
 		};
 	}
 }
