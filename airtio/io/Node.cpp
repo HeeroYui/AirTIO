@@ -146,9 +146,9 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 	std::string volumeName = m_config->getStringValue("volume-name", "");
 	if (volumeName != "") {
 		AIRTIO_INFO("add node volume stage : '" << volumeName << "'");
-		m_volume = std::make_shared<airtalgo::VolumeElement>(volumeName);
+		// use global manager for volume ...
+		m_volume = airtio::io::Manager::getInstance()->getVolumeGroup(volumeName);
 	}
-	
 	
 	enum airtalgo::format formatType = airtalgo::format_int16;
 	if (type == "int16") {

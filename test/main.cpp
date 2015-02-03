@@ -541,29 +541,48 @@ class testCallbackVolume {
 			m_interface->start();
 			usleep(1000000);
 			m_interface->setParameter("volume", "FLOW", "-3dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
+			/*
 			m_interface->setParameter("volume", "FLOW", "-6dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "-9dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "-12dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "-3dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
+			*/
+			m_manager->setParameter("", "volume", "MASTER", "-3dB");
+			APPL_INFO("get volume MASTER: " << m_manager->getParameter("", "volume", "MASTER") );
+			usleep(500000);
+			m_manager->setParameter("", "volume", "MEDIA", "-3dB");
+			APPL_INFO("get volume MEDIA: " << m_manager->getParameter("", "volume", "MEDIA") );
+			usleep(500000);
+			/*
 			m_interface->setParameter("volume", "FLOW", "3dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "6dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "9dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "0dB");
+			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(1000000);
+			*/
 			m_interface->stop();
 		}
 };
 
 
-TEST(testALL, testVolume) {
+TEST(TestALL, testVolume) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
 	std::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
