@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include <memory>
 #include <airtio/Interface.h>
-#include <airtalgo/format.h>
-#include <airtalgo/channel.h>
+#include <audio/format.h>
+#include <audio/channel.h>
 
 namespace airtio {
 	/**
@@ -79,8 +79,8 @@ namespace airtio {
 			 * @return a pointer on the interface
 			 */
 			virtual std::shared_ptr<Interface> createOutput(float _freq,
-			                                                const std::vector<airtalgo::channel>& _map,
-			                                                airtalgo::format _format,
+			                                                const std::vector<audio::channel>& _map,
+			                                                audio::format _format,
 			                                                const std::string& _streamName = "",
 			                                                const std::string& _name = "");
 			/**
@@ -93,8 +93,8 @@ namespace airtio {
 			 * @return a pointer on the interface
 			 */
 			virtual std::shared_ptr<Interface> createInput(float _freq,
-			                                               const std::vector<airtalgo::channel>& _map,
-			                                               airtalgo::format _format,
+			                                               const std::vector<audio::channel>& _map,
+			                                               audio::format _format,
 			                                               const std::string& _streamName = "",
 			                                               const std::string& _name = "");
 	};

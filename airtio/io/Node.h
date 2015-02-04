@@ -13,8 +13,8 @@
 #include <stdint.h>
 #include <chrono>
 #include <functional>
-#include <airtalgo/format.h>
-#include <airtalgo/channel.h>
+#include <audio/format.h>
+#include <audio/channel.h>
 #include "Manager.h"
 #include <memory>
 #include <airtio/Interface.h>
@@ -59,7 +59,7 @@ namespace airtio {
 				                        double _streamTime,
 				                        airtaudio::streamStatus _status);
 			private:
-				std::string m_name;
+				std::string m_name; //!< Harware.json configuration name
 			public:
 				const std::string& getName() {
 					return m_name;

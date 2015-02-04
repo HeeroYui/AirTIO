@@ -57,8 +57,8 @@ std::pair<float,float> airtio::Manager::getVolumeRange(const std::string& _volum
 }
 
 std::shared_ptr<airtio::Interface> airtio::Manager::createOutput(float _freq,
-                                                                 const std::vector<airtalgo::channel>& _map,
-                                                                 airtalgo::format _format,
+                                                                 const std::vector<audio::channel>& _map,
+                                                                 audio::format _format,
                                                                  const std::string& _streamName,
                                                                  const std::string& _name) {
 	// get global hardware interface:
@@ -74,8 +74,8 @@ std::shared_ptr<airtio::Interface> airtio::Manager::createOutput(float _freq,
 }
 
 std::shared_ptr<airtio::Interface> airtio::Manager::createInput(float _freq,
-                                                                const std::vector<airtalgo::channel>& _map,
-                                                                airtalgo::format _format,
+                                                                const std::vector<audio::channel>& _map,
+                                                                audio::format _format,
                                                                 const std::string& _streamName,
                                                                 const std::string& _name) {
 	// get global hardware interface:

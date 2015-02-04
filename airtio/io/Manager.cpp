@@ -65,10 +65,14 @@ std::shared_ptr<airtalgo::VolumeElement> airtio::io::Manager::getVolumeGroup(con
 bool airtio::io::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
 	std::shared_ptr<airtalgo::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
-		AIRTIO_ERROR("Can not get volume ... : '" << _volumeName << "'");
+		AIRTIO_ERROR("Can not set volume ... : '" << _volumeName << "'");
 		return false;
 	}
-	// TODO : Check range ...
+	if (    _valuedB < -300
+	     || _valuedB > 300) {
+		AIRTIO_ERROR("Can not set volume ... : '" << _volumeName << "' out of range : [-300..300]");
+		return false;
+	}
 	volume->setVolume(_valuedB);
 	for (auto &it2 : m_list) {
 		std::shared_ptr<airtio::io::Node> val = it2.lock();

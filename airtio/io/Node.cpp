@@ -150,9 +150,9 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 		m_volume = airtio::io::Manager::getInstance()->getVolumeGroup(volumeName);
 	}
 	
-	enum airtalgo::format formatType = airtalgo::format_int16;
+	enum audio::format formatType = audio::format_int16;
 	if (type == "int16") {
-		formatType = airtalgo::format_int16;
+		formatType = audio::format_int16;
 	} else {
 		AIRTIO_WARNING("not managed type : '" << type << "'");
 	}
@@ -165,19 +165,19 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 	if (streamName == "") {
 		streamName = "default";
 	}
-	std::vector<airtalgo::channel> map;
+	std::vector<audio::channel> map;
 	// set default channel property :
-	map.push_back(airtalgo::channel_frontLeft);
-	map.push_back(airtalgo::channel_frontRight);
+	map.push_back(audio::channel_frontLeft);
+	map.push_back(audio::channel_frontRight);
 	
 	m_hardwareFormat.set(map, formatType, frequency);
 	// TODO : Better view of interface type float -> float, int16 -> int16/int32,  ...
 	if (m_isInput == true) {
 		// for input we just transfert audio with no transformation
-		m_interfaceFormat.set(map, airtalgo::format_int16, frequency);
+		m_interfaceFormat.set(map, audio::format_int16, frequency);
 	} else {
 		// for output we will do a mix ...
-		m_interfaceFormat.set(map, airtalgo::format_int16_on_int32, frequency);
+		m_interfaceFormat.set(map, audio::format_int16_on_int32, frequency);
 	}
 
 	// search device ID :

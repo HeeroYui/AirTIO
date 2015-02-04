@@ -20,7 +20,7 @@ airtio::Interface::Interface(void) :
   m_node(nullptr),
   m_freq(8000),
   m_map(),
-  m_format(airtalgo::format_int16),
+  m_format(audio::format_int16),
   m_name(""),
   m_volume(0.0f) {
 	
@@ -28,8 +28,8 @@ airtio::Interface::Interface(void) :
 
 bool airtio::Interface::init(const std::string& _name,
                              float _freq,
-                             const std::vector<airtalgo::channel>& _map,
-                             airtalgo::format _format,
+                             const std::vector<audio::channel>& _map,
+                             audio::format _format,
                              const std::shared_ptr<airtio::io::Node>& _node) {
 	m_name = _name;
 	m_node = _node;
@@ -71,8 +71,8 @@ bool airtio::Interface::init(const std::string& _name,
 
 std::shared_ptr<airtio::Interface> airtio::Interface::create(const std::string& _name,
                                                              float _freq,
-                                                             const std::vector<airtalgo::channel>& _map,
-                                                             airtalgo::format _format,
+                                                             const std::vector<audio::channel>& _map,
+                                                             audio::format _format,
                                                              const std::shared_ptr<airtio::io::Node>& _node) {
 	std::shared_ptr<airtio::Interface> out = std::shared_ptr<airtio::Interface>(new airtio::Interface());
 	out->init(_name, _freq, _map, _format, _node);

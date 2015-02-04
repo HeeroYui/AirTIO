@@ -13,8 +13,8 @@
 #include <stdint.h>
 #include <chrono>
 #include <functional>
-#include <airtalgo/format.h>
-#include <airtalgo/channel.h>
+#include <audio/format.h>
+#include <audio/channel.h>
 #include <ejson/ejson.h>
 #include <memory>
 #include <airtalgo/Volume.h>

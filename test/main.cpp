@@ -18,18 +18,18 @@
 
 class testOutWrite {
 	private:
-		std::vector<airtalgo::channel> m_channelMap;
+		std::vector<audio::channel> m_channelMap;
 		std::shared_ptr<airtio::Manager> m_manager;
 		std::shared_ptr<airtio::Interface> m_interface;
 	public:
 		testOutWrite(std::shared_ptr<airtio::Manager> _manager) :
 		  m_manager(_manager) {
 			//Set stereo output:
-			m_channelMap.push_back(airtalgo::channel_frontLeft);
-			m_channelMap.push_back(airtalgo::channel_frontRight);
+			m_channelMap.push_back(audio::channel_frontLeft);
+			m_channelMap.push_back(audio::channel_frontRight);
 			m_interface = m_manager->createOutput(48000,
 			                                      m_channelMap,
-			                                      airtalgo::format_int16,
+			                                      audio::format_int16,
 			                                      "speaker",
 			                                      "WriteMode");
 			m_interface->setReadwrite();
@@ -92,13 +92,13 @@ class testOutWriteCallback {
 		testOutWriteCallback(std::shared_ptr<airtio::Manager> _manager) :
 		  m_manager(_manager),
 		  m_phase(0) {
-			std::vector<airtalgo::channel> channelMap;
+			std::vector<audio::channel> channelMap;
 			//Set stereo output:
-			channelMap.push_back(airtalgo::channel_frontLeft);
-			channelMap.push_back(airtalgo::channel_frontRight);
+			channelMap.push_back(audio::channel_frontLeft);
+			channelMap.push_back(audio::channel_frontRight);
 			m_interface = m_manager->createOutput(48000,
 			                                      channelMap,
-			                                      airtalgo::format_int16,
+			                                      audio::format_int16,
 			                                      "speaker",
 			                                      "WriteMode+Callback");
 			m_interface->setReadwrite();
@@ -111,9 +111,9 @@ class testOutWriteCallback {
 		}
 		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
 		                  const size_t& _nbChunk,
-		                  const std::vector<airtalgo::channel>& _map,
-		                  enum airtalgo::format _type) {
-			if (_type != airtalgo::format_int16) {
+		                  const std::vector<audio::channel>& _map,
+		                  enum audio::format _type) {
+			if (_type != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			std::vector<int16_t> data;
@@ -160,12 +160,12 @@ class testOutCallback {
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
-			std::vector<airtalgo::channel> channelMap;
-			channelMap.push_back(airtalgo::channel_frontLeft);
-			channelMap.push_back(airtalgo::channel_frontRight);
+			std::vector<audio::channel> channelMap;
+			channelMap.push_back(audio::channel_frontLeft);
+			channelMap.push_back(audio::channel_frontRight);
 			m_interface = m_manager->createOutput(48000,
 			                                      channelMap,
-			                                      airtalgo::format_int16,
+			                                      audio::format_int16,
 			                                      "speaker",
 			                                      "WriteModeCallback");
 			// set callback mode ...
@@ -180,10 +180,10 @@ class testOutCallback {
 		}
 		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
 		                  const size_t& _nbChunk,
-		                  const std::vector<airtalgo::channel>& _map,
+		                  const std::vector<audio::channel>& _map,
 		                  void* _data,
-		                  enum airtalgo::format _type) {
-			if (_type != airtalgo::format_int16) {
+		                  enum audio::format _type) {
+			if (_type != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			int16_t* data = static_cast<int16_t*>(_data);
@@ -220,18 +220,18 @@ TEST(TestALL, testOutputCallBack) {
 /*
 class testInRead {
 	private:
-		std::vector<airtalgo::channel> m_channelMap;
+		std::vector<audio::channel> m_channelMap;
 		std::shared_ptr<airtio::Manager> m_manager;
 		std::shared_ptr<airtio::Interface> m_interface;
 	public:
 		testInRead(std::shared_ptr<airtio::Manager> _manager) :
 		  m_manager(_manager){
 			//Set stereo output:
-			m_channelMap.push_back(airtalgo::channel_frontLeft);
-			m_channelMap.push_back(airtalgo::channel_frontRight);
+			m_channelMap.push_back(audio::channel_frontLeft);
+			m_channelMap.push_back(audio::channel_frontRight);
 			m_interface = m_manager->createInput(48000,
 			                                     m_channelMap,
-			                                     airtalgo::format_int16,
+			                                     audio::format_int16,
 			                                     "microphone",
 			                                     "WriteMode");
 			m_interface->setReadwrite();
@@ -273,12 +273,12 @@ class testInCallback {
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
-			std::vector<airtalgo::channel> channelMap;
-			channelMap.push_back(airtalgo::channel_frontLeft);
-			channelMap.push_back(airtalgo::channel_frontRight);
+			std::vector<audio::channel> channelMap;
+			channelMap.push_back(audio::channel_frontLeft);
+			channelMap.push_back(audio::channel_frontRight);
 			m_interface = m_manager->createInput(48000,
 			                                     channelMap,
-			                                     airtalgo::format_int16,
+			                                     audio::format_int16,
 			                                     "microphone",
 			                                     "WriteModeCallback");
 			// set callback mode ...
@@ -293,10 +293,10 @@ class testInCallback {
 		}
 		void onDataReceived(const std::chrono::system_clock::time_point& _readTime,
 		                    size_t _nbChunk,
-		                    const std::vector<airtalgo::channel>& _map,
+		                    const std::vector<audio::channel>& _map,
 		                    const void* _data,
-		                    enum airtalgo::format _type) {
-			if (_type != airtalgo::format_int16) {
+		                    enum audio::format _type) {
+			if (_type != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			const int16_t* data = static_cast<const int16_t*>(_data);
@@ -339,24 +339,24 @@ class testOutCallbackType {
 		testOutCallbackType(const std::shared_ptr<airtio::Manager>& _manager,
 		                    float _freq=48000.0f,
 		                    int32_t _nbChannels=2,
-		                    airtalgo::format _format=airtalgo::format_int16) :
+		                    audio::format _format=audio::format_int16) :
 		  m_manager(_manager),
 		  m_phase(0),
 		  m_freq(_freq),
 		  m_nbChannels(_nbChannels),
 		  m_generateFreq(550.0f) {
 			//Set stereo output:
-			std::vector<airtalgo::channel> channelMap;
+			std::vector<audio::channel> channelMap;
 			if (m_nbChannels == 1) {
-				channelMap.push_back(airtalgo::channel_frontCenter);
+				channelMap.push_back(audio::channel_frontCenter);
 			} else if (m_nbChannels == 2) {
-				channelMap.push_back(airtalgo::channel_frontLeft);
-				channelMap.push_back(airtalgo::channel_frontRight);
+				channelMap.push_back(audio::channel_frontLeft);
+				channelMap.push_back(audio::channel_frontRight);
 			} else if (m_nbChannels == 4) {
-				channelMap.push_back(airtalgo::channel_frontLeft);
-				channelMap.push_back(airtalgo::channel_frontRight);
-				channelMap.push_back(airtalgo::channel_rearLeft);
-				channelMap.push_back(airtalgo::channel_rearRight);
+				channelMap.push_back(audio::channel_frontLeft);
+				channelMap.push_back(audio::channel_frontRight);
+				channelMap.push_back(audio::channel_rearLeft);
+				channelMap.push_back(audio::channel_rearRight);
 			} else {
 				APPL_ERROR("Can not generate with channel != 1,2,4");
 				return;
@@ -378,12 +378,12 @@ class testOutCallbackType {
 		}
 		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
 		                  const size_t& _nbChunk,
-		                  const std::vector<airtalgo::channel>& _map,
+		                  const std::vector<audio::channel>& _map,
 		                  void* _data,
-		                  enum airtalgo::format _type) {
+		                  enum audio::format _type) {
 			//APPL_DEBUG("Get data ... " << _type << " map=" << _map << " chunk=" << _nbChunk);
 			double baseCycle = 2.0*M_PI/double(m_freq) * double(m_generateFreq);
-			if (_type == airtalgo::format_int16) {
+			if (_type == audio::format_int16) {
 				int16_t* data = static_cast<int16_t*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -394,7 +394,7 @@ class testOutCallbackType {
 						m_phase -= 2*M_PI;
 					}
 				}
-			} else if (_type == airtalgo::format_int16_on_int32) {
+			} else if (_type == audio::format_int16_on_int32) {
 				int32_t* data = static_cast<int32_t*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -405,7 +405,7 @@ class testOutCallbackType {
 						m_phase -= 2*M_PI;
 					}
 				}
-			} else if (_type == airtalgo::format_int32) {
+			} else if (_type == audio::format_int32) {
 				int32_t* data = static_cast<int32_t*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -416,7 +416,7 @@ class testOutCallbackType {
 						m_phase -= 2*M_PI;
 					}
 				}
-			} else if (_type == airtalgo::format_float) {
+			} else if (_type == audio::format_float) {
 				float* data = static_cast<float*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -447,7 +447,7 @@ class testResampling : public ::testing::TestWithParam<float> {};
 TEST_P(testResampling, base) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
-	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, GetParam(), 2, airtalgo::format_int16);
+	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -458,7 +458,7 @@ INSTANTIATE_TEST_CASE_P(InstantiationName,
                         ::testing::Values(4000, 8000, 16000, 32000, 48000, 48001, 64000, 96000, 11250, 2250, 44100, 88200));
 
 
-class testFormat : public ::testing::TestWithParam<airtalgo::format> {};
+class testFormat : public ::testing::TestWithParam<audio::format> {};
 TEST_P(testFormat, base) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
@@ -469,14 +469,14 @@ TEST_P(testFormat, base) {
 }
 INSTANTIATE_TEST_CASE_P(InstantiationName,
                         testFormat,
-                        ::testing::Values(airtalgo::format_int16, airtalgo::format_int16_on_int32, airtalgo::format_int32, airtalgo::format_float));
+                        ::testing::Values(audio::format_int16, audio::format_int16_on_int32, audio::format_int32, audio::format_float));
 
 
 class testChannels : public ::testing::TestWithParam<int32_t> {};
 TEST_P(testChannels, base) {
 	std::shared_ptr<airtio::Manager> manager;
 	manager = airtio::Manager::create("testApplication");
-	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, GetParam(), airtalgo::format_int16);
+	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -497,12 +497,12 @@ class testCallbackVolume {
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
-			std::vector<airtalgo::channel> channelMap;
-			channelMap.push_back(airtalgo::channel_frontLeft);
-			channelMap.push_back(airtalgo::channel_frontRight);
+			std::vector<audio::channel> channelMap;
+			channelMap.push_back(audio::channel_frontLeft);
+			channelMap.push_back(audio::channel_frontRight);
 			m_interface = m_manager->createOutput(48000,
 			                                      channelMap,
-			                                      airtalgo::format_int16,
+			                                      audio::format_int16,
 			                                      "speaker",
 			                                      "WriteModeCallback");
 			// set callback mode ...
@@ -519,10 +519,10 @@ class testCallbackVolume {
 		}
 		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
 		                  const size_t& _nbChunk,
-		                  const std::vector<airtalgo::channel>& _map,
+		                  const std::vector<audio::channel>& _map,
 		                  void* _data,
-		                  enum airtalgo::format _type) {
-			if (_type != airtalgo::format_int16) {
+		                  enum audio::format _type) {
+			if (_type != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			int16_t* data = static_cast<int16_t*>(_data);
@@ -543,7 +543,6 @@ class testCallbackVolume {
 			m_interface->setParameter("volume", "FLOW", "-3dB");
 			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
-			/*
 			m_interface->setParameter("volume", "FLOW", "-6dB");
 			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
@@ -556,14 +555,6 @@ class testCallbackVolume {
 			m_interface->setParameter("volume", "FLOW", "-3dB");
 			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
-			*/
-			m_manager->setVolume("MASTER", -3.0f);
-			APPL_INFO("get volume MASTER: " << m_manager->getVolume("MASTER") );
-			usleep(500000);
-			m_manager->setVolume("MEDIA", -3.0f);
-			APPL_INFO("get volume MEDIA: " << m_manager->getVolume("MEDIA") );
-			usleep(500000);
-			/*
 			m_interface->setParameter("volume", "FLOW", "3dB");
 			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
@@ -575,8 +566,13 @@ class testCallbackVolume {
 			usleep(500000);
 			m_interface->setParameter("volume", "FLOW", "0dB");
 			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+			usleep(500000);
+			m_manager->setVolume("MASTER", -3.0f);
+			APPL_INFO("get volume MASTER: " << m_manager->getVolume("MASTER") );
+			usleep(500000);
+			m_manager->setVolume("MEDIA", -3.0f);
+			APPL_INFO("get volume MEDIA: " << m_manager->getVolume("MEDIA") );
 			usleep(1000000);
-			*/
 			m_interface->stop();
 		}
 };
@@ -612,11 +608,11 @@ TEST(TestALL, testChannelsFormatResampling) {
 	listChannel.push_back(1);
 	listChannel.push_back(2);
 	listChannel.push_back(4);
-	std::vector<airtalgo::format> listFormat;
-	listFormat.push_back(airtalgo::format_int16);
-	listFormat.push_back(airtalgo::format_int16_on_int32);
-	listFormat.push_back(airtalgo::format_int32);
-	listFormat.push_back(airtalgo::format_float);
+	std::vector<audio::format> listFormat;
+	listFormat.push_back(audio::format_int16);
+	listFormat.push_back(audio::format_int16_on_int32);
+	listFormat.push_back(audio::format_int32);
+	listFormat.push_back(audio::format_float);
 	for (auto &itFreq : listFreq) {
 		for (auto &itChannel : listChannel) {
 			for (auto &itFormat : listFormat) {

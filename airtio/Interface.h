@@ -13,8 +13,8 @@
 #include <chrono>
 #include <functional>
 #include <mutex>
-#include <airtalgo/format.h>
-#include <airtalgo/channel.h>
+#include <audio/format.h>
+#include <audio/channel.h>
 #include <airtalgo/Process.h>
 #include <airtalgo/EndPointCallback.h>
 #include <airtalgo/EndPointWrite.h>
@@ -32,8 +32,8 @@ namespace airtio {
 		protected:
 			std::shared_ptr<airtio::io::Node> m_node;
 			float m_freq;
-			std::vector<airtalgo::channel> m_map;
-			airtalgo::format m_format;
+			std::vector<audio::channel> m_map;
+			audio::format m_format;
 			std::shared_ptr<airtalgo::Process> m_process;
 		protected:
 			std::string m_name;
@@ -48,8 +48,8 @@ namespace airtio {
 			Interface();
 			bool init(const std::string& _name,
 			          float _freq,
-			          const std::vector<airtalgo::channel>& _map,
-			          airtalgo::format _format,
+			          const std::vector<audio::channel>& _map,
+			          audio::format _format,
 			          const std::shared_ptr<airtio::io::Node>& _node);
 		public:
 			/**
@@ -58,8 +58,8 @@ namespace airtio {
 			virtual ~Interface();
 			static std::shared_ptr<Interface> create(const std::string& _name,
 			                                         float _freq,
-			                                         const std::vector<airtalgo::channel>& _map,
-			                                         airtalgo::format _format,
+			                                         const std::vector<audio::channel>& _map,
+			                                         audio::format _format,
 			                                         const std::shared_ptr<airtio::io::Node>& _node);
 			/**
 			 * @brief set the read/write mode enable.
