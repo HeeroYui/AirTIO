@@ -53,7 +53,7 @@ std::shared_ptr<airtalgo::VolumeElement> airtio::io::Manager::getVolumeGroup(con
 			continue;
 		}
 		if (it->getName() == _name) {
-			return nullptr;
+			return it;
 		}
 	}
 	AIRTIO_DEBUG("Add a new volume group : '" << _name << "'");
@@ -62,69 +62,32 @@ std::shared_ptr<airtalgo::VolumeElement> airtio::io::Manager::getVolumeGroup(con
 	return tmpVolume;
 }
 
-
-bool airtio::io::Manager::setParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter, const std::string& _value) {
-	AIRTIO_DEBUG("setParameter [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "':'" << _value << "'");
-	bool out = false;
-	if (    _flow == ""
-	     && _filter == "volume") {
-		// set IO volume
-		float value = 0;
-		if (sscanf(_value.c_str(), "%fdB", &value) != 1) {
-			AIRTIO_ERROR("Can not parse the value of audio volume : '" << _value << "'");
-			return false;
-		}
-		for (auto &it : m_volumeGroup) {
-			if (it == nullptr) {
-				continue;
-			}
-			if (it->getName() == _parameter) {
-				it->setVolume(value);
-				for (auto &it2 : m_list) {
-					std::shared_ptr<airtio::io::Node> val = it2.lock();
-					if (val != nullptr) {
-						// TODO : notify nodes ...
-						// val->
-					}
-				}
-				return true;
-			}
+bool airtio::io::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
+	std::shared_ptr<airtalgo::VolumeElement> volume = getVolumeGroup(_volumeName);
+	if (volume == nullptr) {
+		AIRTIO_ERROR("Can not get volume ... : '" << _volumeName << "'");
+		return false;
+	}
+	// TODO : Check range ...
+	volume->setVolume(_valuedB);
+	for (auto &it2 : m_list) {
+		std::shared_ptr<airtio::io::Node> val = it2.lock();
+		if (val != nullptr) {
+			val->volumeChange();
 		}
 	}
-	AIRTIO_TODO("    IMPLEMENT");
-	AIRTIO_DEBUG("setParameter [ END ] : '" << out << "'");
-	return out;
+	return true;
 }
 
-std::string airtio::io::Manager::getParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
-	AIRTIO_DEBUG("getParameter [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "'");
-	std::string out;
-	if (    _flow == ""
-	     && _filter == "volume") {
-		// get IO volume
-		for (auto &it : m_volumeGroup) {
-			if (it == nullptr) {
-				continue;
-			}
-			if (it->getName() == _parameter) {
-				return std::to_string(it->getVolume()) + "dB";;
-			}
-		}
+float airtio::io::Manager::getVolume(const std::string& _volumeName) {
+	std::shared_ptr<airtalgo::VolumeElement> volume = getVolumeGroup(_volumeName);
+	if (volume == nullptr) {
+		AIRTIO_ERROR("Can not get volume ... : '" << _volumeName << "'");
+		return 0.0f;
 	}
-	AIRTIO_TODO("    IMPLEMENT");
-	AIRTIO_DEBUG("getParameter [ END ] : '" << out << "'");
-	return out;
+	return volume->getVolume();
 }
 
-std::string airtio::io::Manager::getParameterProperty(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const {
-	AIRTIO_DEBUG("getParameterProperty [BEGIN] : '" << _flow << "':'" << _filter << "':'" << _parameter << "'");
-	std::string out;
-	if (    _flow == ""
-	     && _filter == "volume") {
-		// return generic volumes
-		return "[-300..300]dB";
-	}
-	AIRTIO_TODO("    IMPLEMENT");
-	AIRTIO_DEBUG("getParameterProperty [ END ] : '" << out << "'");
-	return out;
+std::pair<float,float> airtio::io::Manager::getVolumeRange(const std::string& _volumeName) const {
+	return std::make_pair<float,float>(-300, 300);
 }

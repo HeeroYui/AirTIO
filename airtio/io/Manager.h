@@ -44,39 +44,30 @@ namespace airtio {
 				std::vector<std::shared_ptr<airtalgo::VolumeElement>> m_volumeGroup;
 			public:
 				std::shared_ptr<airtalgo::VolumeElement> getVolumeGroup(const std::string& _name);
-			
+				
 				/**
-				 * @brief Set a parameter in the stream flow
-				 * @param[in] _flow Low level Flow name (see json config file)
-				 * @param[in] _filter name of the filter (if you added some personels)
-				 * @param[in] _parameter Parameter name.
-				 * @param[in] _value Value to set.
+				 * @brief Set a volume for a specific group
+				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+				 * @param[in] _value Volume in dB to set.
 				 * @return true set done
 				 * @return false An error occured
-				 * @example : setParameter("", "volume", "MASTER", "-3dB");
-				 * @example : setParameter("microphone", "LowPassFilter", "cutFrequency", "1000Hz");
+				 * @example : setVolume("MASTER", -3.0f);
 				 */
-				virtual bool setParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter, const std::string& _value);
+				virtual bool setVolume(const std::string& _volumeName, float _valuedB);
+				/**
+				 * @brief Get a volume value
+				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+				 * @return The Volume value in dB.
+				 * @example ret = getVolume("MASTER"); can return something like ret = -3.0f
+				 */
+				virtual float getVolume(const std::string& _volumeName);
 				/**
 				 * @brief Get a parameter value
-				 * @param[in] _flow Low level Flow name (see json config file)
-				 * @param[in] _filter name of the filter (if you added some personels)
-				 * @param[in] _parameter Parameter name.
-				 * @return The requested value.
-				 * @example : getParameter("", "volume", "MASTER"); can return something like "-3dB"
-				 * @example : getParameter("microphone", "LowPassFilter", "cutFrequency"); can return something like "[-120..0]dB"
+				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+				 * @return The requested value Range.
+				 * @example ret = getVolumeRange("MASTER"); can return something like ret=(-120.0f,0.0f)
 				 */
-				virtual std::string getParameter(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const;
-				/**
-				 * @brief Get a parameter value
-				 * @param[in] _flow Low level Flow name (see json config file)
-				 * @param[in] _filter name of the filter (if you added some personels)
-				 * @param[in] _parameter Parameter name.
-				 * @return The requested value.
-				 * @example : getParameter("", "volume", "MASTER"); can return something like "[-120..0]dB"
-				 * @example : getParameter("microphone", "LowPassFilter", "cutFreqiency"); can return something like "]100..10000]Hz"
-				 */
-				virtual std::string getParameterProperty(const std::string& _flow, const std::string& _filter, const std::string& _parameter) const;
+				virtual std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
 		};
 	}
 }

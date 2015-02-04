@@ -172,7 +172,7 @@ namespace airtio {
 		private:
 			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk);
 			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
-			virtual bool systemSetVolume(const std::string& _parameter, const std::string& _value);
+			virtual void systemVolumeChange();
 			float m_volume; //!< Local channel Volume
 	};
 };

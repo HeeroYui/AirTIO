@@ -38,7 +38,8 @@ bool airtio::Interface::init(const std::string& _name,
 	m_format = _format;
 	m_process = std::make_shared<airtalgo::Process>();
 	m_volume = 0.0f;
-	
+	// register interface to be notify from the volume change.
+	m_node->registerAsRemote(shared_from_this());
 	// Create convertion interface
 	if (m_node->isInput() == true) {
 		// add all time the volume stage :
@@ -310,6 +311,11 @@ void airtio::Interface::systemNeedOutputData(std::chrono::system_clock::time_poi
 	m_process->pull(_time, _data, _nbChunk, _chunkSize);
 }
 
-bool airtio::Interface::systemSetVolume(const std::string& _parameter, const std::string& _value) {
-	return false;
+void airtio::Interface::systemVolumeChange() {
+	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
+	std::shared_ptr<airtalgo::Volume> algo = m_process->get<airtalgo::Volume>("volume");
+	if (algo == nullptr) {
+		return;
+	}
+	algo->volumeChange();
 }

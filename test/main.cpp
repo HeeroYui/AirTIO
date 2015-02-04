@@ -557,11 +557,11 @@ class testCallbackVolume {
 			APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 			usleep(500000);
 			*/
-			m_manager->setParameter("", "volume", "MASTER", "-3dB");
-			APPL_INFO("get volume MASTER: " << m_manager->getParameter("", "volume", "MASTER") );
+			m_manager->setVolume("MASTER", -3.0f);
+			APPL_INFO("get volume MASTER: " << m_manager->getVolume("MASTER") );
 			usleep(500000);
-			m_manager->setParameter("", "volume", "MEDIA", "-3dB");
-			APPL_INFO("get volume MEDIA: " << m_manager->getParameter("", "volume", "MEDIA") );
+			m_manager->setVolume("MEDIA", -3.0f);
+			APPL_INFO("get volume MEDIA: " << m_manager->getVolume("MEDIA") );
 			usleep(500000);
 			/*
 			m_interface->setParameter("volume", "FLOW", "3dB");

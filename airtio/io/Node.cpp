@@ -311,6 +311,17 @@ void airtio::io::Node::stop() {
 	}
 }
 
+void airtio::io::Node::registerAsRemote(const std::shared_ptr<airtio::Interface>& _interface) {
+	auto it = m_listAvaillable.begin();
+	while (it != m_listAvaillable.end()) {
+		if (it->expired() == true) {
+			it = m_listAvaillable.erase(it);
+		}
+		++it;
+	}
+	m_listAvaillable.push_back(_interface);
+}
+
 void airtio::io::Node::interfaceAdd(const std::shared_ptr<airtio::Interface>& _interface) {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
@@ -344,3 +355,12 @@ void airtio::io::Node::interfaceRemove(const std::shared_ptr<airtio::Interface>&
 	return;
 }
 
+
+void airtio::io::Node::volumeChange() {
+	for (auto &it : m_listAvaillable) {
+		std::shared_ptr<airtio::Interface> node = it.lock();
+		if (node != nullptr) {
+			node->systemVolumeChange();
+		}
+	}
+}

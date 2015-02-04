@@ -42,8 +42,10 @@ namespace airtio {
 				 */
 				virtual ~Node();
 			private:
+				std::vector<std::weak_ptr<airtio::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
 				std::vector<std::shared_ptr<airtio::Interface> > m_list;
 			public:
+				void registerAsRemote(const std::shared_ptr<airtio::Interface>& _interface);
 				void interfaceAdd(const std::shared_ptr<airtio::Interface>& _interface);
 				void interfaceRemove(const std::shared_ptr<airtio::Interface>& _interface);
 			private:
@@ -86,6 +88,8 @@ namespace airtio {
 				const std::shared_ptr<airtalgo::VolumeElement>& getVolume() {
 					return m_volume;
 				}
+			public:
+				void volumeChange();
 		};
 	}
 }
