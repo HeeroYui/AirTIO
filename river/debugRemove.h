@@ -4,17 +4,17 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifdef __AIRTIO_DEBUG_H__
-#undef __AIRTIO_DEBUG_H__
+#ifdef __RIVER_DEBUG_H__
+#undef __RIVER_DEBUG_H__
 
-#undef AIRTIO_BASE
-#undef AIRTIO_CRITICAL
-#undef AIRTIO_ERROR
-#undef AIRTIO_WARNING
-#undef AIRTIO_INFO
-#undef AIRTIO_DEBUG
-#undef AIRTIO_VERBOSE
-#undef AIRTIO_TODO
-#undef AIRTIO_ASSERT
+#undef RIVER_BASE
+#undef RIVER_CRITICAL
+#undef RIVER_ERROR
+#undef RIVER_WARNING
+#undef RIVER_INFO
+#undef RIVER_DEBUG
+#undef RIVER_VERBOSE
+#undef RIVER_TODO
+#undef RIVER_ASSERT
 #endif
 

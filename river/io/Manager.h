@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifndef __AIRTIO_IO_MANAGER_H__
-#define __AIRTIO_IO_MANAGER_H__
+#ifndef __RIVER_IO_MANAGER_H__
+#define __RIVER_IO_MANAGER_H__
 
 #include <string>
 #include <vector>

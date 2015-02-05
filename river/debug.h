@@ -5,8 +5,8 @@
  */
 
 
-#ifndef __AIRTIO_DEBUG_H__
-#define __AIRTIO_DEBUG_H__
+#ifndef __RIVER_DEBUG_H__
+#define __RIVER_DEBUG_H__
 
 #include <etk/log.h>
 
@@ -14,7 +14,7 @@ namespace river {
 	int32_t getLogId();
 };
 // TODO : Review this problem of multiple intanciation of "std::stringbuf sb"
-#define AIRTIO_BASE(info,data) \
+#define RIVER_BASE(info,data) \
 	do { \
 		if (info <= etk::log::getLevel(river::getLogId())) { \
 			std::stringbuf sb; \
@@ -24,25 +24,25 @@ namespace river {
 		} \
 	} while(0)
 
-#define AIRTIO_CRITICAL(data)      AIRTIO_BASE(1, data)
-#define AIRTIO_ERROR(data)         AIRTIO_BASE(2, data)
-#define AIRTIO_WARNING(data)       AIRTIO_BASE(3, data)
+#define RIVER_CRITICAL(data)      RIVER_BASE(1, data)
+#define RIVER_ERROR(data)         RIVER_BASE(2, data)
+#define RIVER_WARNING(data)       RIVER_BASE(3, data)
 #ifdef DEBUG
-	#define AIRTIO_INFO(data)          AIRTIO_BASE(4, data)
-	#define AIRTIO_DEBUG(data)         AIRTIO_BASE(5, data)
-	#define AIRTIO_VERBOSE(data)       AIRTIO_BASE(6, data)
-	#define AIRTIO_TODO(data)          AIRTIO_BASE(4, "TODO : " << data)
+	#define RIVER_INFO(data)          RIVER_BASE(4, data)
+	#define RIVER_DEBUG(data)         RIVER_BASE(5, data)
+	#define RIVER_VERBOSE(data)       RIVER_BASE(6, data)
+	#define RIVER_TODO(data)          RIVER_BASE(4, "TODO : " << data)
 #else
-	#define AIRTIO_INFO(data)          do { } while(false)
-	#define AIRTIO_DEBUG(data)         do { } while(false)
-	#define AIRTIO_VERBOSE(data)       do { } while(false)
-	#define AIRTIO_TODO(data)          do { } while(false)
+	#define RIVER_INFO(data)          do { } while(false)
+	#define RIVER_DEBUG(data)         do { } while(false)
+	#define RIVER_VERBOSE(data)       do { } while(false)
+	#define RIVER_TODO(data)          do { } while(false)
 #endif
 
-#define AIRTIO_ASSERT(cond,data) \
+#define RIVER_ASSERT(cond,data) \
 	do { \
 		if (!(cond)) { \
-			AIRTIO_CRITICAL(data); \
+			RIVER_CRITICAL(data); \
 			assert(!#cond); \
 		} \
 	} while (0)

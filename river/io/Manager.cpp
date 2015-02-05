@@ -14,7 +14,7 @@
 
 river::io::Manager::Manager() {
 	if (m_config.load("DATA:hardware.json") == false) {
-		AIRTIO_ERROR("you must set a basic configuration file for harware configuration: DATA:hardware.json");
+		RIVER_ERROR("you must set a basic configuration file for harware configuration: DATA:hardware.json");
 	}
 };
 
@@ -39,13 +39,13 @@ std::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& 
 		m_list.push_back(tmp);
 		return tmp;
 	}
-	AIRTIO_ERROR("Can not create the interface : '" << _name << "' the node is not DEFINED in the configuration file availlable : " << m_config.getKeys());
+	RIVER_ERROR("Can not create the interface : '" << _name << "' the node is not DEFINED in the configuration file availlable : " << m_config.getKeys());
 	return nullptr;
 }
 
 std::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const std::string& _name) {
 	if (_name == "") {
-		AIRTIO_ERROR("Try to create an audio group with no name ...");
+		RIVER_ERROR("Try to create an audio group with no name ...");
 		return nullptr;
 	}
 	for (auto &it : m_volumeGroup) {
@@ -56,7 +56,7 @@ std::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const s
 			return it;
 		}
 	}
-	AIRTIO_DEBUG("Add a new volume group : '" << _name << "'");
+	RIVER_DEBUG("Add a new volume group : '" << _name << "'");
 	std::shared_ptr<drain::VolumeElement> tmpVolume = std::make_shared<drain::VolumeElement>(_name);
 	m_volumeGroup.push_back(tmpVolume);
 	return tmpVolume;
@@ -65,12 +65,12 @@ std::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const s
 bool river::io::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
 	std::shared_ptr<drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
-		AIRTIO_ERROR("Can not set volume ... : '" << _volumeName << "'");
+		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
 		return false;
 	}
 	if (    _valuedB < -300
 	     || _valuedB > 300) {
-		AIRTIO_ERROR("Can not set volume ... : '" << _volumeName << "' out of range : [-300..300]");
+		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "' out of range : [-300..300]");
 		return false;
 	}
 	volume->setVolume(_valuedB);
@@ -86,7 +86,7 @@ bool river::io::Manager::setVolume(const std::string& _volumeName, float _valued
 float river::io::Manager::getVolume(const std::string& _volumeName) {
 	std::shared_ptr<drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
-		AIRTIO_ERROR("Can not get volume ... : '" << _volumeName << "'");
+		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
 		return 0.0f;
 	}
 	return volume->getVolume();

@@ -34,7 +34,7 @@ int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
 	std::chrono::system_clock::time_point ttime = std::chrono::system_clock::time_point();//std::chrono::system_clock::now();
 	
 	if (_outputBuffer != nullptr) {
-		AIRTIO_VERBOSE("data Output");
+		RIVER_VERBOSE("data Output");
 		std::vector<int32_t> output;
 		output.resize(_nBufferFrames*m_interfaceFormat.getMap().size(), 0);
 		const int32_t* outputTmp = nullptr;
@@ -44,7 +44,7 @@ int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
 			if (it != nullptr) {
 				// clear datas ...
 				memset(&outputTmp2[0], 0, sizeof(int32_t)*m_interfaceFormat.getMap().size()*_nBufferFrames);
-				AIRTIO_VERBOSE("    IO : " /* << std::distance(m_list.begin(), it)*/ << "/" << m_list.size() << " name="<< it->getName());
+				RIVER_VERBOSE("    IO : " /* << std::distance(m_list.begin(), it)*/ << "/" << m_list.size() << " name="<< it->getName());
 				it->systemNeedOutputData(ttime, &outputTmp2[0], _nBufferFrames, sizeof(int32_t)*m_interfaceFormat.getMap().size());
 				outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
 				//it->systemNeedOutputData(ttime, _outputBuffer, _nBufferFrames, sizeof(int16_t)*m_map.size());
@@ -61,11 +61,11 @@ int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
 		}
 	}
 	if (_inputBuffer != nullptr) {
-		AIRTIO_INFO("data Input");
+		RIVER_INFO("data Input");
 		int16_t* inputBuffer = static_cast<int16_t *>(_inputBuffer);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (m_list[iii] != nullptr) {
-				AIRTIO_INFO("    IO : " << iii+1 << "/" << m_list.size() << " name="<< m_list[iii]->getName());
+				RIVER_INFO("    IO : " << iii+1 << "/" << m_list.size() << " name="<< m_list[iii]->getName());
 				m_list[iii]->systemNewInputData(ttime, inputBuffer, _nBufferFrames);
 			}
 		}
@@ -82,9 +82,9 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
-	AIRTIO_INFO("-----------------------------------------------------------------");
-	AIRTIO_INFO("--                       CREATE NODE                           --");
-	AIRTIO_INFO("-----------------------------------------------------------------");
+	RIVER_INFO("-----------------------------------------------------------------");
+	RIVER_INFO("--                       CREATE NODE                           --");
+	RIVER_INFO("-----------------------------------------------------------------");
 	/**
 		io:"input", # input or output
 		map-on:{ # select hardware interface and name
@@ -104,7 +104,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	std::string streamName = "default";
 	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
-		AIRTIO_WARNING("missing node : 'map-on' ==> auto map : 'alsa:default'");
+		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'alsa:default'");
 	} else {
 		std::string value = tmpObject->getStringValue("interface", "default");
 		if (value == "alsa") {
@@ -136,7 +136,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		} else if (value == "user-4") {
 			typeInterface = airtaudio::api::USER_INTERFACE_4;
 		} else {
-			AIRTIO_WARNING("Unknow interface : '" << value << "'");
+			RIVER_WARNING("Unknow interface : '" << value << "'");
 		}
 		streamName = tmpObject->getStringValue("name", "default");
 	}
@@ -145,7 +145,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
 	std::string volumeName = m_config->getStringValue("volume-name", "");
 	if (volumeName != "") {
-		AIRTIO_INFO("add node volume stage : '" << volumeName << "'");
+		RIVER_INFO("add node volume stage : '" << volumeName << "'");
 		// use global manager for volume ...
 		m_volume = river::io::Manager::getInstance()->getVolumeGroup(volumeName);
 	}
@@ -154,7 +154,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	if (type == "int16") {
 		formatType = audio::format_int16;
 	} else {
-		AIRTIO_WARNING("not managed type : '" << type << "'");
+		RIVER_WARNING("not managed type : '" << type << "'");
 	}
 	// TODO : MAP ...
 	
@@ -181,19 +181,19 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	}
 
 	// search device ID :
-	AIRTIO_INFO("Open :");
-	AIRTIO_INFO("    m_streamName=" << streamName);
-	AIRTIO_INFO("    m_freq=" << m_hardwareFormat.getFrequency());
-	AIRTIO_INFO("    m_map=" << m_hardwareFormat.getMap());
-	AIRTIO_INFO("    m_format=" << m_hardwareFormat.getFormat());
-	AIRTIO_INFO("    m_isInput=" << m_isInput);
+	RIVER_INFO("Open :");
+	RIVER_INFO("    m_streamName=" << streamName);
+	RIVER_INFO("    m_freq=" << m_hardwareFormat.getFrequency());
+	RIVER_INFO("    m_map=" << m_hardwareFormat.getMap());
+	RIVER_INFO("    m_format=" << m_hardwareFormat.getFormat());
+	RIVER_INFO("    m_isInput=" << m_isInput);
 	int32_t deviceId = 0;
-	AIRTIO_INFO("Device list:");
+	RIVER_INFO("Device list:");
 	for (int32_t iii=0; iii<m_adac.getDeviceCount(); ++iii) {
 		m_info = m_adac.getDeviceInfo(iii);
-		AIRTIO_INFO("    " << iii << " name :" << m_info.name);
+		RIVER_INFO("    " << iii << " name :" << m_info.name);
 		if (m_info.name == streamName) {
-			AIRTIO_INFO("        Select ...");
+			RIVER_INFO("        Select ...");
 			deviceId = iii;
 		}
 	}
@@ -201,41 +201,41 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	m_info = m_adac.getDeviceInfo(deviceId);
 	// display property :
 	{
-		AIRTIO_INFO("Device " << deviceId << " property :");
-		AIRTIO_INFO("    probe=" << m_info.probed);
-		AIRTIO_INFO("    name=" << m_info.name);
-		AIRTIO_INFO("    outputChannels=" << m_info.outputChannels);
-		AIRTIO_INFO("    inputChannels=" << m_info.inputChannels);
-		AIRTIO_INFO("    duplexChannels=" << m_info.duplexChannels);
-		AIRTIO_INFO("    isDefaultOutput=" << m_info.isDefaultOutput);
-		AIRTIO_INFO("    isDefaultInput=" << m_info.isDefaultInput);
+		RIVER_INFO("Device " << deviceId << " property :");
+		RIVER_INFO("    probe=" << m_info.probed);
+		RIVER_INFO("    name=" << m_info.name);
+		RIVER_INFO("    outputChannels=" << m_info.outputChannels);
+		RIVER_INFO("    inputChannels=" << m_info.inputChannels);
+		RIVER_INFO("    duplexChannels=" << m_info.duplexChannels);
+		RIVER_INFO("    isDefaultOutput=" << m_info.isDefaultOutput);
+		RIVER_INFO("    isDefaultInput=" << m_info.isDefaultInput);
 		//std::string rrate;
 		std::stringstream rrate;
 		for (int32_t jjj=0; jjj<m_info.sampleRates.size(); ++jjj) {
 			rrate << m_info.sampleRates[jjj] << ";";
 		}
-		AIRTIO_INFO("    rates=" << rrate.str());
+		RIVER_INFO("    rates=" << rrate.str());
 		switch(m_info.nativeFormats) {
 			case airtaudio::SINT8:
-				AIRTIO_INFO("    native Format: 8-bit signed integer");
+				RIVER_INFO("    native Format: 8-bit signed integer");
 				break;
 			case airtaudio::SINT16:
-				AIRTIO_INFO("    native Format: 16-bit signed integer");
+				RIVER_INFO("    native Format: 16-bit signed integer");
 				break;
 			case airtaudio::SINT24:
-				AIRTIO_INFO("    native Format: 24-bit signed integer");
+				RIVER_INFO("    native Format: 24-bit signed integer");
 				break;
 			case airtaudio::SINT32:
-				AIRTIO_INFO("    native Format: 32-bit signed integer");
+				RIVER_INFO("    native Format: 32-bit signed integer");
 				break;
 			case airtaudio::FLOAT32:
-				AIRTIO_INFO("    native Format: Normalized between plus/minus 1.0");
+				RIVER_INFO("    native Format: Normalized between plus/minus 1.0");
 				break;
 			case airtaudio::FLOAT64:
-				AIRTIO_INFO("    native Format: Normalized between plus/minus 1.0");
+				RIVER_INFO("    native Format: Normalized between plus/minus 1.0");
 				break;
 			default:
-				AIRTIO_INFO("    native Format: Unknow");
+				RIVER_INFO("    native Format: Unknow");
 				break;
 		}
 	}
@@ -252,7 +252,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	}
 	
 	m_rtaudioFrameSize = nbChunk;
-	AIRTIO_INFO("Open output stream nbChannels=" << params.nChannels);
+	RIVER_INFO("Open output stream nbChannels=" << params.nChannels);
 	enum airtaudio::errorType err = airtaudio::errorNone;
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
@@ -278,16 +278,16 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		                        );
 	}
 	if (err != airtaudio::errorNone) {
-		AIRTIO_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
+		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
 	}
 }
 
 river::io::Node::~Node() {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	AIRTIO_INFO("-----------------------------------------------------------------");
-	AIRTIO_INFO("--                      DESTROY NODE                           --");
-	AIRTIO_INFO("-----------------------------------------------------------------");
-	AIRTIO_INFO("close input stream");
+	RIVER_INFO("-----------------------------------------------------------------");
+	RIVER_INFO("--                      DESTROY NODE                           --");
+	RIVER_INFO("-----------------------------------------------------------------");
+	RIVER_INFO("close input stream");
 	if (m_adac.isStreamOpen() ) {
 		m_adac.closeStream();
 	}
@@ -295,19 +295,19 @@ river::io::Node::~Node() {
 
 void river::io::Node::start() {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	AIRTIO_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
+	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum airtaudio::errorType err = m_adac.startStream();
 	if (err != airtaudio::errorNone) {
-		AIRTIO_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
+		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
 	}
 }
 
 void river::io::Node::stop() {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	AIRTIO_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
+	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum airtaudio::errorType err = m_adac.stopStream();
 	if (err != airtaudio::errorNone) {
-		AIRTIO_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
+		RIVER_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
 	}
 }
 
@@ -330,7 +330,7 @@ void river::io::Node::interfaceAdd(const std::shared_ptr<river::Interface>& _int
 				return;
 			}
 		}
-		AIRTIO_INFO("ADD interface for stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
+		RIVER_INFO("ADD interface for stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 		m_list.push_back(_interface);
 	}
 	if (m_list.size() == 1) {
@@ -344,7 +344,7 @@ void river::io::Node::interfaceRemove(const std::shared_ptr<river::Interface>& _
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				m_list.erase(m_list.begin()+iii);
-				AIRTIO_INFO("RM interface for stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
+				RIVER_INFO("RM interface for stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 				break;
 			}
 		}

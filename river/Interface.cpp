@@ -47,10 +47,10 @@ bool river::Interface::init(const std::string& _name,
 		algo->setInputFormat(m_node->getInterfaceFormat());
 		algo->setName("volume");
 		m_process->pushBack(algo);
-		AIRTIO_INFO("add basic volume stage (1)");
+		RIVER_INFO("add basic volume stage (1)");
 		std::shared_ptr<drain::VolumeElement> tmpVolume = m_node->getVolume();
 		if (tmpVolume != nullptr) {
-			AIRTIO_INFO(" add volume for node");
+			RIVER_INFO(" add volume for node");
 			algo->addVolumeStage(tmpVolume);
 		}
 	} else {
@@ -59,10 +59,10 @@ bool river::Interface::init(const std::string& _name,
 		algo->setOutputFormat(m_node->getInterfaceFormat());
 		algo->setName("volume");
 		m_process->pushBack(algo);
-		AIRTIO_INFO("add basic volume stage (2)");
+		RIVER_INFO("add basic volume stage (2)");
 		std::shared_ptr<drain::VolumeElement> tmpVolume = m_node->getVolume();
 		if (tmpVolume != nullptr) {
-			AIRTIO_INFO(" add volume for node");
+			RIVER_INFO(" add volume for node");
 			algo->addVolumeStage(tmpVolume);
 		}
 	}
@@ -94,7 +94,7 @@ void river::Interface::setReadwrite() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process->removeAlgoDynamic();
 	if (m_process->hasType<drain::EndPoint>() ) {
-		AIRTIO_ERROR("Endpoint is already present ==> can not change");
+		RIVER_ERROR("Endpoint is already present ==> can not change");
 		return;
 	}
 	if (m_node->isInput() == true) {
@@ -117,7 +117,7 @@ void river::Interface::setOutputCallback(size_t _chunkSize, drain::needDataFunct
 	m_process->removeAlgoDynamic();
 	m_process->removeIfFirst<drain::EndPoint>();
 	std::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
-	AIRTIO_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
+	RIVER_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
 	algo->setInputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
 	//algo->setOutputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
 	m_process->pushFront(algo);
@@ -145,65 +145,65 @@ void river::Interface::setWriteCallback(drain::needDataFunctionWrite _function) 
 
 void river::Interface::start(const std::chrono::system_clock::time_point& _time) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	AIRTIO_DEBUG("start [BEGIN]");
+	RIVER_DEBUG("start [BEGIN]");
 	m_process->updateInterAlgo();
 	m_node->interfaceAdd(shared_from_this());
-	AIRTIO_DEBUG("start [ END ]");
+	RIVER_DEBUG("start [ END ]");
 }
 
 void river::Interface::stop(bool _fast, bool _abort) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	AIRTIO_DEBUG("stop [BEGIN]");
+	RIVER_DEBUG("stop [BEGIN]");
 	m_node->interfaceRemove(shared_from_this());
-	AIRTIO_DEBUG("stop [ END]");
+	RIVER_DEBUG("stop [ END]");
 }
 
 void river::Interface::abort() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	AIRTIO_DEBUG("abort [BEGIN]");
+	RIVER_DEBUG("abort [BEGIN]");
 	// TODO :...
-	AIRTIO_DEBUG("abort [ END ]");
+	RIVER_DEBUG("abort [ END ]");
 }
 
 bool river::Interface::setParameter(const std::string& _filter, const std::string& _parameter, const std::string& _value) {
-	AIRTIO_DEBUG("setParameter [BEGIN] : '" << _filter << "':'" << _parameter << "':'" << _value << "'");
+	RIVER_DEBUG("setParameter [BEGIN] : '" << _filter << "':'" << _parameter << "':'" << _value << "'");
 	bool out = false;
 	if (    _filter == "volume"
 	     && _parameter != "FLOW") {
-		AIRTIO_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
+		RIVER_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
 		return false;
 	}
 	std::shared_ptr<drain::Algo> algo = m_process->get<drain::Algo>(_filter);
 	if (algo == nullptr) {
-		AIRTIO_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
+		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return false;
 	}
 	out = algo->setParameter(_parameter, _value);
-	AIRTIO_DEBUG("setParameter [ END ] : '" << out << "'");
+	RIVER_DEBUG("setParameter [ END ] : '" << out << "'");
 	return out;
 }
 std::string river::Interface::getParameter(const std::string& _filter, const std::string& _parameter) const {
-	AIRTIO_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
+	RIVER_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
 	std::shared_ptr<drain::Algo> algo = m_process->get<drain::Algo>(_filter);
 	if (algo == nullptr) {
-		AIRTIO_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
+		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return "[ERROR]";
 	}
 	out = algo->getParameter(_parameter);
-	AIRTIO_DEBUG("getParameter [ END ] : '" << out << "'");
+	RIVER_DEBUG("getParameter [ END ] : '" << out << "'");
 	return out;
 }
 std::string river::Interface::getParameterProperty(const std::string& _filter, const std::string& _parameter) const {
-	AIRTIO_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
+	RIVER_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
 	std::shared_ptr<drain::Algo> algo = m_process->get<drain::Algo>(_filter);
 	if (algo == nullptr) {
-		AIRTIO_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
+		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return "[ERROR]";
 	}
 	out = algo->getParameterProperty(_parameter);
-	AIRTIO_DEBUG("getParameterProperty [ END ] : '" << out << "'");
+	RIVER_DEBUG("getParameterProperty [ END ] : '" << out << "'");
 	return out;
 }
 
@@ -285,10 +285,10 @@ std::chrono::system_clock::time_point river::Interface::getCurrentTime() const {
 
 void river::Interface::addVolumeGroup(const std::string& _name) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	AIRTIO_DEBUG("addVolumeGroup(" << _name << ")");
+	RIVER_DEBUG("addVolumeGroup(" << _name << ")");
 	std::shared_ptr<drain::Volume> algo = m_process->get<drain::Volume>("volume");
 	if (algo == nullptr) {
-		AIRTIO_ERROR("addVolumeGroup(" << _name << ") ==> no volume stage ... can not add it ...");
+		RIVER_ERROR("addVolumeGroup(" << _name << ") ==> no volume stage ... can not add it ...");
 		return;
 	}
 	if (_name == "FLOW") {

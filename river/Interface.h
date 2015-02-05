@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifndef __AIRTIO_INTERFACE_H__
-#define __AIRTIO_INTERFACE_H__
+#ifndef __RIVER_INTERFACE_H__
+#define __RIVER_INTERFACE_H__
 
 #include <string>
 #include <vector>
