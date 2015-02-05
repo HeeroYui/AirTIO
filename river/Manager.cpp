@@ -16,75 +16,75 @@
 #undef __class__
 #define __class__ "Manager"
 
-std::shared_ptr<airtio::Manager> airtio::Manager::create(const std::string& _applicationUniqueId) {
-	return std::shared_ptr<airtio::Manager>(new airtio::Manager(_applicationUniqueId));
+std::shared_ptr<river::Manager> river::Manager::create(const std::string& _applicationUniqueId) {
+	return std::shared_ptr<river::Manager>(new river::Manager(_applicationUniqueId));
 }
 
-airtio::Manager::Manager(const std::string& _applicationUniqueId) :
+river::Manager::Manager(const std::string& _applicationUniqueId) :
   m_applicationUniqueId(_applicationUniqueId),
   m_listOpenInterface() {
 	
 }
 
-airtio::Manager::~Manager() {
+river::Manager::~Manager() {
 	// TODO : Stop all interfaces...
 	
 }
 
-std::vector<std::pair<std::string,std::string> > airtio::Manager::getListStreamInput() {
+std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamInput() {
 	std::vector<std::pair<std::string,std::string> > output;
 	//output.push_back(std::make_pair<std::string,std::string>("default", "48000 Hz, 16 bits, 2 channels: Default input "));
 	return output;
 }
 
-std::vector<std::pair<std::string,std::string> > airtio::Manager::getListStreamOutput() {
+std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamOutput() {
 	std::vector<std::pair<std::string,std::string> > output;
 	//output.push_back(std::make_pair<std::string,std::string>("default", "48000 Hz, 16 bits, 2 channels: Default output "));
 	return output;
 }
 
 
-bool airtio::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
-	return airtio::io::Manager::getInstance()->setVolume(_volumeName, _valuedB);
+bool river::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
+	return river::io::Manager::getInstance()->setVolume(_volumeName, _valuedB);
 }
 
-float airtio::Manager::getVolume(const std::string& _volumeName) const {
-	return airtio::io::Manager::getInstance()->getVolume(_volumeName);
+float river::Manager::getVolume(const std::string& _volumeName) const {
+	return river::io::Manager::getInstance()->getVolume(_volumeName);
 }
 
-std::pair<float,float> airtio::Manager::getVolumeRange(const std::string& _volumeName) const {
-	return airtio::io::Manager::getInstance()->getVolumeRange(_volumeName);
+std::pair<float,float> river::Manager::getVolumeRange(const std::string& _volumeName) const {
+	return river::io::Manager::getInstance()->getVolumeRange(_volumeName);
 }
 
-std::shared_ptr<airtio::Interface> airtio::Manager::createOutput(float _freq,
+std::shared_ptr<river::Interface> river::Manager::createOutput(float _freq,
                                                                  const std::vector<audio::channel>& _map,
                                                                  audio::format _format,
                                                                  const std::string& _streamName,
                                                                  const std::string& _name) {
 	// get global hardware interface:
-	std::shared_ptr<airtio::io::Manager> manager = airtio::io::Manager::getInstance();
+	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName);//, false);
+	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);//, false);
 	// create user iterface:
-	std::shared_ptr<airtio::Interface> interface;
-	interface = airtio::Interface::create(_name, _freq, _map, _format, node);
+	std::shared_ptr<river::Interface> interface;
+	interface = river::Interface::create(_name, _freq, _map, _format, node);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	return interface;
 }
 
-std::shared_ptr<airtio::Interface> airtio::Manager::createInput(float _freq,
+std::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
                                                                 const std::vector<audio::channel>& _map,
                                                                 audio::format _format,
                                                                 const std::string& _streamName,
                                                                 const std::string& _name) {
 	// get global hardware interface:
-	std::shared_ptr<airtio::io::Manager> manager = airtio::io::Manager::getInstance();
+	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<airtio::io::Node> node = manager->getNode(_streamName);//, true);
+	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);//, true);
 	// create user iterface:
-	std::shared_ptr<airtio::Interface> interface;
-	interface = airtio::Interface::create(_name, _freq, _map, _format, node);
+	std::shared_ptr<river::Interface> interface;
+	interface = river::Interface::create(_name, _freq, _map, _format, node);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	return interface;

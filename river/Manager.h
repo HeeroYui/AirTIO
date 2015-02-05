@@ -10,25 +10,25 @@
 #include <string>
 #include <stdint.h>
 #include <memory>
-#include <airtio/Interface.h>
+#include <river/Interface.h>
 #include <audio/format.h>
 #include <audio/channel.h>
 
-namespace airtio {
+namespace river {
 	/**
 	 * @brief Audio interface manager : Single interface for every application that want to access on the Audio input/output
 	 */
 	class Manager {
 		private:
 			const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
-			std::vector<std::weak_ptr<airtio::Interface> > m_listOpenInterface; //!< List of all open Stream.
+			std::vector<std::weak_ptr<river::Interface> > m_listOpenInterface; //!< List of all open Stream.
 		protected:
 			/**
 			 * @brief Constructor
 			 */
 			Manager(const std::string& _applicationUniqueId);
 		public:
-			static std::shared_ptr<airtio::Manager> create(const std::string& _applicationUniqueId);
+			static std::shared_ptr<river::Manager> create(const std::string& _applicationUniqueId);
 			/**
 			 * @brief Destructor
 			 */

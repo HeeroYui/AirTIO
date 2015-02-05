@@ -15,12 +15,12 @@
 #include <mutex>
 #include <audio/format.h>
 #include <audio/channel.h>
-#include <airtalgo/Process.h>
-#include <airtalgo/EndPointCallback.h>
-#include <airtalgo/EndPointWrite.h>
+#include <drain/Process.h>
+#include <drain/EndPointCallback.h>
+#include <drain/EndPointWrite.h>
 #include <memory>
 
-namespace airtio {
+namespace river {
 	namespace io {
 		class Node;
 	}
@@ -30,11 +30,11 @@ namespace airtio {
 		protected:
 			mutable std::recursive_mutex m_mutex;
 		protected:
-			std::shared_ptr<airtio::io::Node> m_node;
+			std::shared_ptr<river::io::Node> m_node;
 			float m_freq;
 			std::vector<audio::channel> m_map;
 			audio::format m_format;
-			std::shared_ptr<airtalgo::Process> m_process;
+			std::shared_ptr<drain::Process> m_process;
 		protected:
 			std::string m_name;
 		public:
@@ -50,7 +50,7 @@ namespace airtio {
 			          float _freq,
 			          const std::vector<audio::channel>& _map,
 			          audio::format _format,
-			          const std::shared_ptr<airtio::io::Node>& _node);
+			          const std::shared_ptr<river::io::Node>& _node);
 		public:
 			/**
 			 * @brief Destructor
@@ -60,7 +60,7 @@ namespace airtio {
 			                                         float _freq,
 			                                         const std::vector<audio::channel>& _map,
 			                                         audio::format _format,
-			                                         const std::shared_ptr<airtio::io::Node>& _node);
+			                                         const std::shared_ptr<river::io::Node>& _node);
 			/**
 			 * @brief set the read/write mode enable.
 			 */
@@ -68,9 +68,9 @@ namespace airtio {
 			/**
 			 * @brief When we want to implement a Callback Mode:
 			 */
-			virtual void setWriteCallback(airtalgo::needDataFunctionWrite _function);
-			virtual void setOutputCallback(size_t _chunkSize, airtalgo::needDataFunction _function);
-			virtual void setInputCallback(size_t _chunkSize, airtalgo::haveNewDataFunction _function);
+			virtual void setWriteCallback(drain::needDataFunctionWrite _function);
+			virtual void setOutputCallback(size_t _chunkSize, drain::needDataFunction _function);
+			virtual void setInputCallback(size_t _chunkSize, drain::haveNewDataFunction _function);
 			/**
 			 * @brief Add a volume group of the current channel.
 			 * @note If you do not call this function with the group "FLOW" you chan not have a channel volume.

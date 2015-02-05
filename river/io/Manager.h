@@ -17,9 +17,9 @@
 #include <audio/channel.h>
 #include <ejson/ejson.h>
 #include <memory>
-#include <airtalgo/Volume.h>
+#include <drain/Volume.h>
 
-namespace airtio {
+namespace river {
 	namespace io {
 		class Node;
 		class Manager {
@@ -36,14 +36,14 @@ namespace airtio {
 				virtual ~Manager() {};
 			private:
 				ejson::Document m_config; // harware configuration
-				std::vector<std::shared_ptr<airtio::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
-				std::vector<std::weak_ptr<airtio::io::Node> > m_list; //!< List of all IO node
+				std::vector<std::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
+				std::vector<std::weak_ptr<river::io::Node> > m_list; //!< List of all IO node
 			public:
-				std::shared_ptr<airtio::io::Node> getNode(const std::string& _name);
+				std::shared_ptr<river::io::Node> getNode(const std::string& _name);
 			private:
-				std::vector<std::shared_ptr<airtalgo::VolumeElement>> m_volumeGroup;
+				std::vector<std::shared_ptr<drain::VolumeElement>> m_volumeGroup;
 			public:
-				std::shared_ptr<airtalgo::VolumeElement> getVolumeGroup(const std::string& _name);
+				std::shared_ptr<drain::VolumeElement> getVolumeGroup(const std::string& _name);
 				
 				/**
 				 * @brief Set a volume for a specific group

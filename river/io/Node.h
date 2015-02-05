@@ -17,19 +17,19 @@
 #include <audio/channel.h>
 #include "Manager.h"
 #include <memory>
-#include <airtio/Interface.h>
+#include <river/Interface.h>
 #include <airtaudio/Interface.h>
-#include <airtalgo/IOFormatInterface.h>
-#include <airtalgo/Volume.h>
+#include <drain/IOFormatInterface.h>
+#include <drain/Volume.h>
 
-namespace airtio {
+namespace river {
 	namespace io {
 		class Manager;
 		class Node {
 			private:
 				mutable std::mutex m_mutex;
 				std::shared_ptr<const ejson::Object> m_config;
-				std::shared_ptr<airtalgo::VolumeElement> m_volume; //!< if a volume is set it is set here ...
+				std::shared_ptr<drain::VolumeElement> m_volume; //!< if a volume is set it is set here ...
 			private:
 				/**
 				 * @brief Constructor
@@ -42,12 +42,12 @@ namespace airtio {
 				 */
 				virtual ~Node();
 			private:
-				std::vector<std::weak_ptr<airtio::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
-				std::vector<std::shared_ptr<airtio::Interface> > m_list;
+				std::vector<std::weak_ptr<river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
+				std::vector<std::shared_ptr<river::Interface> > m_list;
 			public:
-				void registerAsRemote(const std::shared_ptr<airtio::Interface>& _interface);
-				void interfaceAdd(const std::shared_ptr<airtio::Interface>& _interface);
-				void interfaceRemove(const std::shared_ptr<airtio::Interface>& _interface);
+				void registerAsRemote(const std::shared_ptr<river::Interface>& _interface);
+				void interfaceAdd(const std::shared_ptr<river::Interface>& _interface);
+				void interfaceRemove(const std::shared_ptr<river::Interface>& _interface);
 			private:
 				airtaudio::Interface m_adac; //!< Real audio interface
 				airtaudio::DeviceInfo m_info;
@@ -65,13 +65,13 @@ namespace airtio {
 					return m_name;
 				}
 			private:
-				airtalgo::IOFormatInterface m_interfaceFormat;
+				drain::IOFormatInterface m_interfaceFormat;
 			public:
-				const airtalgo::IOFormatInterface& getInterfaceFormat() {
+				const drain::IOFormatInterface& getInterfaceFormat() {
 					return m_interfaceFormat;
 				}
 			private:
-				airtalgo::IOFormatInterface m_hardwareFormat;
+				drain::IOFormatInterface m_hardwareFormat;
 			private:
 				bool m_isInput;
 			public:
@@ -85,7 +85,7 @@ namespace airtio {
 				void start();
 				void stop();
 			public:
-				const std::shared_ptr<airtalgo::VolumeElement>& getVolume() {
+				const std::shared_ptr<drain::VolumeElement>& getVolume() {
 					return m_volume;
 				}
 			public:

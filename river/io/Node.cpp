@@ -5,7 +5,7 @@
  */
 
 #include "Node.h"
-#include <airtio/debug.h>
+#include <river/debug.h>
 
 #include <memory>
 
@@ -25,7 +25,7 @@
 	#define INT32_MIN (-INT32_MAX - 1L)
 #endif
 
-int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
+int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
                                           void* _inputBuffer,
                                           unsigned int _nBufferFrames,
                                           double _streamTime,
@@ -74,11 +74,11 @@ int32_t airtio::io::Node::rtAudioCallback(void* _outputBuffer,
 }
 
 
-std::shared_ptr<airtio::io::Node> airtio::io::Node::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
-	return std::shared_ptr<airtio::io::Node>(new airtio::io::Node(_name, _config));
+std::shared_ptr<river::io::Node> river::io::Node::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+	return std::shared_ptr<river::io::Node>(new river::io::Node(_name, _config));
 }
 
-airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
@@ -147,7 +147,7 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 	if (volumeName != "") {
 		AIRTIO_INFO("add node volume stage : '" << volumeName << "'");
 		// use global manager for volume ...
-		m_volume = airtio::io::Manager::getInstance()->getVolumeGroup(volumeName);
+		m_volume = river::io::Manager::getInstance()->getVolumeGroup(volumeName);
 	}
 	
 	enum audio::format formatType = audio::format_int16;
@@ -257,7 +257,7 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
 		                        airtaudio::SINT16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&airtio::io::Node::rtAudioCallback,
+		                        std::bind(&river::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
 		                                  std::placeholders::_2,
@@ -268,7 +268,7 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 	} else {
 		err = m_adac.openStream(&params, nullptr,
 		                        airtaudio::SINT16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&airtio::io::Node::rtAudioCallback,
+		                        std::bind(&river::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
 		                                  std::placeholders::_2,
@@ -282,7 +282,7 @@ airtio::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejs
 	}
 }
 
-airtio::io::Node::~Node() {
+river::io::Node::~Node() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	AIRTIO_INFO("-----------------------------------------------------------------");
 	AIRTIO_INFO("--                      DESTROY NODE                           --");
@@ -293,7 +293,7 @@ airtio::io::Node::~Node() {
 	}
 };
 
-void airtio::io::Node::start() {
+void river::io::Node::start() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	AIRTIO_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum airtaudio::errorType err = m_adac.startStream();
@@ -302,7 +302,7 @@ void airtio::io::Node::start() {
 	}
 }
 
-void airtio::io::Node::stop() {
+void river::io::Node::stop() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	AIRTIO_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum airtaudio::errorType err = m_adac.stopStream();
@@ -311,7 +311,7 @@ void airtio::io::Node::stop() {
 	}
 }
 
-void airtio::io::Node::registerAsRemote(const std::shared_ptr<airtio::Interface>& _interface) {
+void river::io::Node::registerAsRemote(const std::shared_ptr<river::Interface>& _interface) {
 	auto it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
@@ -322,7 +322,7 @@ void airtio::io::Node::registerAsRemote(const std::shared_ptr<airtio::Interface>
 	m_listAvaillable.push_back(_interface);
 }
 
-void airtio::io::Node::interfaceAdd(const std::shared_ptr<airtio::Interface>& _interface) {
+void river::io::Node::interfaceAdd(const std::shared_ptr<river::Interface>& _interface) {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
@@ -338,7 +338,7 @@ void airtio::io::Node::interfaceAdd(const std::shared_ptr<airtio::Interface>& _i
 	}
 }
 
-void airtio::io::Node::interfaceRemove(const std::shared_ptr<airtio::Interface>& _interface) {
+void river::io::Node::interfaceRemove(const std::shared_ptr<river::Interface>& _interface) {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
@@ -356,9 +356,9 @@ void airtio::io::Node::interfaceRemove(const std::shared_ptr<airtio::Interface>&
 }
 
 
-void airtio::io::Node::volumeChange() {
+void river::io::Node::volumeChange() {
 	for (auto &it : m_listAvaillable) {
-		std::shared_ptr<airtio::Interface> node = it.lock();
+		std::shared_ptr<river::Interface> node = it.lock();
 		if (node != nullptr) {
 			node->systemVolumeChange();
 		}

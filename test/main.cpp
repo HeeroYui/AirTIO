@@ -5,8 +5,8 @@
  */
 
 #include "debug.h"
-#include <airtio/Manager.h>
-#include <airtio/Interface.h>
+#include <river/Manager.h>
+#include <river/Interface.h>
 #include <gtest/gtest.h>
 #include <etk/os/FSNode.h>
 
@@ -19,10 +19,10 @@
 class testOutWrite {
 	private:
 		std::vector<audio::channel> m_channelMap;
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 	public:
-		testOutWrite(std::shared_ptr<airtio::Manager> _manager) :
+		testOutWrite(std::shared_ptr<river::Manager> _manager) :
 		  m_manager(_manager) {
 			//Set stereo output:
 			m_channelMap.push_back(audio::channel_frontLeft);
@@ -72,8 +72,8 @@ class testOutWrite {
 };
 
 TEST(TestALL, testOutputWrite) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (write mode)");
 	std::shared_ptr<testOutWrite> process = std::make_shared<testOutWrite>(manager);
@@ -85,11 +85,11 @@ TEST(TestALL, testOutputWrite) {
 
 class testOutWriteCallback {
 	private:
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 	public:
-		testOutWriteCallback(std::shared_ptr<airtio::Manager> _manager) :
+		testOutWriteCallback(std::shared_ptr<river::Manager> _manager) :
 		  m_manager(_manager),
 		  m_phase(0) {
 			std::vector<audio::channel> channelMap;
@@ -139,8 +139,8 @@ class testOutWriteCallback {
 };
 
 TEST(TestALL, testOutputWriteWithCallback) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (write with callback event mode)");
 	std::shared_ptr<testOutWriteCallback> process = std::make_shared<testOutWriteCallback>(manager);
@@ -152,11 +152,11 @@ TEST(TestALL, testOutputWriteWithCallback) {
 
 class testOutCallback {
 	private:
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 	public:
-		testOutCallback(std::shared_ptr<airtio::Manager> _manager) :
+		testOutCallback(std::shared_ptr<river::Manager> _manager) :
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
@@ -207,8 +207,8 @@ class testOutCallback {
 };
 
 TEST(TestALL, testOutputCallBack) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (callback mode)");
 	std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager);
@@ -221,10 +221,10 @@ TEST(TestALL, testOutputCallBack) {
 class testInRead {
 	private:
 		std::vector<audio::channel> m_channelMap;
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 	public:
-		testInRead(std::shared_ptr<airtio::Manager> _manager) :
+		testInRead(std::shared_ptr<river::Manager> _manager) :
 		  m_manager(_manager){
 			//Set stereo output:
 			m_channelMap.push_back(audio::channel_frontLeft);
@@ -253,8 +253,8 @@ class testInRead {
 };
 
 TEST(TestALL, testInputCallBack) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	APPL_INFO("test input (callback mode)");
 	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
 	process->run();
@@ -265,11 +265,11 @@ TEST(TestALL, testInputCallBack) {
 
 class testInCallback {
 	private:
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 	public:
-		testInCallback(std::shared_ptr<airtio::Manager> _manager) :
+		testInCallback(std::shared_ptr<river::Manager> _manager) :
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
@@ -316,8 +316,8 @@ class testInCallback {
 };
 
 TEST(TestALL, testInputCallBack) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	APPL_INFO("test input (callback mode)");
 	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
 	process->run();
@@ -328,15 +328,15 @@ TEST(TestALL, testInputCallBack) {
 
 class testOutCallbackType {
 	private:
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 		float m_freq;
 		int32_t m_nbChannels;
 		float m_generateFreq;
 		
 	public:
-		testOutCallbackType(const std::shared_ptr<airtio::Manager>& _manager,
+		testOutCallbackType(const std::shared_ptr<river::Manager>& _manager,
 		                    float _freq=48000.0f,
 		                    int32_t _nbChannels=2,
 		                    audio::format _format=audio::format_int16) :
@@ -445,8 +445,8 @@ class testOutCallbackType {
 
 class testResampling : public ::testing::TestWithParam<float> {};
 TEST_P(testResampling, base) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
 	process->run();
 	process.reset();
@@ -460,8 +460,8 @@ INSTANTIATE_TEST_CASE_P(InstantiationName,
 
 class testFormat : public ::testing::TestWithParam<audio::format> {};
 TEST_P(testFormat, base) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, 2, GetParam());
 	process->run();
 	process.reset();
@@ -474,8 +474,8 @@ INSTANTIATE_TEST_CASE_P(InstantiationName,
 
 class testChannels : public ::testing::TestWithParam<int32_t> {};
 TEST_P(testChannels, base) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	std::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
 	process->run();
 	process.reset();
@@ -489,11 +489,11 @@ INSTANTIATE_TEST_CASE_P(InstantiationName,
 
 class testCallbackVolume {
 	private:
-		std::shared_ptr<airtio::Manager> m_manager;
-		std::shared_ptr<airtio::Interface> m_interface;
+		std::shared_ptr<river::Manager> m_manager;
+		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 	public:
-		testCallbackVolume(std::shared_ptr<airtio::Manager> _manager) :
+		testCallbackVolume(std::shared_ptr<river::Manager> _manager) :
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
@@ -579,8 +579,8 @@ class testCallbackVolume {
 
 
 TEST(TestALL, testVolume) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	std::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
 	process->run();
 	process.reset();
@@ -588,8 +588,8 @@ TEST(TestALL, testVolume) {
 }
 
 TEST(TestALL, testChannelsFormatResampling) {
-	std::shared_ptr<airtio::Manager> manager;
-	manager = airtio::Manager::create("testApplication");
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
 	APPL_INFO("test convert flaot to output (callback mode)");
 	std::vector<float> listFreq;
 	listFreq.push_back(4000);

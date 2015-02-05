@@ -4,11 +4,11 @@ import lutinTools as tools
 import lutinDebug as debug
 
 def get_desc():
-	return "airtio_test : Multi-nodal audio interface test"
+	return "river_test : Multi-nodal audio interface test"
 
 
 def create(target):
-	myModule = module.Module(__file__, 'airtio_test', 'BINARY')
+	myModule = module.Module(__file__, 'river_test', 'BINARY')
 	
 	myModule.add_src_file([
 		'test/main.cpp',
@@ -16,7 +16,7 @@ def create(target):
 		])
 	
 	myModule.copy_folder('data/*')
-	myModule.add_module_depend(['airtio', 'gtest', 'etk'])
+	myModule.add_module_depend(['river', 'gtest', 'etk'])
 	
 	# add the currrent module at the 
 	return myModule
