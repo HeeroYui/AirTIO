@@ -215,29 +215,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 			rrate << m_info.sampleRates[jjj] << ";";
 		}
 		RIVER_INFO("    rates=" << rrate.str());
-		switch(m_info.nativeFormats) {
-			case airtaudio::SINT8:
-				RIVER_INFO("    native Format: 8-bit signed integer");
-				break;
-			case airtaudio::SINT16:
-				RIVER_INFO("    native Format: 16-bit signed integer");
-				break;
-			case airtaudio::SINT24:
-				RIVER_INFO("    native Format: 24-bit signed integer");
-				break;
-			case airtaudio::SINT32:
-				RIVER_INFO("    native Format: 32-bit signed integer");
-				break;
-			case airtaudio::FLOAT32:
-				RIVER_INFO("    native Format: Normalized between plus/minus 1.0");
-				break;
-			case airtaudio::FLOAT64:
-				RIVER_INFO("    native Format: Normalized between plus/minus 1.0");
-				break;
-			default:
-				RIVER_INFO("    native Format: Unknow");
-				break;
-		}
+		RIVER_INFO("    native Format: " << m_info.nativeFormats);
 	}
 	
 	// open Audio device:
@@ -256,7 +234,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	enum airtaudio::errorType err = airtaudio::errorNone;
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
-		                        airtaudio::SINT16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
+		                        audio::format_int16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std::bind(&river::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
@@ -267,7 +245,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		                        );
 	} else {
 		err = m_adac.openStream(&params, nullptr,
-		                        airtaudio::SINT16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
+		                        audio::format_int16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std::bind(&river::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
