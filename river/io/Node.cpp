@@ -29,7 +29,7 @@ int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
                                           void* _inputBuffer,
                                           unsigned int _nBufferFrames,
                                           double _streamTime,
-                                          airtaudio::streamStatus _status) {
+                                          airtaudio::status _status) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	std::chrono::system_clock::time_point ttime = std::chrono::system_clock::time_point();//std::chrono::system_clock::now();
 	
@@ -100,44 +100,14 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
 	m_isInput = m_config->getStringValue("io") == "input";
-	enum airtaudio::api::type typeInterface = airtaudio::api::LINUX_ALSA;
+	enum airtaudio::type typeInterface = airtaudio::type_undefined;
 	std::string streamName = "default";
 	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'alsa:default'");
 	} else {
 		std::string value = tmpObject->getStringValue("interface", "default");
-		if (value == "alsa") {
-			typeInterface = airtaudio::api::LINUX_ALSA;
-		} else if (value == "pulse") {
-			typeInterface = airtaudio::api::LINUX_PULSE;
-		} else if (value == "b") {
-			typeInterface = airtaudio::api::LINUX_OSS;
-		} else if (value == "jack") {
-			typeInterface = airtaudio::api::UNIX_JACK;
-		} else if (value == "mac-core") {
-			typeInterface = airtaudio::api::MACOSX_CORE;
-		} else if (value == "ios-core") {
-			typeInterface = airtaudio::api::IOS_CORE;
-		} else if (value == "asio") {
-			typeInterface = airtaudio::api::WINDOWS_ASIO;
-		} else if (value == "ds") {
-			typeInterface = airtaudio::api::WINDOWS_DS;
-		} else if (value == "dummy") {
-			typeInterface = airtaudio::api::RTAUDIO_DUMMY;
-		} else if (value == "java") {
-			typeInterface = airtaudio::api::ANDROID_JAVA;
-		} else if (value == "user-1") {
-			typeInterface = airtaudio::api::USER_INTERFACE_1;
-		} else if (value == "user-2") {
-			typeInterface = airtaudio::api::USER_INTERFACE_2;
-		} else if (value == "user-3") {
-			typeInterface = airtaudio::api::USER_INTERFACE_3;
-		} else if (value == "user-4") {
-			typeInterface = airtaudio::api::USER_INTERFACE_4;
-		} else {
-			RIVER_WARNING("Unknow interface : '" << value << "'");
-		}
+		typeInterface = airtaudio::getTypeFromString(value);
 		streamName = tmpObject->getStringValue("name", "default");
 	}
 	int32_t frequency = m_config->getNumberValue("frequency", 48000);
@@ -231,7 +201,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	
 	m_rtaudioFrameSize = nbChunk;
 	RIVER_INFO("Open output stream nbChannels=" << params.nChannels);
-	enum airtaudio::errorType err = airtaudio::errorNone;
+	enum airtaudio::error err = airtaudio::error_none;
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
 		                        audio::format_int16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
@@ -255,7 +225,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		                                  std::placeholders::_5)
 		                        );
 	}
-	if (err != airtaudio::errorNone) {
+	if (err != airtaudio::error_none) {
 		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
 	}
 }
@@ -274,8 +244,8 @@ river::io::Node::~Node() {
 void river::io::Node::start() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	enum airtaudio::errorType err = m_adac.startStream();
-	if (err != airtaudio::errorNone) {
+	enum airtaudio::error err = m_adac.startStream();
+	if (err != airtaudio::error_none) {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
 	}
 }
@@ -283,8 +253,8 @@ void river::io::Node::start() {
 void river::io::Node::stop() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	enum airtaudio::errorType err = m_adac.stopStream();
-	if (err != airtaudio::errorNone) {
+	enum airtaudio::error err = m_adac.stopStream();
+	if (err != airtaudio::error_none) {
 		RIVER_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
 	}
 }

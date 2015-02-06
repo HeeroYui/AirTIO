@@ -57,7 +57,7 @@ namespace river {
 				                        void * _inputBuffer,
 				                        unsigned int _nBufferFrames,
 				                        double _streamTime,
-				                        airtaudio::streamStatus _status);
+				                        airtaudio::status _status);
 			private:
 				std::string m_name; //!< Harware.json configuration name
 			public:
