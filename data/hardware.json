@@ -25,5 +25,33 @@
 		type:"int16",
 		nb-chunk:1024,
 		volume-name:"MASTER"
+	},
+	speaker-pulse:{
+		io:"output",
+		map-on:{
+			interface:"pulse",
+			name:"default",
+		},
+		frequency:48000,
+		channel-map:[
+			"front-left", "front-right",
+		],
+		type:"int16",
+		nb-chunk:1024,
+		volume-name:"MASTER"
+	},
+	speaker-jack:{
+		io:"output",
+		map-on:{
+			interface:"jack",
+			name:"default",
+		},
+		frequency:48000,
+		channel-map:[
+			"front-left", "front-right",
+		],
+		type:"float",
+		nb-chunk:1024,
+		volume-name:"MASTER"
 	}
 }

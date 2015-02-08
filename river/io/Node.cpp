@@ -36,18 +36,17 @@ int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
 	if (_outputBuffer != nullptr) {
 		RIVER_VERBOSE("data Output");
 		std::vector<int32_t> output;
-		output.resize(_nBufferFrames*m_interfaceFormat.getMap().size(), 0);
+		output.resize(_nBufferFrames*m_process.getInputConfig().getMap().size(), 0);
 		const int32_t* outputTmp = nullptr;
 		std::vector<uint8_t> outputTmp2;
-		outputTmp2.resize(sizeof(int32_t)*m_interfaceFormat.getMap().size()*_nBufferFrames, 0);
+		outputTmp2.resize(sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nBufferFrames, 0);
 		for (auto &it : m_list) {
 			if (it != nullptr) {
 				// clear datas ...
-				memset(&outputTmp2[0], 0, sizeof(int32_t)*m_interfaceFormat.getMap().size()*_nBufferFrames);
+				memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nBufferFrames);
 				RIVER_VERBOSE("    IO : " /* << std::distance(m_list.begin(), it)*/ << "/" << m_list.size() << " name="<< it->getName());
-				it->systemNeedOutputData(ttime, &outputTmp2[0], _nBufferFrames, sizeof(int32_t)*m_interfaceFormat.getMap().size());
+				it->systemNeedOutputData(ttime, &outputTmp2[0], _nBufferFrames, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
 				outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
-				//it->systemNeedOutputData(ttime, _outputBuffer, _nBufferFrames, sizeof(int16_t)*m_map.size());
 				// Add data to the output tmp buffer :
 				for (size_t kkk=0; kkk<output.size(); ++kkk) {
 					output[kkk] += outputTmp[kkk];
@@ -55,10 +54,8 @@ int32_t river::io::Node::rtAudioCallback(void* _outputBuffer,
 				break;
 			}
 		}
-		int16_t* outputBuffer = static_cast<int16_t*>(_outputBuffer);
-		for (size_t kkk=0; kkk<output.size(); ++kkk) {
-			*outputBuffer++ = static_cast<int16_t>(std::min(std::max(INT16_MIN, output[kkk]), INT16_MAX));
-		}
+		m_process.processIn(&outputTmp2[0], _nBufferFrames, _outputBuffer, _nBufferFrames);
+		// TODO : Call feedback ...
 	}
 	if (_inputBuffer != nullptr) {
 		RIVER_INFO("data Input");
@@ -85,6 +82,8 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	RIVER_INFO("-----------------------------------------------------------------");
 	RIVER_INFO("--                       CREATE NODE                           --");
 	RIVER_INFO("-----------------------------------------------------------------");
+	drain::IOFormatInterface interfaceFormat;
+	drain::IOFormatInterface hardwareFormat;
 	/**
 		io:"input", # input or output
 		map-on:{ # select hardware interface and name
@@ -120,12 +119,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		m_volume = river::io::Manager::getInstance()->getVolumeGroup(volumeName);
 	}
 	
-	enum audio::format formatType = audio::format_int16;
-	if (type == "int16") {
-		formatType = audio::format_int16;
-	} else {
-		RIVER_WARNING("not managed type : '" << type << "'");
-	}
+	enum audio::format formatType = audio::getFormatFromString(type);
 	// TODO : MAP ...
 	
 	// intanciate specific API ...
@@ -140,22 +134,22 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	map.push_back(audio::channel_frontLeft);
 	map.push_back(audio::channel_frontRight);
 	
-	m_hardwareFormat.set(map, formatType, frequency);
+	hardwareFormat.set(map, formatType, frequency);
 	// TODO : Better view of interface type float -> float, int16 -> int16/int32,  ...
 	if (m_isInput == true) {
 		// for input we just transfert audio with no transformation
-		m_interfaceFormat.set(map, audio::format_int16, frequency);
+		interfaceFormat.set(map, audio::format_int16, frequency);
 	} else {
 		// for output we will do a mix ...
-		m_interfaceFormat.set(map, audio::format_int16_on_int32, frequency);
+		interfaceFormat.set(map, audio::format_int16_on_int32, frequency);
 	}
 
 	// search device ID :
 	RIVER_INFO("Open :");
 	RIVER_INFO("    m_streamName=" << streamName);
-	RIVER_INFO("    m_freq=" << m_hardwareFormat.getFrequency());
-	RIVER_INFO("    m_map=" << m_hardwareFormat.getMap());
-	RIVER_INFO("    m_format=" << m_hardwareFormat.getFormat());
+	RIVER_INFO("    m_freq=" << hardwareFormat.getFrequency());
+	RIVER_INFO("    m_map=" << hardwareFormat.getMap());
+	RIVER_INFO("    m_format=" << hardwareFormat.getFormat());
 	RIVER_INFO("    m_isInput=" << m_isInput);
 	int32_t deviceId = 0;
 	RIVER_INFO("Device list:");
@@ -179,13 +173,16 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		RIVER_INFO("    duplexChannels=" << m_info.duplexChannels);
 		RIVER_INFO("    isDefaultOutput=" << m_info.isDefaultOutput);
 		RIVER_INFO("    isDefaultInput=" << m_info.isDefaultInput);
-		//std::string rrate;
-		std::stringstream rrate;
-		for (int32_t jjj=0; jjj<m_info.sampleRates.size(); ++jjj) {
-			rrate << m_info.sampleRates[jjj] << ";";
-		}
-		RIVER_INFO("    rates=" << rrate.str());
+		RIVER_INFO("    rates=" << m_info.sampleRates);
 		RIVER_INFO("    native Format: " << m_info.nativeFormats);
+		if (etk::isIn(hardwareFormat.getFormat(), m_info.nativeFormats) == false) {
+			RIVER_CRITICAL("Can not manage input transforamtion: " << hardwareFormat.getFormat() << " not in " << m_info.nativeFormats);
+			// TODO : Manage this
+		}
+		if (etk::isIn(hardwareFormat.getFrequency(), m_info.sampleRates) == false) {
+			RIVER_CRITICAL("Can not manage input transforamtion:" << hardwareFormat.getFrequency() << " not in " << m_info.sampleRates);
+			// TODO : Manage this
+		}
 	}
 	
 	// open Audio device:
@@ -204,7 +201,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	enum airtaudio::error err = airtaudio::error_none;
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
-		                        audio::format_int16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
+		                        audio::format_int16, hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std::bind(&river::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
@@ -215,7 +212,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		                        );
 	} else {
 		err = m_adac.openStream(&params, nullptr,
-		                        audio::format_int16, m_hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
+		                        audio::format_int16, hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std::bind(&river::io::Node::rtAudioCallback,
 		                                  this,
 		                                  std::placeholders::_1,
@@ -227,6 +224,13 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	}
 	if (err != airtaudio::error_none) {
 		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
+	}
+	if (m_isInput == true) {
+		m_process.setInputConfig(hardwareFormat);
+		m_process.setOutputConfig(interfaceFormat);
+	} else {
+		m_process.setOutputConfig(hardwareFormat);
+		m_process.setInputConfig(interfaceFormat);
 	}
 }
 

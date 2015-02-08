@@ -156,7 +156,7 @@ class testOutCallback {
 		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 	public:
-		testOutCallback(std::shared_ptr<river::Manager> _manager) :
+		testOutCallback(std::shared_ptr<river::Manager> _manager, const std::string& _io="speaker") :
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
@@ -166,7 +166,7 @@ class testOutCallback {
 			m_interface = m_manager->createOutput(48000,
 			                                      channelMap,
 			                                      audio::format_int16,
-			                                      "speaker",
+			                                      _io,
 			                                      "WriteModeCallback");
 			// set callback mode ...
 			m_interface->setOutputCallback(1024,
@@ -211,7 +211,29 @@ TEST(TestALL, testOutputCallBack) {
 	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (callback mode)");
-	std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager);
+	std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker");
+	process->run();
+	process.reset();
+	usleep(500000);
+}
+
+TEST(TestALL, testOutputCallBackPulse) {
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
+	
+	APPL_INFO("test output (callback mode)");
+	std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker-pulse");
+	process->run();
+	process.reset();
+	usleep(500000);
+}
+
+TEST(TestALL, testOutputCallBackJack) {
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
+	
+	APPL_INFO("test output (callback mode)");
+	std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker-jack");
 	process->run();
 	process.reset();
 	usleep(500000);

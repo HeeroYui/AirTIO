@@ -65,13 +65,15 @@ namespace river {
 					return m_name;
 				}
 			private:
-				drain::IOFormatInterface m_interfaceFormat;
+				drain::Process m_process;
 			public:
 				const drain::IOFormatInterface& getInterfaceFormat() {
-					return m_interfaceFormat;
+					if (m_isInput == true) {
+						return m_process.getOutputConfig();
+					} else {
+						return m_process.getInputConfig();
+					}
 				}
-			private:
-				drain::IOFormatInterface m_hardwareFormat;
 			private:
 				bool m_isInput;
 			public:
