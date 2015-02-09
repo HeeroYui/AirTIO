@@ -34,7 +34,7 @@ namespace river {
 			float m_freq;
 			std::vector<audio::channel> m_map;
 			audio::format m_format;
-			std::shared_ptr<drain::Process> m_process;
+			drain::Process m_process;
 		protected:
 			std::string m_name;
 		public:

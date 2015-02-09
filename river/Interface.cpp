@@ -36,39 +36,38 @@ bool river::Interface::init(const std::string& _name,
 	m_freq = _freq;
 	m_map = _map;
 	m_format = _format;
-	m_process = std::make_shared<drain::Process>();
 	m_volume = 0.0f;
 	// register interface to be notify from the volume change.
 	m_node->registerAsRemote(shared_from_this());
 	// Create convertion interface
 	if (m_node->isInput() == true) {
-		m_process->setInputConfig(m_node->getInterfaceFormat());
+		m_process.setInputConfig(m_node->getInterfaceFormat());
 		// add all time the volume stage :
 		std::shared_ptr<drain::Volume> algo = drain::Volume::create();
 		//algo->setInputFormat(m_node->getInterfaceFormat());
 		algo->setName("volume");
-		m_process->pushBack(algo);
+		m_process.pushBack(algo);
 		RIVER_INFO("add basic volume stage (1)");
 		std::shared_ptr<drain::VolumeElement> tmpVolume = m_node->getVolume();
 		if (tmpVolume != nullptr) {
 			RIVER_INFO(" add volume for node");
 			algo->addVolumeStage(tmpVolume);
 		}
-		m_process->setOutputConfig(drain::IOFormatInterface(m_map, m_format, m_freq));
+		m_process.setOutputConfig(drain::IOFormatInterface(m_map, m_format, m_freq));
 	} else {
-		m_process->setInputConfig(drain::IOFormatInterface(m_map, m_format, m_freq));
+		m_process.setInputConfig(drain::IOFormatInterface(m_map, m_format, m_freq));
 		// add all time the volume stage :
 		std::shared_ptr<drain::Volume> algo = drain::Volume::create();
 		//algo->setOutputFormat(m_node->getInterfaceFormat());
 		algo->setName("volume");
-		m_process->pushBack(algo);
+		m_process.pushBack(algo);
 		RIVER_INFO("add basic volume stage (2)");
 		std::shared_ptr<drain::VolumeElement> tmpVolume = m_node->getVolume();
 		if (tmpVolume != nullptr) {
 			RIVER_INFO(" add volume for node");
 			algo->addVolumeStage(tmpVolume);
 		}
-		m_process->setOutputConfig(m_node->getInterfaceFormat());
+		m_process.setOutputConfig(m_node->getInterfaceFormat());
 	}
 	return true;
 }
@@ -87,7 +86,6 @@ river::Interface::~Interface() {
 	//stop(true, true);
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	//m_node->interfaceRemove(shared_from_this());
-	m_process.reset();
 }
 /*
 bool river::Interface::hasEndPoint() {
@@ -96,47 +94,47 @@ bool river::Interface::hasEndPoint() {
 */
 void river::Interface::setReadwrite() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->removeAlgoDynamic();
-	if (m_process->hasType<drain::EndPoint>() ) {
+	m_process.removeAlgoDynamic();
+	if (m_process.hasType<drain::EndPoint>() ) {
 		RIVER_ERROR("Endpoint is already present ==> can not change");
 		return;
 	}
 	if (m_node->isInput() == true) {
-		m_process->removeIfLast<drain::EndPoint>();
+		m_process.removeIfLast<drain::EndPoint>();
 		std::shared_ptr<drain::EndPointRead> algo = drain::EndPointRead::create();
 		//algo->setOutputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
-		m_process->pushBack(algo);
+		m_process.pushBack(algo);
 	} else {
-		m_process->removeIfFirst<drain::EndPoint>();
+		m_process.removeIfFirst<drain::EndPoint>();
 		std::shared_ptr<drain::EndPointWrite> algo = drain::EndPointWrite::create();
 		//algo->setInputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
-		m_process->pushFront(algo);
+		m_process.pushFront(algo);
 	}
 }
 
 void river::Interface::setOutputCallback(size_t _chunkSize, drain::needDataFunction _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->removeAlgoDynamic();
-	m_process->removeIfFirst<drain::EndPoint>();
+	m_process.removeAlgoDynamic();
+	m_process.removeIfFirst<drain::EndPoint>();
 	std::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
 	RIVER_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
 	//algo->setInputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
-	m_process->pushFront(algo);
+	m_process.pushFront(algo);
 }
 
 void river::Interface::setInputCallback(size_t _chunkSize, drain::haveNewDataFunction _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->removeAlgoDynamic();
-	m_process->removeIfLast<drain::EndPoint>();
+	m_process.removeAlgoDynamic();
+	m_process.removeIfLast<drain::EndPoint>();
 	std::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
 	//algo->setOutputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
-	m_process->pushBack(algo);
+	m_process.pushBack(algo);
 }
 
 void river::Interface::setWriteCallback(drain::needDataFunctionWrite _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->removeAlgoDynamic();
-	std::shared_ptr<drain::EndPointWrite> algo = m_process->get<drain::EndPointWrite>(0);
+	m_process.removeAlgoDynamic();
+	std::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		return;
 	}
@@ -146,7 +144,7 @@ void river::Interface::setWriteCallback(drain::needDataFunctionWrite _function) 
 void river::Interface::start(const std::chrono::system_clock::time_point& _time) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("start [BEGIN]");
-	m_process->updateInterAlgo();
+	m_process.updateInterAlgo();
 	m_node->interfaceAdd(shared_from_this());
 	RIVER_DEBUG("start [ END ]");
 }
@@ -173,7 +171,7 @@ bool river::Interface::setParameter(const std::string& _filter, const std::strin
 		RIVER_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
 		return false;
 	}
-	std::shared_ptr<drain::Algo> algo = m_process->get<drain::Algo>(_filter);
+	std::shared_ptr<drain::Algo> algo = m_process.get<drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return false;
@@ -185,7 +183,7 @@ bool river::Interface::setParameter(const std::string& _filter, const std::strin
 std::string river::Interface::getParameter(const std::string& _filter, const std::string& _parameter) const {
 	RIVER_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
-	std::shared_ptr<drain::Algo> algo = m_process->get<drain::Algo>(_filter);
+	std::shared_ptr<const drain::Algo> algo = m_process.get<const drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return "[ERROR]";
@@ -197,7 +195,7 @@ std::string river::Interface::getParameter(const std::string& _filter, const std
 std::string river::Interface::getParameterProperty(const std::string& _filter, const std::string& _parameter) const {
 	RIVER_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
-	std::shared_ptr<drain::Algo> algo = m_process->get<drain::Algo>(_filter);
+	std::shared_ptr<const drain::Algo> algo = m_process.get<const drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return "[ERROR]";
@@ -209,8 +207,8 @@ std::string river::Interface::getParameterProperty(const std::string& _filter, c
 
 void river::Interface::write(const void* _value, size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->updateInterAlgo();
-	std::shared_ptr<drain::EndPointWrite> algo = m_process->get<drain::EndPointWrite>(0);
+	m_process.updateInterAlgo();
+	std::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		return;
 	}
@@ -244,7 +242,7 @@ std::vector<int16_t> river::Interface::read(size_t _nbChunk) {
 
 void river::Interface::read(void* _value, size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->updateInterAlgo();
+	m_process.updateInterAlgo();
 	// TODO :...
 	
 }
@@ -257,21 +255,21 @@ size_t river::Interface::size() const {
 
 void river::Interface::setBufferSize(size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->updateInterAlgo();
+	m_process.updateInterAlgo();
 	// TODO :...
 	
 }
 
 void river::Interface::setBufferSize(const std::chrono::duration<int64_t, std::micro>& _time) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->updateInterAlgo();
+	m_process.updateInterAlgo();
 	// TODO :...
 	
 }
 
 void river::Interface::clearInternalBuffer() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	m_process->updateInterAlgo();
+	m_process.updateInterAlgo();
 	// TODO :...
 	
 }
@@ -286,7 +284,7 @@ std::chrono::system_clock::time_point river::Interface::getCurrentTime() const {
 void river::Interface::addVolumeGroup(const std::string& _name) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("addVolumeGroup(" << _name << ")");
-	std::shared_ptr<drain::Volume> algo = m_process->get<drain::Volume>("volume");
+	std::shared_ptr<drain::Volume> algo = m_process.get<drain::Volume>("volume");
 	if (algo == nullptr) {
 		RIVER_ERROR("addVolumeGroup(" << _name << ") ==> no volume stage ... can not add it ...");
 		return;
@@ -303,17 +301,17 @@ void river::Interface::addVolumeGroup(const std::string& _name) {
 
 void river::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
-	m_process->push(_time, _data, _nbChunk);
+	m_process.push(_time, _data, _nbChunk);
 }
 
 void river::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize) {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
-	m_process->pull(_time, _data, _nbChunk, _chunkSize);
+	m_process.pull(_time, _data, _nbChunk, _chunkSize);
 }
 
 void river::Interface::systemVolumeChange() {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
-	std::shared_ptr<drain::Volume> algo = m_process->get<drain::Volume>("volume");
+	std::shared_ptr<drain::Volume> algo = m_process.get<drain::Volume>("volume");
 	if (algo == nullptr) {
 		return;
 	}
