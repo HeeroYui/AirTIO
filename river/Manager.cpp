@@ -57,34 +57,34 @@ std::pair<float,float> river::Manager::getVolumeRange(const std::string& _volume
 }
 
 std::shared_ptr<river::Interface> river::Manager::createOutput(float _freq,
-                                                                 const std::vector<audio::channel>& _map,
-                                                                 audio::format _format,
-                                                                 const std::string& _streamName,
-                                                                 const std::string& _name) {
+                                                               const std::vector<audio::channel>& _map,
+                                                               audio::format _format,
+                                                               const std::string& _streamName,
+                                                               const std::string& _name) {
 	// get global hardware interface:
 	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);//, false);
+	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
 	// create user iterface:
 	std::shared_ptr<river::Interface> interface;
-	interface = river::Interface::create(_name, _freq, _map, _format, node);
+	interface = river::Interface::create(_name, _freq, _map, _format, node, false);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	return interface;
 }
 
 std::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
-                                                                const std::vector<audio::channel>& _map,
-                                                                audio::format _format,
-                                                                const std::string& _streamName,
-                                                                const std::string& _name) {
+                                                              const std::vector<audio::channel>& _map,
+                                                              audio::format _format,
+                                                              const std::string& _streamName,
+                                                              const std::string& _name) {
 	// get global hardware interface:
 	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);//, true);
+	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
 	// create user iterface:
 	std::shared_ptr<river::Interface> interface;
-	interface = river::Interface::create(_name, _freq, _map, _format, node);
+	interface = river::Interface::create(_name, _freq, _map, _format, node, true);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	return interface;

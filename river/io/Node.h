@@ -53,11 +53,11 @@ namespace river {
 				airtaudio::DeviceInfo m_info;
 				unsigned int m_rtaudioFrameSize;
 			public:
-				int32_t rtAudioCallback(void* _outputBuffer,
-				                        void * _inputBuffer,
-				                        unsigned int _nBufferFrames,
-				                        double _streamTime,
-				                        airtaudio::status _status);
+				int32_t airtAudioCallback(void* _outputBuffer,
+				                          void * _inputBuffer,
+				                          uint32_t _nbChunk,
+				                          const std::chrono::system_clock::time_point& _time,
+				                          airtaudio::status _status);
 			private:
 				std::string m_name; //!< Harware.json configuration name
 			public:

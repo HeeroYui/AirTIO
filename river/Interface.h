@@ -42,6 +42,15 @@ namespace river {
 				return m_name;
 			};
 		protected:
+			bool m_isInput;
+		public:
+			bool isInput() {
+				return m_isInput;
+			}
+			bool isOutput() {
+				return !m_isInput;
+			}
+		protected:
 			/**
 			 * @brief Constructor
 			 */
@@ -50,7 +59,8 @@ namespace river {
 			          float _freq,
 			          const std::vector<audio::channel>& _map,
 			          audio::format _format,
-			          const std::shared_ptr<river::io::Node>& _node);
+			          const std::shared_ptr<river::io::Node>& _node,
+			          bool _isInput);
 		public:
 			/**
 			 * @brief Destructor
@@ -60,7 +70,8 @@ namespace river {
 			                                         float _freq,
 			                                         const std::vector<audio::channel>& _map,
 			                                         audio::format _format,
-			                                         const std::shared_ptr<river::io::Node>& _node);
+			                                         const std::shared_ptr<river::io::Node>& _node,
+			                                         bool _isInput);
 			/**
 			 * @brief set the read/write mode enable.
 			 */

@@ -30,13 +30,15 @@ bool river::Interface::init(const std::string& _name,
                              float _freq,
                              const std::vector<audio::channel>& _map,
                              audio::format _format,
-                             const std::shared_ptr<river::io::Node>& _node) {
+                             const std::shared_ptr<river::io::Node>& _node,
+                             bool _isInput) {
 	m_name = _name;
 	m_node = _node;
 	m_freq = _freq;
 	m_map = _map;
 	m_format = _format;
 	m_volume = 0.0f;
+	m_isInput = _isInput;
 	// register interface to be notify from the volume change.
 	m_node->registerAsRemote(shared_from_this());
 	// Create convertion interface
@@ -76,9 +78,10 @@ std::shared_ptr<river::Interface> river::Interface::create(const std::string& _n
                                                              float _freq,
                                                              const std::vector<audio::channel>& _map,
                                                              audio::format _format,
-                                                             const std::shared_ptr<river::io::Node>& _node) {
+                                                             const std::shared_ptr<river::io::Node>& _node,
+                                                             bool _isInput) {
 	std::shared_ptr<river::Interface> out = std::shared_ptr<river::Interface>(new river::Interface());
-	out->init(_name, _freq, _map, _format, _node);
+	out->init(_name, _freq, _map, _format, _node, _isInput);
 	return out;
 }
 
