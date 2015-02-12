@@ -13,6 +13,7 @@
 #include <river/Interface.h>
 #include <audio/format.h>
 #include <audio/channel.h>
+#include <ejson/ejson.h>
 
 namespace river {
 	/**
@@ -20,6 +21,7 @@ namespace river {
 	 */
 	class Manager {
 		private:
+			ejson::Document m_config; // virtual configuration
 			const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
 			std::vector<std::weak_ptr<river::Interface> > m_listOpenInterface; //!< List of all open Stream.
 		protected:

@@ -19,11 +19,18 @@
 #include <drain/EndPointCallback.h>
 #include <drain/EndPointWrite.h>
 #include <memory>
+#include <ejson/ejson.h>
 
 namespace river {
 	namespace io {
 		class Node;
 	}
+	enum modeInterface {
+		modeInterface_unknow,
+		modeInterface_input,
+		modeInterface_output,
+		modeInterface_feedback,
+	};
 	class Interface : public std::enable_shared_from_this<Interface> {
 		friend class io::Node;
 		friend class Manager;
@@ -35,6 +42,7 @@ namespace river {
 			std::vector<audio::channel> m_map;
 			audio::format m_format;
 			drain::Process m_process;
+			std::shared_ptr<const ejson::Object> m_config;
 		protected:
 			std::string m_name;
 		public:
@@ -42,13 +50,10 @@ namespace river {
 				return m_name;
 			};
 		protected:
-			bool m_isInput;
+			enum modeInterface m_mode;
 		public:
-			bool isInput() {
-				return m_isInput;
-			}
-			bool isOutput() {
-				return !m_isInput;
+			enum modeInterface getMode() {
+				return m_mode;
 			}
 		protected:
 			/**
@@ -60,7 +65,7 @@ namespace river {
 			          const std::vector<audio::channel>& _map,
 			          audio::format _format,
 			          const std::shared_ptr<river::io::Node>& _node,
-			          bool _isInput);
+			          const std::shared_ptr<const ejson::Object>& _config);
 		public:
 			/**
 			 * @brief Destructor
@@ -71,7 +76,7 @@ namespace river {
 			                                         const std::vector<audio::channel>& _map,
 			                                         audio::format _format,
 			                                         const std::shared_ptr<river::io::Node>& _node,
-			                                         bool _isInput);
+			                                         const std::shared_ptr<const ejson::Object>& _config);
 			/**
 			 * @brief set the read/write mode enable.
 			 */

@@ -27,18 +27,27 @@ river::Interface::Interface(void) :
 }
 
 bool river::Interface::init(const std::string& _name,
-                             float _freq,
-                             const std::vector<audio::channel>& _map,
-                             audio::format _format,
-                             const std::shared_ptr<river::io::Node>& _node,
-                             bool _isInput) {
+                            float _freq,
+                            const std::vector<audio::channel>& _map,
+                            audio::format _format,
+                            const std::shared_ptr<river::io::Node>& _node,
+                            const std::shared_ptr<const ejson::Object>& _config) {
 	m_name = _name;
 	m_node = _node;
 	m_freq = _freq;
 	m_map = _map;
 	m_format = _format;
 	m_volume = 0.0f;
-	m_isInput = _isInput;
+	m_config = _config;
+	m_mode = river::modeInterface_unknow;
+	std::string type = m_config->getStringValue("io", "error");
+	if (type == "output") {
+		m_mode = river::modeInterface_output;
+	} else if (type == "input") {
+		m_mode = river::modeInterface_input;
+	} else if (type == "feedback") {
+		m_mode = river::modeInterface_feedback;
+	}
 	// register interface to be notify from the volume change.
 	m_node->registerAsRemote(shared_from_this());
 	// Create convertion interface
@@ -75,13 +84,13 @@ bool river::Interface::init(const std::string& _name,
 }
 
 std::shared_ptr<river::Interface> river::Interface::create(const std::string& _name,
-                                                             float _freq,
-                                                             const std::vector<audio::channel>& _map,
-                                                             audio::format _format,
-                                                             const std::shared_ptr<river::io::Node>& _node,
-                                                             bool _isInput) {
+                                                           float _freq,
+                                                           const std::vector<audio::channel>& _map,
+                                                           audio::format _format,
+                                                           const std::shared_ptr<river::io::Node>& _node,
+                                                           const std::shared_ptr<const ejson::Object>& _config) {
 	std::shared_ptr<river::Interface> out = std::shared_ptr<river::Interface>(new river::Interface());
-	out->init(_name, _freq, _map, _format, _node, _isInput);
+	out->init(_name, _freq, _map, _format, _node, _config);
 	return out;
 }
 

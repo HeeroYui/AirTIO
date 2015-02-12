@@ -16,6 +16,7 @@ river::io::Manager::Manager() {
 	if (m_config.load("DATA:hardware.json") == false) {
 		RIVER_ERROR("you must set a basic configuration file for harware configuration: DATA:hardware.json");
 	}
+	// TODO : Load virtual.json and check if all is correct ...
 };
 
 
@@ -25,8 +26,8 @@ std::shared_ptr<river::io::Manager> river::io::Manager::getInstance() {
 }
 
 std::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& _name) {
-	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		std::shared_ptr<river::io::Node> tmppp = m_list[iii].lock();
+	for (auto &it : m_list) {
+		std::shared_ptr<river::io::Node> tmppp = it.lock();
 		if (    tmppp != nullptr
 		     && _name == tmppp->getName()) {
 			return tmppp;

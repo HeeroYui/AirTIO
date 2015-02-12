@@ -69,7 +69,7 @@ int32_t river::io::Node::airtAudioCallback(void* _outputBuffer,
 			if (it == nullptr) {
 				continue;
 			}
-			if (it->isOutput() == false) {
+			if (it->getMode() != river::modeInterface_output) {
 				continue;
 			}
 			RIVER_VERBOSE("    IO name="<< it->getName());
@@ -91,7 +91,7 @@ int32_t river::io::Node::airtAudioCallback(void* _outputBuffer,
 			if (it == nullptr) {
 				continue;
 			}
-			if (it->isInput() == false) {
+			if (it->getMode() != river::modeInterface_feedback) {
 				continue;
 			}
 			RIVER_VERBOSE("    IO name="<< it->getName() << " (feedback)");
@@ -104,6 +104,9 @@ int32_t river::io::Node::airtAudioCallback(void* _outputBuffer,
 		int16_t* inputBuffer = static_cast<int16_t *>(_inputBuffer);
 		for (auto &it : m_list) {
 			if (it == nullptr) {
+				continue;
+			}
+			if (it->getMode() != river::modeInterface_input) {
 				continue;
 			}
 			RIVER_INFO("    IO name="<< it->getName());

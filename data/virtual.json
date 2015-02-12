@@ -12,7 +12,7 @@
 		resampling-option:"quality=10"
 	},
 	feedback:{
-		io:"input",
+		io:"feedback", # note : Feedback is plugged on an output not an input
 		map-on:"speaker",
 		resampling-type:"speexdsp",
 		resampling-option:"quality=10"
@@ -22,8 +22,9 @@
 		map-on:"speaker",
 		resampling-type:"speexdsp",
 		resampling-option:"quality=10",
-		aec-map-on:"microphone", the second input of the AEC (get a single 
-		aec-type:"airtio-remover", # some type is "airtio-remover",
+		# specific case for AEC : only 3 options
+		aec-map-on:"microphone", # the second input of the AEC (get a single)
+		aec-type:"river-remover", # some type is "airtio-remover",
 		aec-option:"mode=cutter"
 	}
 }
