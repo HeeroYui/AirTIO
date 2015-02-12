@@ -9,6 +9,7 @@
 #include <river/Interface.h>
 #include <gtest/gtest.h>
 #include <etk/os/FSNode.h>
+#include <math.h>
 
 #include <sstream>
 #include <unistd.h>

@@ -3,26 +3,27 @@
 		io:"input",
 		map-on:{
 			interface:"coreOSX",
-			name:"default",
+			name:"Apple Inc.: Built-in Input",
 		},
 		frequency:48000,
 		channel-map:[
 			"front-left", "front-right"
 		],
-		type:"int16",
+		type:"float",
 		nb-chunk:1024
 	},
 	speaker:{
 		io:"output",
 		map-on:{
 			interface:"coreOSX",
-			name:"default",
+			#name:"Apple Inc.: Built-in Output",
+			name:"Apple Inc.: HDMI",
 		},
 		frequency:48000,
 		channel-map:[
 			"front-left", "front-right",
 		],
-		type:"int16",
+		type:"float",
 		nb-chunk:1024,
 		volume-name:"MASTER"
 	}
