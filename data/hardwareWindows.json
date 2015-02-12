@@ -1,0 +1,29 @@
+{
+	microphone:{
+		io:"input",
+		map-on:{
+			interface:"ds",
+			name:"default",
+		},
+		frequency:44100,
+		channel-map:[
+			"front-left", "front-right"
+		],
+		type:"int16",
+		nb-chunk:1024
+	},
+	speaker:{
+		io:"output",
+		map-on:{
+			interface:"ds",
+			name:"default",
+		},
+		frequency:44100,
+		channel-map:[
+			"front-left", "front-right",
+		],
+		type:"int16",
+		nb-chunk:1024,
+		volume-name:"MASTER"
+	}
+}
