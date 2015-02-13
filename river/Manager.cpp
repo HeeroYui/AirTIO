@@ -16,6 +16,23 @@
 #undef __class__
 #define __class__ "Manager"
 
+static std::string basicAutoConfig = 
+	"{\n"
+	"	microphone:{\n"
+	"		io:'input',\n"
+	"		map-on:'microphone',\n"
+	"		resampling-type:'speexdsp',\n"
+	"		resampling-option:'quality=10'\n"
+	"	},\n"
+	"	speaker:{\n"
+	"		io:'output',\n"
+	"		map-on:'speaker',\n"
+	"		resampling-type:'speexdsp',\n"
+	"		resampling-option:'quality=10'\n"
+	"	}\n"
+	"}\n";
+
+
 std::shared_ptr<river::Manager> river::Manager::create(const std::string& _applicationUniqueId) {
 	return std::shared_ptr<river::Manager>(new river::Manager(_applicationUniqueId));
 }
@@ -25,7 +42,8 @@ river::Manager::Manager(const std::string& _applicationUniqueId) :
   m_listOpenInterface() {
 	// TODO : Maybe create a single interface property (and all get the same ...)
 	if (m_config.load("DATA:virtual.json") == false) {
-		RIVER_ERROR("you must set a basic configuration file for virtual configuration: DATA:virtual.json");
+		RIVER_WARNING("you must set a basic configuration file for virtual configuration: DATA:virtual.json (load default interface)");
+		m_config.parse(basicAutoConfig);
 	}
 }
 

@@ -150,13 +150,13 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	std::string streamName = "default";
 	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
-		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'alsa:default'");
+		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
 		std::string value = tmpObject->getStringValue("interface", "default");
 		typeInterface = airtaudio::getTypeFromString(value);
 		streamName = tmpObject->getStringValue("name", "default");
 	}
-	int32_t frequency = m_config->getNumberValue("frequency", 48000);
+	int32_t frequency = m_config->getNumberValue("frequency", 1);
 	std::string type = m_config->getStringValue("type", "int16");
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
 	std::string volumeName = m_config->getStringValue("volume-name", "");
@@ -222,13 +222,57 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 		RIVER_INFO("    isDefaultInput=" << m_info.isDefaultInput);
 		RIVER_INFO("    rates=" << m_info.sampleRates);
 		RIVER_INFO("    native Format: " << m_info.nativeFormats);
+		
 		if (etk::isIn(hardwareFormat.getFormat(), m_info.nativeFormats) == false) {
-			RIVER_CRITICAL("Can not manage input transforamtion: " << hardwareFormat.getFormat() << " not in " << m_info.nativeFormats);
-			// TODO : Manage this
+			if (type == "auto") {
+				if (etk::isIn(audio::format_int16, m_info.nativeFormats) == true) {
+					hardwareFormat.setFormat(audio::format_int16);
+					RIVER_INFO("auto set format: " << hardwareFormat.getFormat());
+				} else if (etk::isIn(audio::format_float, m_info.nativeFormats) == true) {
+					hardwareFormat.setFormat(audio::format_float);
+					RIVER_INFO("auto set format: " << hardwareFormat.getFormat());
+				} else if (etk::isIn(audio::format_int16_on_int32, m_info.nativeFormats) == true) {
+					hardwareFormat.setFormat(audio::format_int16_on_int32);
+					RIVER_INFO("auto set format: " << hardwareFormat.getFormat());
+				} else if (etk::isIn(audio::format_int24, m_info.nativeFormats) == true) {
+					hardwareFormat.setFormat(audio::format_int24);
+					RIVER_INFO("auto set format: " << hardwareFormat.getFormat());
+				} else if (m_info.nativeFormats.size() != 0) {
+					hardwareFormat.setFormat(m_info.nativeFormats[0]);
+					RIVER_INFO("auto set format: " << hardwareFormat.getFormat());
+				} else {
+					RIVER_CRITICAL("auto set format no element in the configuration: " << m_info.nativeFormats);
+				}
+			} else {
+				RIVER_CRITICAL("Can not manage input transforamtion: " << hardwareFormat.getFormat() << " not in " << m_info.nativeFormats);
+			}
 		}
 		if (etk::isIn(hardwareFormat.getFrequency(), m_info.sampleRates) == false) {
-			RIVER_CRITICAL("Can not manage input transforamtion:" << hardwareFormat.getFrequency() << " not in " << m_info.sampleRates);
-			// TODO : Manage this
+			if (etk::isIn(48000, m_info.sampleRates) == true) {
+				hardwareFormat.setFrequency(48000);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency());
+			} else if (etk::isIn(44100, m_info.sampleRates) == true) {
+				hardwareFormat.setFrequency(44100);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency());
+			} else if (etk::isIn(32000, m_info.sampleRates) == true) {
+				hardwareFormat.setFrequency(32000);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency());
+			} else if (etk::isIn(16000, m_info.sampleRates) == true) {
+				hardwareFormat.setFrequency(16000);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency());
+			} else if (etk::isIn(8000, m_info.sampleRates) == true) {
+				hardwareFormat.setFrequency(8000);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency());
+			} else if (etk::isIn(96000, m_info.sampleRates) == true) {
+				hardwareFormat.setFrequency(96000);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency());
+			} else if (m_info.sampleRates.size() != 0) {
+				hardwareFormat.setFrequency(m_info.sampleRates[0]);
+				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency() << "(first element in list) in " << m_info.sampleRates);
+			} else {
+				RIVER_CRITICAL("Can not manage input transforamtion:" << hardwareFormat.getFrequency() << " not in " << m_info.sampleRates);
+			}
+			interfaceFormat.setFrequency(hardwareFormat.getFrequency());
 		}
 	}
 	

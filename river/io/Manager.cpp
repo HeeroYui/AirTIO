@@ -12,9 +12,44 @@
 #undef __class__
 #define __class__ "io::Manager"
 
+
+static std::string basicAutoConfig =
+	"{\n"
+	"	microphone:{\n"
+	"		io:'input',\n"
+	"		map-on:{\n"
+	"			interface:'auto',\n"
+	"			name:'default',\n"
+	"		},\n"
+	"		frequency:0,\n"
+	"		channel-map:[\n"
+	"			'front-left', 'front-right'\n"
+	"		],\n"
+	"		type:'auto',\n"
+	"		nb-chunk:1024\n"
+	"	},\n"
+	"	speaker:{\n"
+	"		io:'output',\n"
+	"		map-on:{\n"
+	"			interface:'auto',\n"
+	"			name:'default',\n"
+	"		},\n"
+	"		frequency:0,\n"
+	"		channel-map:[\n"
+	"			'front-left', 'front-right',\n"
+	"		],\n"
+	"		type:'auto',\n"
+	"		nb-chunk:1024,\n"
+	"		volume-name:'MASTER'\n"
+	"	}\n"
+	"}\n";
+
+
+
 river::io::Manager::Manager() {
 	if (m_config.load("DATA:hardware.json") == false) {
-		RIVER_ERROR("you must set a basic configuration file for harware configuration: DATA:hardware.json");
+		RIVER_WARNING("you must set a basic configuration file for harware configuration: DATA:hardware.json (load default interface)");
+		m_config.parse(basicAutoConfig);
 	}
 	// TODO : Load virtual.json and check if all is correct ...
 };
