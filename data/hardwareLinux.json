@@ -1,16 +1,26 @@
 {
-	microphone:{ # name of the device
-		io:"input", # input or output
-		map-on:{ # select hardware interface and name
-			interface:"alsa", # interface : "alsa", "pulse", "core", ...
-			name:"default", # name of the interface
+	# name of the device
+	microphone:{
+		# input or output
+		io:"input",
+		# select hardware interface and name
+		map-on:{
+			# interface : "alsa", "pulse", "core", ...
+			interface:"alsa",
+			# name of the interface
+			name:"default",
 		},
-		frequency:48000, # frequency to open device
-		channel-map:[ # mapping of the harware device (mapping is not get under)
+		# frequency to open device
+		frequency:48000,
+		# mapping of the harware device (mapping is not get under)
+		channel-map:[
 			"front-left", "front-right"
 		],
-		type:"int16", # format to open device (int8, int16, int16-on-ont32, int24, int32, float)
-		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
+		# format to open device (int8, int16, int16-on-ont32, int24, int32, float)
+		type:"int16",
+		# number of chunk to open device (create the latency anf the frequency to call user)
+		nb-chunk:1024,
+		mux-demux-type:"int16",
 	},
 	speaker:{
 		io:"output",
@@ -24,7 +34,8 @@
 		],
 		type:"int16",
 		nb-chunk:1024,
-		volume-name:"MASTER"
+		volume-name:"MASTER",
+		mux-demux-type:"int16-on-int32",
 	},
 	speaker-pulse:{
 		io:"output",
@@ -38,7 +49,8 @@
 		],
 		type:"int16",
 		nb-chunk:1024,
-		volume-name:"MASTER"
+		volume-name:"MASTER",
+		mux-demux-type:"int16-on-int32",
 	},
 	speaker-jack:{
 		io:"output",
@@ -52,6 +64,36 @@
 		],
 		type:"float",
 		nb-chunk:1024,
-		volume-name:"MASTER"
+		volume-name:"MASTER",
+		mux-demux-type:"float",
+	},
+	# virtual Nodes :
+	microphone-clean:{
+		io:"aec",
+		# connect in input mode
+		map-on-microphone:{
+			# generic virtual definition
+			io:"input",
+			map-on:"microphone",
+			resampling-type:"speexdsp",
+			resampling-option:"quality=10"
+		},
+		# connect in feedback mode
+		map-on-feedback:{
+			io:"feedback",
+			map-on:"speaker",
+			resampling-type:"speexdsp",
+			resampling-option:"quality=10",
+		},
+		#classical format configuration:
+		frequency:16000,
+		channel-map:[
+			"front-left", "front-right"
+		],
+		type:"int16",
+		# AEC algo definition
+		algo:"river-remover",
+		algo-mode:"cutter",
+		mux-demux-type:"int16",
 	}
 }

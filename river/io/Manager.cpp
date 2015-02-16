@@ -8,6 +8,8 @@
 #include <memory>
 #include <river/debug.h>
 #include "Node.h"
+#include "NodeAEC.h"
+#include "NodeAirTAudio.h"
 
 #undef __class__
 #define __class__ "io::Manager"
@@ -71,9 +73,18 @@ std::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& 
 	// check if the node can be open :
 	const std::shared_ptr<const ejson::Object> tmpObject = m_config.getObject(_name);
 	if (tmpObject != nullptr) {
-		std::shared_ptr<river::io::Node> tmp = river::io::Node::create(_name, tmpObject);
-		m_list.push_back(tmp);
-		return tmp;
+		// get type : io
+		std::string ioType = tmpObject->getStringValue("io", "error");
+		if (    ioType == "input"
+		     || ioType == "output") {
+			std::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_name, tmpObject);
+			m_list.push_back(tmp);
+			return tmp;
+		} else if (ioType == "aec") {
+			std::shared_ptr<river::io::Node> tmp = river::io::NodeAEC::create(_name, tmpObject);
+			m_list.push_back(tmp);
+			return tmp;
+		}
 	}
 	RIVER_ERROR("Can not create the interface : '" << _name << "' the node is not DEFINED in the configuration file availlable : " << m_config.getKeys());
 	return nullptr;

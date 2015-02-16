@@ -18,9 +18,6 @@
 
 river::Interface::Interface(void) :
   m_node(nullptr),
-  m_freq(8000),
-  m_map(),
-  m_format(audio::format_int16),
   m_name(""),
   m_volume(0.0f) {
 	
@@ -34,9 +31,6 @@ bool river::Interface::init(const std::string& _name,
                             const std::shared_ptr<const ejson::Object>& _config) {
 	m_name = _name;
 	m_node = _node;
-	m_freq = _freq;
-	m_map = _map;
-	m_format = _format;
 	m_volume = 0.0f;
 	m_config = _config;
 	m_mode = river::modeInterface_unknow;
@@ -64,9 +58,9 @@ bool river::Interface::init(const std::string& _name,
 			RIVER_INFO(" add volume for node");
 			algo->addVolumeStage(tmpVolume);
 		}
-		m_process.setOutputConfig(drain::IOFormatInterface(m_map, m_format, m_freq));
+		m_process.setOutputConfig(drain::IOFormatInterface(_map, _format, _freq));
 	} else {
-		m_process.setInputConfig(drain::IOFormatInterface(m_map, m_format, m_freq));
+		m_process.setInputConfig(drain::IOFormatInterface(_map, _format, _freq));
 		// add all time the volume stage :
 		std::shared_ptr<drain::Volume> algo = drain::Volume::create();
 		//algo->setOutputFormat(m_node->getInterfaceFormat());
@@ -114,12 +108,10 @@ void river::Interface::setReadwrite() {
 	if (m_node->isInput() == true) {
 		m_process.removeIfLast<drain::EndPoint>();
 		std::shared_ptr<drain::EndPointRead> algo = drain::EndPointRead::create();
-		//algo->setOutputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
 		m_process.pushBack(algo);
 	} else {
 		m_process.removeIfFirst<drain::EndPoint>();
 		std::shared_ptr<drain::EndPointWrite> algo = drain::EndPointWrite::create();
-		//algo->setInputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
 		m_process.pushFront(algo);
 	}
 }
@@ -129,8 +121,6 @@ void river::Interface::setOutputCallback(size_t _chunkSize, drain::needDataFunct
 	m_process.removeAlgoDynamic();
 	m_process.removeIfFirst<drain::EndPoint>();
 	std::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
-	RIVER_INFO("set property: " << m_map << " " << m_format << " " << m_freq);
-	//algo->setInputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
 	m_process.pushFront(algo);
 }
 
@@ -139,7 +129,6 @@ void river::Interface::setInputCallback(size_t _chunkSize, drain::haveNewDataFun
 	m_process.removeAlgoDynamic();
 	m_process.removeIfLast<drain::EndPoint>();
 	std::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
-	//algo->setOutputFormat(drain::IOFormatInterface(m_map, m_format, m_freq));
 	m_process.pushBack(algo);
 }
 
@@ -311,9 +300,10 @@ void river::Interface::addVolumeGroup(const std::string& _name) {
 	}
 }
 
-void river::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk) {
+void river::Interface::systemNewInputData(std::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
-	m_process.push(_time, _data, _nbChunk);
+	void * tmpData = const_cast<void*>(_data);
+	m_process.push(_time, tmpData, _nbChunk);
 }
 
 void river::Interface::systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize) {

@@ -15,6 +15,8 @@ def create(target):
 		'river/Manager.cpp',
 		'river/Interface.cpp',
 		'river/io/Node.cpp',
+		'river/io/NodeAirTAudio.cpp',
+		'river/io/NodeAEC.cpp',
 		'river/io/Manager.cpp'
 		])
 	

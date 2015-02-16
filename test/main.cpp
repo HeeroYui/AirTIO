@@ -292,7 +292,7 @@ class testInCallback {
 		std::shared_ptr<river::Interface> m_interface;
 		double m_phase;
 	public:
-		testInCallback(std::shared_ptr<river::Manager> _manager) :
+		testInCallback(std::shared_ptr<river::Manager> _manager, const std::string& _input="microphone") :
 		  m_manager(_manager),
 		  m_phase(0) {
 			//Set stereo output:
@@ -302,7 +302,7 @@ class testInCallback {
 			m_interface = m_manager->createInput(48000,
 			                                     channelMap,
 			                                     audio::format_int16,
-			                                     "microphone",
+			                                     _input,
 			                                     "WriteModeCallback");
 			// set callback mode ...
 			m_interface->setInputCallback(1024,
@@ -347,6 +347,16 @@ TEST(TestALL, testInputCallBack) {
 	process.reset();
 	usleep(500000);
 }
+TEST(TestALL, testInputCallBackMicClean) {
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
+	APPL_INFO("test input (callback mode)");
+	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager, "microphone-clean");
+	process->run();
+	process.reset();
+	usleep(500000);
+}
+
 
 
 class testOutCallbackType {

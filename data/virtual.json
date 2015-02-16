@@ -1,9 +1,14 @@
 {
-	microphone:{ # name of the virtual interface
-		io:"input", # input or output
-		map-on:"microphone", # name of the harware device
-		resampling-type:"speexdsp", # name of the resampler
-		resampling-option:"quality=10" # some option to the resampler
+	# name of the virtual interface
+	microphone:{
+		# input or output
+		io:"input",
+		# name of the harware device
+		map-on:"microphone",
+		# name of the resampler
+		resampling-type:"speexdsp",
+		# some option to the resampler
+		resampling-option:"quality=10"
 	},
 	speaker:{
 		io:"output",
@@ -12,19 +17,16 @@
 		resampling-option:"quality=10"
 	},
 	feedback:{
-		io:"feedback", # note : Feedback is plugged on an output not an input
+		# note : Feedback is plugged on an output not an input
+		io:"feedback",
 		map-on:"speaker",
 		resampling-type:"speexdsp",
 		resampling-option:"quality=10"
 	},
-	microphone-cleaned:{
+	microphone-clean:{
 		io:"input",
-		map-on:"speaker",
+		map-on:"microphone-clean",
 		resampling-type:"speexdsp",
-		resampling-option:"quality=10",
-		# specific case for AEC : only 3 options
-		aec-map-on:"microphone", # the second input of the AEC (get a single)
-		aec-type:"river-remover", # some type is "airtio-remover",
-		aec-option:"mode=cutter"
-	}
+		resampling-option:"quality=10"
+	},
 }

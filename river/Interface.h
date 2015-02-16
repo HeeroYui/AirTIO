@@ -24,6 +24,8 @@
 namespace river {
 	namespace io {
 		class Node;
+		class NodeAirTAudio;
+		class NodeAEC;
 	}
 	enum modeInterface {
 		modeInterface_unknow,
@@ -33,28 +35,9 @@ namespace river {
 	};
 	class Interface : public std::enable_shared_from_this<Interface> {
 		friend class io::Node;
+		friend class io::NodeAirTAudio;
+		friend class io::NodeAEC;
 		friend class Manager;
-		protected:
-			mutable std::recursive_mutex m_mutex;
-		protected:
-			std::shared_ptr<river::io::Node> m_node;
-			float m_freq;
-			std::vector<audio::channel> m_map;
-			audio::format m_format;
-			drain::Process m_process;
-			std::shared_ptr<const ejson::Object> m_config;
-		protected:
-			std::string m_name;
-		public:
-			virtual std::string getName() {
-				return m_name;
-			};
-		protected:
-			enum modeInterface m_mode;
-		public:
-			enum modeInterface getMode() {
-				return m_mode;
-			}
 		protected:
 			/**
 			 * @brief Constructor
@@ -77,6 +60,35 @@ namespace river {
 			                                         audio::format _format,
 			                                         const std::shared_ptr<river::io::Node>& _node,
 			                                         const std::shared_ptr<const ejson::Object>& _config);
+		
+		protected:
+			mutable std::recursive_mutex m_mutex;
+			std::shared_ptr<const ejson::Object> m_config;
+		protected:
+			enum modeInterface m_mode;
+		public:
+			enum modeInterface getMode() {
+				return m_mode;
+			}
+			drain::Process m_process;
+		public:
+			const drain::IOFormatInterface& getInterfaceFormat() {
+				if (    m_mode == modeInterface_input
+				     || m_mode == modeInterface_feedback) {
+					return m_process.getOutputConfig();
+				} else {
+					return m_process.getInputConfig();
+				}
+			}
+		
+		protected:
+			std::shared_ptr<river::io::Node> m_node;
+		protected:
+			std::string m_name;
+		public:
+			virtual std::string getName() {
+				return m_name;
+			};
 			/**
 			 * @brief set the read/write mode enable.
 			 */
@@ -186,7 +198,7 @@ namespace river {
 			 */
 			virtual std::chrono::system_clock::time_point getCurrentTime() const;
 		private:
-			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk);
+			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk);
 			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
 			virtual void systemVolumeChange();
 			float m_volume; //!< Local channel Volume
