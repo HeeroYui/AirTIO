@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include <sstream>
+#include <thread>
 #include <unistd.h>
 
 #undef __class__
@@ -108,13 +109,15 @@ class testOutWriteCallback {
 			                                        std::placeholders::_1,
 			                                        std::placeholders::_2,
 			                                        std::placeholders::_3,
-			                                        std::placeholders::_4));
+			                                        std::placeholders::_4,
+			                                        std::placeholders::_5));
 		}
-		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
-		                  const size_t& _nbChunk,
-		                  const std::vector<audio::channel>& _map,
-		                  enum audio::format _type) {
-			if (_type != audio::format_int16) {
+		void onDataNeeded(const std::chrono::system_clock::time_point& _time,
+		                  size_t _nbChunk,
+		                  enum audio::format _format,
+		                  uint32_t _frequency,
+		                  const std::vector<audio::channel>& _map) {
+			if (_format != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			std::vector<int16_t> data;
@@ -170,21 +173,22 @@ class testOutCallback {
 			                                      _io,
 			                                      "WriteModeCallback");
 			// set callback mode ...
-			m_interface->setOutputCallback(1024,
-			                               std::bind(&testOutCallback::onDataNeeded,
+			m_interface->setOutputCallback(std::bind(&testOutCallback::onDataNeeded,
 			                                         this,
 			                                         std::placeholders::_1,
 			                                         std::placeholders::_2,
 			                                         std::placeholders::_3,
 			                                         std::placeholders::_4,
-			                                         std::placeholders::_5));
+			                                         std::placeholders::_5,
+			                                         std::placeholders::_6));
 		}
-		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
-		                  const size_t& _nbChunk,
-		                  const std::vector<audio::channel>& _map,
-		                  void* _data,
-		                  enum audio::format _type) {
-			if (_type != audio::format_int16) {
+		void onDataNeeded(void* _data,
+		                  const std::chrono::system_clock::time_point& _time,
+		                  size_t _nbChunk,
+		                  enum audio::format _format,
+		                  uint32_t _frequency,
+		                  const std::vector<audio::channel>& _map) {
+			if (_format != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			int16_t* data = static_cast<int16_t*>(_data);
@@ -305,21 +309,22 @@ class testInCallback {
 			                                     _input,
 			                                     "WriteModeCallback");
 			// set callback mode ...
-			m_interface->setInputCallback(1024,
-			                              std::bind(&testInCallback::onDataReceived,
+			m_interface->setInputCallback(std::bind(&testInCallback::onDataReceived,
 			                                        this,
 			                                        std::placeholders::_1,
 			                                        std::placeholders::_2,
 			                                        std::placeholders::_3,
 			                                        std::placeholders::_4,
-			                                        std::placeholders::_5));
+			                                        std::placeholders::_5,
+			                                        std::placeholders::_6));
 		}
-		void onDataReceived(const std::chrono::system_clock::time_point& _readTime,
+		void onDataReceived(const void* _data,
+		                    const std::chrono::system_clock::time_point& _time,
 		                    size_t _nbChunk,
-		                    const std::vector<audio::channel>& _map,
-		                    const void* _data,
-		                    enum audio::format _type) {
-			if (_type != audio::format_int16) {
+		                    enum audio::format _format,
+		                    uint32_t _frequency,
+		                    const std::vector<audio::channel>& _map) {
+			if (_format != audio::format_int16) {
 				APPL_ERROR("call wrong type ... (need int16_t)");
 			}
 			const int16_t* data = static_cast<const int16_t*>(_data);
@@ -343,15 +348,6 @@ TEST(TestALL, testInputCallBack) {
 	manager = river::Manager::create("testApplication");
 	APPL_INFO("test input (callback mode)");
 	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
-	process->run();
-	process.reset();
-	usleep(500000);
-}
-TEST(TestALL, testInputCallBackMicClean) {
-	std::shared_ptr<river::Manager> manager;
-	manager = river::Manager::create("testApplication");
-	APPL_INFO("test input (callback mode)");
-	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager, "microphone-clean");
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -400,23 +396,24 @@ class testOutCallbackType {
 			                                      "speaker",
 			                                      "WriteModeCallbackType");
 			// set callback mode ...
-			m_interface->setOutputCallback(1024,
-			                               std::bind(&testOutCallbackType::onDataNeeded,
+			m_interface->setOutputCallback(std::bind(&testOutCallbackType::onDataNeeded,
 			                                         this,
 			                                         std::placeholders::_1,
 			                                         std::placeholders::_2,
 			                                         std::placeholders::_3,
 			                                         std::placeholders::_4,
-			                                         std::placeholders::_5));
+			                                         std::placeholders::_5,
+			                                         std::placeholders::_6));
 		}
-		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
-		                  const size_t& _nbChunk,
-		                  const std::vector<audio::channel>& _map,
-		                  void* _data,
-		                  enum audio::format _type) {
-			//APPL_DEBUG("Get data ... " << _type << " map=" << _map << " chunk=" << _nbChunk);
+		void onDataNeeded(void* _data,
+		                  const std::chrono::system_clock::time_point& _time,
+		                  size_t _nbChunk,
+		                  enum audio::format _format,
+		                  uint32_t _frequency,
+		                  const std::vector<audio::channel>& _map) {
+			//APPL_DEBUG("Get data ... " << _format << " map=" << _map << " chunk=" << _nbChunk);
 			double baseCycle = 2.0*M_PI/double(m_freq) * double(m_generateFreq);
-			if (_type == audio::format_int16) {
+			if (_format == audio::format_int16) {
 				int16_t* data = static_cast<int16_t*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -427,7 +424,7 @@ class testOutCallbackType {
 						m_phase -= 2*M_PI;
 					}
 				}
-			} else if (_type == audio::format_int16_on_int32) {
+			} else if (_format == audio::format_int16_on_int32) {
 				int32_t* data = static_cast<int32_t*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -438,7 +435,7 @@ class testOutCallbackType {
 						m_phase -= 2*M_PI;
 					}
 				}
-			} else if (_type == audio::format_int32) {
+			} else if (_format == audio::format_int32) {
 				int32_t* data = static_cast<int32_t*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -449,7 +446,7 @@ class testOutCallbackType {
 						m_phase -= 2*M_PI;
 					}
 				}
-			} else if (_type == audio::format_float) {
+			} else if (_format == audio::format_float) {
 				float* data = static_cast<float*>(_data);
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
@@ -539,25 +536,23 @@ class testCallbackVolume {
 			                                      "speaker",
 			                                      "WriteModeCallback");
 			// set callback mode ...
-			m_interface->setOutputCallback(1024,
-			                               std::bind(&testCallbackVolume::onDataNeeded,
+			m_interface->setOutputCallback(std::bind(&testCallbackVolume::onDataNeeded,
 			                                         this,
 			                                         std::placeholders::_1,
 			                                         std::placeholders::_2,
 			                                         std::placeholders::_3,
 			                                         std::placeholders::_4,
-			                                         std::placeholders::_5));
+			                                         std::placeholders::_5,
+			                                         std::placeholders::_6));
 			m_interface->addVolumeGroup("MEDIA");
 			m_interface->addVolumeGroup("FLOW");
 		}
-		void onDataNeeded(const std::chrono::system_clock::time_point& _playTime,
-		                  const size_t& _nbChunk,
-		                  const std::vector<audio::channel>& _map,
-		                  void* _data,
-		                  enum audio::format _type) {
-			if (_type != audio::format_int16) {
-				APPL_ERROR("call wrong type ... (need int16_t)");
-			}
+		void onDataNeeded(void* _data,
+		                  const std::chrono::system_clock::time_point& _time,
+		                  size_t _nbChunk,
+		                  enum audio::format _format,
+		                  uint32_t _frequency,
+		                  const std::vector<audio::channel>& _map) {
 			int16_t* data = static_cast<int16_t*>(_data);
 			double baseCycle = 2.0*M_PI/(double)48000 * (double)550;
 			for (int32_t iii=0; iii<_nbChunk; iii++) {
@@ -609,6 +604,28 @@ class testCallbackVolume {
 			m_interface->stop();
 		}
 };
+
+void threadVolume(void* _userData) {
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
+	std::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
+	process->run();
+	process.reset();
+	usleep(500000);
+}
+
+TEST(TestALL, testInputCallBackMicClean) {
+	std::shared_ptr<river::Manager> manager;
+	manager = river::Manager::create("testApplication");
+	std::thread tmpThread(&threadVolume, nullptr);
+	usleep(100000);
+	
+	APPL_INFO("test input (callback mode)");
+	std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager, "microphone-clean");
+	process->run();
+	process.reset();
+	usleep(500000);
+}
 
 
 TEST(TestALL, testVolume) {

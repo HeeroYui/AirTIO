@@ -9,6 +9,7 @@
 
 #include <river/io/Node.h>
 #include <river/Interface.h>
+#include <river/CircularBuffer.h>
 
 namespace river {
 	namespace io {
@@ -35,17 +36,22 @@ namespace river {
 				                                              audio::format _format,
 				                                              const std::string& _streamName,
 				                                              const std::string& _name);
-				void onDataReceivedMicrophone(const std::chrono::system_clock::time_point& _playTime,
+				void onDataReceivedMicrophone(const void* _data,
+				                              const std::chrono::system_clock::time_point& _time,
 				                              size_t _nbChunk,
-				                              const std::vector<audio::channel>& _map,
-				                              const void* _data,
-				                              enum audio::format _type);
-				
-				void onDataReceivedFeedBack(const std::chrono::system_clock::time_point& _readTime,
+				                              enum audio::format _format,
+				                              uint32_t _frequency,
+				                              const std::vector<audio::channel>& _map);
+				void onDataReceivedFeedBack(const void* _data,
+				                            const std::chrono::system_clock::time_point& _time,
 				                            size_t _nbChunk,
-				                            const std::vector<audio::channel>& _map,
-				                            const void* _data,
-				                            enum audio::format _type);
+				                            enum audio::format _format,
+				                            uint32_t _frequency,
+				                            const std::vector<audio::channel>& _map);
+				river::CircularBuffer m_bufferMicrophone;
+				river::CircularBuffer m_bufferFeedBack;
+				void process();
+				void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std::chrono::system_clock::time_point& _time);
 		};
 	}
 }

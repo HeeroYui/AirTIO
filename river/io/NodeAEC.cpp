@@ -149,6 +149,7 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<cons
 	*/
 	std::vector<audio::channel> feedbackMap;
 	feedbackMap.push_back(audio::channel_frontCenter);
+	RIVER_INFO("Create FEEDBACK : ");
 	m_interfaceFeedBack = createInput(hardwareFormat.getFrequency(),
 	                                  feedbackMap,
 	                                  hardwareFormat.getFormat(),
@@ -158,6 +159,7 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<cons
 		RIVER_ERROR("Can not opne virtual device ... map-on-feedback in " << _name);
 		return;
 	}
+	RIVER_INFO("Create MICROPHONE : ");
 	m_interfaceMicrophone = createInput(hardwareFormat.getFrequency(),
 	                                    hardwareFormat.getMap(),
 	                                    hardwareFormat.getFormat(),
@@ -169,23 +171,30 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<cons
 	}
 	
 	// set callback mode ...
-	m_interfaceFeedBack->setInputCallback(1024,
-	                                      std::bind(&river::io::NodeAEC::onDataReceivedFeedBack,
+	m_interfaceFeedBack->setInputCallback(std::bind(&river::io::NodeAEC::onDataReceivedFeedBack,
 	                                                this,
 	                                                std::placeholders::_1,
 	                                                std::placeholders::_2,
 	                                                std::placeholders::_3,
 	                                                std::placeholders::_4,
-	                                                std::placeholders::_5));
+	                                                std::placeholders::_5,
+	                                                std::placeholders::_6));
 	// set callback mode ...
-	m_interfaceMicrophone->setInputCallback(1024,
-	                                        std::bind(&river::io::NodeAEC::onDataReceivedMicrophone,
+	m_interfaceMicrophone->setInputCallback(std::bind(&river::io::NodeAEC::onDataReceivedMicrophone,
 	                                                  this,
 	                                                  std::placeholders::_1,
 	                                                  std::placeholders::_2,
 	                                                  std::placeholders::_3,
 	                                                  std::placeholders::_4,
-	                                                  std::placeholders::_5));
+	                                                  std::placeholders::_5,
+	                                                  std::placeholders::_6));
+	
+	m_bufferMicrophone.setCapacity(std::chrono::milliseconds(1000),
+	                               audio::getFormatBytes(hardwareFormat.getFormat())*hardwareFormat.getMap().size(),
+	                               hardwareFormat.getFrequency());
+	m_bufferFeedBack.setCapacity(std::chrono::milliseconds(1000),
+	                             audio::getFormatBytes(hardwareFormat.getFormat()), // only one channel ...
+	                             hardwareFormat.getFrequency());
 	
 	m_process.updateInterAlgo();
 }
@@ -201,9 +210,11 @@ void river::io::NodeAEC::start() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceFeedBack != nullptr) {
+		RIVER_INFO("Start FEEDBACK : ");
 		m_interfaceFeedBack->start();
 	}
 	if (m_interfaceMicrophone != nullptr) {
+		RIVER_INFO("Start Microphone : ");
 		m_interfaceMicrophone->start();
 	}
 }
@@ -220,35 +231,140 @@ void river::io::NodeAEC::stop() {
 
 namespace std {
 	static std::ostream& operator <<(std::ostream& _os, const std::chrono::system_clock::time_point& _obj) {
-		std::chrono::microseconds us = std::chrono::duration_cast<std::chrono::microseconds>(_obj.time_since_epoch());
-		_os << us.count();
+		std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(_obj.time_since_epoch());
+		int64_t totalSecond = ns.count()/1000000000;
+		int64_t millisecond = (ns.count()%1000000000)/1000000;
+		int64_t microsecond = (ns.count()%1000000)/1000;
+		int64_t nanosecond = ns.count()%1000;
+		//_os << totalSecond << "s " << millisecond << "ms " << microsecond << "µs " << nanosecond << "ns";
+		
+		int32_t second = totalSecond % 60;
+		int32_t minute = (totalSecond/60)%60;
+		int32_t hour = (totalSecond/3600)%24;
+		int32_t day = (totalSecond/(24*3600))%365;
+		int32_t year = totalSecond/(24*3600*365);
+		_os << year << "y " << day << "d " << hour << "h" << minute << ":"<< second << "s " << millisecond << "ms " << microsecond << "µs " << nanosecond << "ns";
 		return _os;
 	}
 }
+#define SAVE_FILE_MACRO(type,fileName,dataPointer,nbElement) \
+	do { \
+		static FILE *pointerOnFile = nullptr; \
+		static bool errorOpen = false; \
+		if (NULL==pointerOnFile) { \
+			RIVER_WARNING("open file '" << fileName << "' type=" << #type); \
+			pointerOnFile = fopen(fileName,"w"); \
+			if (    errorOpen == false \
+			     && pointerOnFile == nullptr) { \
+				RIVER_ERROR("ERROR OPEN file ... '" << fileName << "' type=" << #type); \
+				errorOpen=true; \
+			} \
+		} \
+		if (pointerOnFile != nullptr) { \
+			fwrite((dataPointer), sizeof(type), (nbElement), pointerOnFile); \
+			fflush(pointerOnFile); \
+		} \
+	}while(0)
 
-void river::io::NodeAEC::onDataReceivedMicrophone(const std::chrono::system_clock::time_point& _time,
+
+void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
+                                                  const std::chrono::system_clock::time_point& _time,
                                                   size_t _nbChunk,
-                                                  const std::vector<audio::channel>& _map,
-                                                  const void* _data,
-                                                  enum audio::format _type) {
-	RIVER_INFO("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _type=" << _type);
-	if (_type != audio::format_int16) {
+                                                  enum audio::format _format,
+                                                  uint32_t _frequency,
+                                                  const std::vector<audio::channel>& _map) {
+	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
+	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	
-	// if threaded : send event / otherwise, process ...
-	newInput(_data, _nbChunk, _time);
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_bufferMicrophone.write(_data, _nbChunk, _time);
+	SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
+	process();
 }
 
-void river::io::NodeAEC::onDataReceivedFeedBack(const std::chrono::system_clock::time_point& _time,
+void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
+                                                const std::chrono::system_clock::time_point& _time,
                                                 size_t _nbChunk,
-                                                const std::vector<audio::channel>& _map,
-                                                const void* _data,
-                                                enum audio::format _type) {
-	RIVER_INFO("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _type=" << _type);
-	if (_type != audio::format_int16) {
+                                                enum audio::format _format,
+                                                uint32_t _frequency,
+                                                const std::vector<audio::channel>& _map) {
+	RIVER_DEBUG("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
+	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
-	// TODO : Call synchro ...
+	// push data synchronize
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_bufferFeedBack.write(_data, _nbChunk, _time);
+	SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
+	process();
 }
+
+void river::io::NodeAEC::process() {
+	if (m_bufferMicrophone.getSize() <= 256) {
+		return;
+	}
+	if (m_bufferFeedBack.getSize() <= 256) {
+		return;
+	}
+	std::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
+	std::chrono::system_clock::time_point fbTime = m_bufferFeedBack.getReadTimeStamp();
+	
+	// Synchronize if possible
+	if (MicTime < fbTime) {
+		RIVER_INFO("micTime < fbTime : Change Microphone time start " << fbTime);
+		RIVER_INFO("                                 old time stamp=" << m_bufferMicrophone.getReadTimeStamp());
+		m_bufferMicrophone.setReadPosition(fbTime);
+		RIVER_INFO("                                 new time stamp=" << m_bufferMicrophone.getReadTimeStamp());
+	}
+	/*
+	if (MicTime > fbTime) {
+		RIVER_INFO("micTime > fbTime : Change FeedBack time start " << fbTime);
+		RIVER_INFO("                               old time stamp=" << m_bufferFeedBack.getReadTimeStamp());
+		m_bufferFeedBack.setReadPosition(MicTime);
+		RIVER_INFO("                               new time stamp=" << m_bufferFeedBack.getReadTimeStamp());
+	}*/
+	// check if enought time after synchronisation ...
+	if (m_bufferMicrophone.getSize() <= 256) {
+		return;
+	}
+	if (m_bufferFeedBack.getSize() <= 256) {
+		return;
+	}
+	
+	MicTime = m_bufferMicrophone.getReadTimeStamp();
+	fbTime = m_bufferFeedBack.getReadTimeStamp();
+	
+	if (MicTime != fbTime) {
+		RIVER_ERROR("Can not synchronize flow ... : " << MicTime << " != " << fbTime << "  delta = " << (MicTime-fbTime).count()/1000 << " µs");
+		return;
+	}
+	std::vector<uint8_t> dataMic;
+	std::vector<uint8_t> dataFB;
+	dataMic.resize(256*sizeof(int16_t)*2, 0);
+	dataFB.resize(256*sizeof(int16_t), 0);
+	while (true) {
+		MicTime = m_bufferMicrophone.getReadTimeStamp();
+		fbTime = m_bufferFeedBack.getReadTimeStamp();
+		RIVER_INFO(" process 256 samples ... " << MicTime);
+		m_bufferMicrophone.read(&dataMic[0], 256);
+		m_bufferFeedBack.read(&dataFB[0], 256);
+		SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], 256*2);
+		SAVE_FILE_MACRO(int16_t, "REC_FeedBack_sync.raw", &dataFB[0], 256);
+		// if threaded : send event / otherwise, process ...
+		//processAEC(&dataMic[0], &dataFB[0], 256, _time);
+		if (m_bufferMicrophone.getSize() <= 256) {
+			return;
+		}
+		if (m_bufferFeedBack.getSize() <= 256) {
+			return;
+		}
+	}
+}
+
+
+void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std::chrono::system_clock::time_point& _time) {
+	newInput(_dataMic, _nbChunk, _time);
+}
+

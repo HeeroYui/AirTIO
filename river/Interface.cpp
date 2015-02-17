@@ -45,7 +45,8 @@ bool river::Interface::init(const std::string& _name,
 	// register interface to be notify from the volume change.
 	m_node->registerAsRemote(shared_from_this());
 	// Create convertion interface
-	if (m_node->isInput() == true) {
+	if (    m_node->isInput() == true
+	     && m_mode == river::modeInterface_input) {
 		m_process.setInputConfig(m_node->getInterfaceFormat());
 		// add all time the volume stage :
 		std::shared_ptr<drain::Volume> algo = drain::Volume::create();
@@ -59,7 +60,8 @@ bool river::Interface::init(const std::string& _name,
 			algo->addVolumeStage(tmpVolume);
 		}
 		m_process.setOutputConfig(drain::IOFormatInterface(_map, _format, _freq));
-	} else {
+	} else if (    m_node->isOutput() == true
+	            && m_mode == river::modeInterface_output) {
 		m_process.setInputConfig(drain::IOFormatInterface(_map, _format, _freq));
 		// add all time the volume stage :
 		std::shared_ptr<drain::Volume> algo = drain::Volume::create();
@@ -73,6 +75,19 @@ bool river::Interface::init(const std::string& _name,
 			algo->addVolumeStage(tmpVolume);
 		}
 		m_process.setOutputConfig(m_node->getInterfaceFormat());
+	} else if (    m_node->isOutput() == true
+	            && m_mode == river::modeInterface_feedback) {
+		m_process.setInputConfig(m_node->getHarwareFormat());
+		// add all time the volume stage :
+		std::shared_ptr<drain::Volume> algo = drain::Volume::create();
+		//algo->setInputFormat(m_node->getInterfaceFormat());
+		algo->setName("volume");
+		m_process.pushBack(algo);
+		// note : feedback has no volume stage ...
+		m_process.setOutputConfig(drain::IOFormatInterface(_map, _format, _freq));
+	} else {
+		RIVER_ERROR("Can not link virtual interface with type : " << m_mode << " to a hardware interface " << (m_node->isInput()==true?"input":"output"));
+		return false;
 	}
 	return true;
 }
@@ -116,7 +131,7 @@ void river::Interface::setReadwrite() {
 	}
 }
 
-void river::Interface::setOutputCallback(size_t _chunkSize, drain::needDataFunction _function) {
+void river::Interface::setOutputCallback(drain::playbackFunction _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process.removeAlgoDynamic();
 	m_process.removeIfFirst<drain::EndPoint>();
@@ -124,7 +139,7 @@ void river::Interface::setOutputCallback(size_t _chunkSize, drain::needDataFunct
 	m_process.pushFront(algo);
 }
 
-void river::Interface::setInputCallback(size_t _chunkSize, drain::haveNewDataFunction _function) {
+void river::Interface::setInputCallback(drain::recordFunction _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process.removeAlgoDynamic();
 	m_process.removeIfLast<drain::EndPoint>();
@@ -132,7 +147,7 @@ void river::Interface::setInputCallback(size_t _chunkSize, drain::haveNewDataFun
 	m_process.pushBack(algo);
 }
 
-void river::Interface::setWriteCallback(drain::needDataFunctionWrite _function) {
+void river::Interface::setWriteCallback(drain::playbackFunctionWrite _function) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process.removeAlgoDynamic();
 	std::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);

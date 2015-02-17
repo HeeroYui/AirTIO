@@ -14,6 +14,7 @@ def create(target):
 		'river/debug.cpp',
 		'river/Manager.cpp',
 		'river/Interface.cpp',
+		'river/CircularBuffer.cpp',
 		'river/io/Node.cpp',
 		'river/io/NodeAirTAudio.cpp',
 		'river/io/NodeAEC.cpp',

@@ -31,22 +31,47 @@ namespace std {
 }
 
 
-int32_t river::io::NodeAirTAudio::airtAudioCallback(void* _outputBuffer,
-                                                    void* _inputBuffer,
-                                                    uint32_t _nbChunk,
-                                                    const std::chrono::system_clock::time_point& _time,
-                                                    airtaudio::status _status) {
+int32_t river::io::NodeAirTAudio::duplexCallback(const void* _inputBuffer,
+                                                 const std::chrono::system_clock::time_point& _timeInput,
+                                                 void* _outputBuffer,
+                                                 const std::chrono::system_clock::time_point& _timeOutput,
+                                                 uint32_t _nbChunk,
+                                                 const std::vector<airtaudio::status>& _status) {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	if (_outputBuffer != nullptr) {
-		RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
-		newOutput(_outputBuffer, _nbChunk, _time);
-	}
+	// TODO : Manage status ...
 	if (_inputBuffer != nullptr) {
 		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
-		newInput(_inputBuffer, _nbChunk, _time);
+		newInput(_inputBuffer, _nbChunk, _timeInput);
+	}
+	if (_outputBuffer != nullptr) {
+		RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
+		newOutput(_outputBuffer, _nbChunk, _timeOutput);
 	}
 	return 0;
 }
+
+int32_t river::io::NodeAirTAudio::recordCallback(const void* _inputBuffer,
+                                                 const std::chrono::system_clock::time_point& _timeInput,
+                                                 uint32_t _nbChunk,
+                                                 const std::vector<airtaudio::status>& _status) {
+	std::unique_lock<std::mutex> lock(m_mutex);
+	// TODO : Manage status ...
+	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
+	newInput(_inputBuffer, _nbChunk, _timeInput);
+	return 0;
+}
+
+int32_t river::io::NodeAirTAudio::playbackCallback(void* _outputBuffer,
+                                                   const std::chrono::system_clock::time_point& _timeOutput,
+                                                   uint32_t _nbChunk,
+                                                   const std::vector<airtaudio::status>& _status) {
+	std::unique_lock<std::mutex> lock(m_mutex);
+	// TODO : Manage status ...
+	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
+	newOutput(_outputBuffer, _nbChunk, _timeOutput);
+	return 0;
+}
+
 
 
 std::shared_ptr<river::io::NodeAirTAudio> river::io::NodeAirTAudio::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
@@ -78,6 +103,7 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std::sha
 	
 	// intanciate specific API ...
 	m_adac.instanciate(typeInterface);
+	m_adac.setName(_name);
 	// TODO : Check return ...
 	std::string type = m_config->getStringValue("type", "int16");
 	if (streamName == "") {
@@ -186,24 +212,22 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std::sha
 	if (m_isInput == true) {
 		err = m_adac.openStream(nullptr, &params,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&river::io::NodeAirTAudio::airtAudioCallback,
+		                        std::bind(&river::io::NodeAirTAudio::recordCallback,
 		                                  this,
 		                                  std::placeholders::_1,
 		                                  std::placeholders::_2,
-		                                  std::placeholders::_3,
-		                                  std::placeholders::_4,
-		                                  std::placeholders::_5)
+		                                  std::placeholders::_5,
+		                                  std::placeholders::_6)
 		                        );
 	} else {
 		err = m_adac.openStream(&params, nullptr,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&river::io::NodeAirTAudio::airtAudioCallback,
+		                        std::bind(&river::io::NodeAirTAudio::playbackCallback,
 		                                  this,
-		                                  std::placeholders::_1,
-		                                  std::placeholders::_2,
 		                                  std::placeholders::_3,
 		                                  std::placeholders::_4,
-		                                  std::placeholders::_5)
+		                                  std::placeholders::_5,
+		                                  std::placeholders::_6)
 		                        );
 	}
 	if (err != airtaudio::error_none) {

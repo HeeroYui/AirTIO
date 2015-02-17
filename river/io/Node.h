@@ -50,7 +50,6 @@ namespace river {
 						return m_process.getInputConfig();
 					}
 				}
-			protected:
 				const drain::IOFormatInterface& getHarwareFormat() {
 					if (m_isInput == true) {
 						return m_process.getInputConfig();

@@ -29,11 +29,20 @@ namespace river {
 				airtaudio::DeviceInfo m_info;
 				unsigned int m_rtaudioFrameSize;
 			public:
-				int32_t airtAudioCallback(void* _outputBuffer,
-				                          void * _inputBuffer,
-				                          uint32_t _nbChunk,
-				                          const std::chrono::system_clock::time_point& _time,
-				                          airtaudio::status _status);
+				int32_t duplexCallback(const void* _inputBuffer,
+				                       const std::chrono::system_clock::time_point& _timeInput,
+				                       void* _outputBuffer,
+				                       const std::chrono::system_clock::time_point& _timeOutput,
+				                       uint32_t _nbChunk,
+				                       const std::vector<airtaudio::status>& _status);
+				int32_t recordCallback(const void* _inputBuffer,
+				                       const std::chrono::system_clock::time_point& _timeInput,
+				                       uint32_t _nbChunk,
+				                       const std::vector<airtaudio::status>& _status);
+				int32_t playbackCallback(void* _outputBuffer,
+				                         const std::chrono::system_clock::time_point& _timeOutput,
+				                         uint32_t _nbChunk,
+				                         const std::vector<airtaudio::status>& _status);
 			protected:
 				virtual void start();
 				virtual void stop();

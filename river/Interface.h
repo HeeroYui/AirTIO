@@ -96,9 +96,9 @@ namespace river {
 			/**
 			 * @brief When we want to implement a Callback Mode:
 			 */
-			virtual void setWriteCallback(drain::needDataFunctionWrite _function);
-			virtual void setOutputCallback(size_t _chunkSize, drain::needDataFunction _function);
-			virtual void setInputCallback(size_t _chunkSize, drain::haveNewDataFunction _function);
+			virtual void setWriteCallback(drain::playbackFunctionWrite _function);
+			virtual void setOutputCallback(drain::playbackFunction _function);
+			virtual void setInputCallback(drain::recordFunction _function);
 			/**
 			 * @brief Add a volume group of the current channel.
 			 * @note If you do not call this function with the group "FLOW" you chan not have a channel volume.
