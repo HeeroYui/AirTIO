@@ -28,6 +28,8 @@ namespace river {
 		class Manager;
 		class Node : public std::enable_shared_from_this<Node> {
 			protected:
+				uint32_t m_uid; // uniqueNodeID
+			protected:
 				/**
 				 * @brief Constructor
 				 */

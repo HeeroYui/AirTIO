@@ -152,6 +152,7 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 		return;
 	}
 	node << "digraph G {" << "\n";
+	node << "	rankdir=\"RL\";\n";
 	int32_t id = 0;
 	for (auto &it2 : m_list) {
 		std::shared_ptr<river::io::Node> val = it2.lock();

@@ -17,6 +17,8 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
+	static uint32_t uid=0;
+	m_uid = uid++;
 	RIVER_INFO("-----------------------------------------------------------------");
 	RIVER_INFO("--                       CREATE NODE                           --");
 	RIVER_INFO("-----------------------------------------------------------------");
@@ -225,23 +227,80 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 }
 
 void river::io::Node::generateDot(etk::FSNode& _node) {
-	_node << "subgraph cluster_0 {\n";
+	_node << "subgraph clusterNode_" << m_uid << " {\n";
+	_node << "	color=blue;\n";
+	_node << "	label=\"IO::Node : " << m_name << "\";\n";
+	if (m_isInput == true) {
+		_node << "	node [shape=larrow];\n";
+		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=MICROPHONE\n type=input\" ];\n";
+		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
+		_node << "			label=\"Drain::Process\";\n";
+		_node << "			node [shape=ellipse];\n";
+		_node << "			ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		
+		_node << "		}\n";
+		_node << "	node [shape=square];\n";
+		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		// Link all nodes :
+		_node << "		NODE_" << m_uid << "_HW_interface -> ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
+		_node << "		ALGO_" << m_uid << "_in -> ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
+		_node << "		ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+	} else {
+		_node << "	node [shape=rarrow];\n";
+		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=SPEAKER\n type=output\" ];\n";
+		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
+		_node << "			label=\"Drain::Process\";\n";
+		_node << "			node [shape=ellipse];\n";
+		_node << "			ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "		}\n";
+		_node << "	node [shape=square];\n";
+		_node << "		NODE_" << m_uid << "_muxer [ label=\"MUXER\n format=xxx\" ];\n";
+		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		// Link all nodes :
+		_node << "		NODE_" << m_uid << "_muxer -> ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
+		_node << "		ALGO_" << m_uid << "_in -> ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
+		_node << "		ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_HW_interface [arrowhead=\"open\"];\n";
+		_node << "		NODE_" << m_uid << "_HW_interface -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+		_node << "		{ rank=same; NODE_" << m_uid << "_demuxer; NODE_" << m_uid << "_muxer }\n";
+		
+	}
+	
+	for (auto &it : m_list) {
+		if (it != nullptr) {
+			if (it->getMode() == modeInterface_input) {
+				_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\n type=input\" ];\n";
+				_node << "		NODE_" << m_uid << "_demuxer -> interface_" << it->m_uid << " [ arrowhead=\"open\"];\n";
+			} else if (it->getMode() == modeInterface_output) {
+				_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\n type=output\" ];\n";
+				_node << "		interface_" << it->m_uid << " -> NODE_" << m_uid << "_muxer [ arrowhead=\"open\"];\n";
+			} else if (it->getMode() == modeInterface_feedback) {
+				_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\n type=feedback\" ];\n";
+				_node << "		NODE_" << m_uid << "_demuxer -> interface_" << it->m_uid << " [ arrowhead=\"open\"];\n";
+			} else {
+				
+			}
+		}
+	}
+	
+	/*
 	// configure display:
 	_node << "	node [shape=record, fontname=Helvetica, fontsize=10, color=lightsteelblue1, style=filled];\n";
 	//_node << "	node [shape=diamond, fontname=Helvetica, fontsize=10, color=orangered, style=filled];\n"
 	//_node << "	node [shape=ellipse, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
 	// add elements
-	int32_t idNode = 0;
-	_node << "		NODE_" << idNode << " [ label=\"name=" << m_name << "\" ];\n";
+	_node << "		NODE_" << m_uid << " [ label=\"name=" << m_name << "\n type=" << (m_isInput?"input":"output") << "\" ];\n";
 	// add IO
-	_node << "	node [shape=ellipse, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
+	_node << "	node [shape=record, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
 	int32_t id = 0;
 	for (auto &it : m_list) {
 		if (it != nullptr) {
-			_node << "		interface_" << id << " [ label=\"name=" << it->getName() << "\" ];\n";
-			_node << "		NODE_" << idNode << " -> interface_" << id << " [ arrowhead=\"open\"];\n";
+			_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\" ];\n";
+			_node << "		NODE_" << m_uid << " -> interface_" << it->m_uid << " [ arrowhead=\"open\"];\n";
 		}
 	}
+	*/
 	_node << "}\n";
 }
 

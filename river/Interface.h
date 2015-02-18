@@ -39,6 +39,8 @@ namespace river {
 		friend class io::NodeAEC;
 		friend class Manager;
 		protected:
+			uint32_t m_uid; //!< unique ID for interface
+		protected:
 			/**
 			 * @brief Constructor
 			 */

@@ -20,6 +20,8 @@ river::Interface::Interface(void) :
   m_node(nullptr),
   m_name(""),
   m_volume(0.0f) {
+	static uint32_t uid = 0;
+	m_uid = uid++;
 	
 }
 
