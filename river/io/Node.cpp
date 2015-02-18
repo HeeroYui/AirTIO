@@ -223,3 +223,25 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [ END ]");
 	return 0;
 }
+
+void river::io::Node::generateDot(etk::FSNode& _node) {
+	_node << "subgraph cluster_0 {\n";
+	// configure display:
+	_node << "	node [shape=record, fontname=Helvetica, fontsize=10, color=lightsteelblue1, style=filled];\n";
+	//_node << "	node [shape=diamond, fontname=Helvetica, fontsize=10, color=orangered, style=filled];\n"
+	//_node << "	node [shape=ellipse, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
+	// add elements
+	int32_t idNode = 0;
+	_node << "		NODE_" << idNode << " [ label=\"name=" << m_name << "\" ];\n";
+	// add IO
+	_node << "	node [shape=ellipse, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
+	int32_t id = 0;
+	for (auto &it : m_list) {
+		if (it != nullptr) {
+			_node << "		interface_" << id << " [ label=\"name=" << it->getName() << "\" ];\n";
+			_node << "		NODE_" << idNode << " -> interface_" << id << " [ arrowhead=\"open\"];\n";
+		}
+	}
+	_node << "}\n";
+}
+

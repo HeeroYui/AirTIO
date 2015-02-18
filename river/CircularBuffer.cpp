@@ -239,10 +239,11 @@ void river::CircularBuffer::setReadPosition(const std::chrono::system_clock::tim
 	size_t usedSizeBeforeEnd = getUsedSizeBeforEnd();
 	if (0 < m_size) {
 		// check the time of the read :
-		std::chrono::nanoseconds deltaTime = m_timeRead - _time;
-		size_t nbSampleToRemove = m_frequency*-deltaTime.count()/100000000;
+		std::chrono::nanoseconds deltaTime = _time - m_timeRead;
+		size_t nbSampleToRemove = m_frequency*deltaTime.count()/1000000000;
 		nbSampleToRemove = std::min(nbSampleToRemove, m_size);
 		RIVER_WARNING("Remove sample in the buffer " << nbSampleToRemove << " / " << m_size);
+		std::chrono::nanoseconds updateTime((nbSampleToRemove*1000000000)/int64_t(m_frequency));
 		if (usedSizeBeforeEnd >= nbSampleToRemove) {
 			usedSizeBeforeEnd -= nbSampleToRemove;
 			m_size -= nbSampleToRemove;
@@ -252,7 +253,8 @@ void river::CircularBuffer::setReadPosition(const std::chrono::system_clock::tim
 			m_size -= nbSampleToRemove;
 			m_read = &m_data[0] + nbSampleToRemove*m_sizeChunk;
 		}
-		m_timeRead += deltaTime;
+		m_timeRead += updateTime;
+		//m_timeRead += deltaTime;
 	} else {
 		m_timeRead = std::chrono::system_clock::time_point();
 	}

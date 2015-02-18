@@ -127,6 +127,7 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<cons
   Node(_name, _config) {
 	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+	m_sampleTime = std::chrono::nanoseconds(1000000000*int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
 		map-on-microphone:{
@@ -311,20 +312,21 @@ void river::io::NodeAEC::process() {
 	std::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
 	std::chrono::system_clock::time_point fbTime = m_bufferFeedBack.getReadTimeStamp();
 	
-	// Synchronize if possible
-	if (MicTime < fbTime) {
-		RIVER_INFO("micTime < fbTime : Change Microphone time start " << fbTime);
-		RIVER_INFO("                                 old time stamp=" << m_bufferMicrophone.getReadTimeStamp());
-		m_bufferMicrophone.setReadPosition(fbTime);
-		RIVER_INFO("                                 new time stamp=" << m_bufferMicrophone.getReadTimeStamp());
+	if (MicTime-fbTime > m_sampleTime) {
+		// Synchronize if possible
+		if (MicTime < fbTime) {
+			RIVER_INFO("micTime < fbTime : Change Microphone time start " << fbTime);
+			RIVER_INFO("                                 old time stamp=" << m_bufferMicrophone.getReadTimeStamp());
+			m_bufferMicrophone.setReadPosition(fbTime);
+			RIVER_INFO("                                 new time stamp=" << m_bufferMicrophone.getReadTimeStamp());
+		}
+		if (MicTime > fbTime) {
+			RIVER_INFO("micTime > fbTime : Change FeedBack time start " << MicTime);
+			RIVER_INFO("                               old time stamp=" << m_bufferFeedBack.getReadTimeStamp());
+			m_bufferFeedBack.setReadPosition(MicTime);
+			RIVER_INFO("                               new time stamp=" << m_bufferFeedBack.getReadTimeStamp());
+		}
 	}
-	/*
-	if (MicTime > fbTime) {
-		RIVER_INFO("micTime > fbTime : Change FeedBack time start " << fbTime);
-		RIVER_INFO("                               old time stamp=" << m_bufferFeedBack.getReadTimeStamp());
-		m_bufferFeedBack.setReadPosition(MicTime);
-		RIVER_INFO("                               new time stamp=" << m_bufferFeedBack.getReadTimeStamp());
-	}*/
 	// check if enought time after synchronisation ...
 	if (m_bufferMicrophone.getSize() <= 256) {
 		return;
@@ -336,7 +338,7 @@ void river::io::NodeAEC::process() {
 	MicTime = m_bufferMicrophone.getReadTimeStamp();
 	fbTime = m_bufferFeedBack.getReadTimeStamp();
 	
-	if (MicTime != fbTime) {
+	if (MicTime-fbTime > m_sampleTime) {
 		RIVER_ERROR("Can not synchronize flow ... : " << MicTime << " != " << fbTime << "  delta = " << (MicTime-fbTime).count()/1000 << " µs");
 		return;
 	}

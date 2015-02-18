@@ -50,6 +50,7 @@ namespace river {
 				                            const std::vector<audio::channel>& _map);
 				river::CircularBuffer m_bufferMicrophone;
 				river::CircularBuffer m_bufferFeedBack;
+				std::chrono::nanoseconds m_sampleTime; //!< represent the sample time at the specify frequency.
 				void process();
 				void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std::chrono::system_clock::time_point& _time);
 		};

@@ -339,6 +339,8 @@ class testInCallback {
 			m_interface->start();
 			// wait 2 second ...
 			usleep(2000000);
+			
+			m_manager->generateDotAll("activeProcess.dot");
 			m_interface->stop();
 		}
 };
@@ -625,6 +627,7 @@ TEST(TestALL, testInputCallBackMicClean) {
 	process->run();
 	process.reset();
 	usleep(500000);
+	tmpThread.join();
 }
 
 

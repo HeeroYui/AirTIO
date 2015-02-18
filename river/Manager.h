@@ -99,6 +99,11 @@ namespace river {
 			                                               audio::format _format,
 			                                               const std::string& _streamName = "",
 			                                               const std::string& _name = "");
+			/**
+			 * @brief Generate the dot file corresponding at all the actif nodes.
+			 * @param[in] _filename Name of the file to write data.
+			 */
+			virtual void generateDotAll(const std::string& _filename);
 	};
 };
 

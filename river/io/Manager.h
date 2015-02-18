@@ -68,6 +68,11 @@ namespace river {
 				 * @example ret = getVolumeRange("MASTER"); can return something like ret=(-120.0f,0.0f)
 				 */
 				virtual std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
+				/**
+				 * @brief Generate the dot file corresponding at the actif nodes.
+				 * @param[in] _filename Name of the file to write data.
+				 */
+				virtual void generateDot(const std::string& _filename);
 		};
 	}
 }

@@ -10,6 +10,7 @@
 #include "Node.h"
 #include "NodeAEC.h"
 #include "NodeAirTAudio.h"
+#include <etk/os/FSNode.h>
 
 #undef __class__
 #define __class__ "io::Manager"
@@ -141,4 +142,25 @@ float river::io::Manager::getVolume(const std::string& _volumeName) {
 
 std::pair<float,float> river::io::Manager::getVolumeRange(const std::string& _volumeName) const {
 	return std::make_pair<float,float>(-300, 300);
+}
+
+void river::io::Manager::generateDot(const std::string& _filename) {
+	etk::FSNode node(_filename);
+	RIVER_INFO("Generate the DOT files: " << node);
+	if (node.fileOpenWrite() == false) {
+		RIVER_ERROR("Can not Write the dot file (fail to open) : " << node);
+		return;
+	}
+	node << "digraph G {" << "\n";
+	int32_t id = 0;
+	for (auto &it2 : m_list) {
+		std::shared_ptr<river::io::Node> val = it2.lock();
+		if (val != nullptr) {
+			val->generateDot(node);
+			id++;
+		}
+	}
+	node << "}" << "\n";
+	node.fileClose();
+	RIVER_INFO("Generate the DOT files: " << node << " (DONE)");
 }

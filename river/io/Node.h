@@ -21,6 +21,7 @@
 #include <airtaudio/Interface.h>
 #include <drain/IOFormatInterface.h>
 #include <drain/Volume.h>
+#include <etk/os/FSNode.h>
 
 namespace river {
 	namespace io {
@@ -99,6 +100,9 @@ namespace river {
 				int32_t newOutput(void* _outputBuffer,
 				                  uint32_t _nbChunk,
 				                  const std::chrono::system_clock::time_point& _time);
+				
+			public:
+				virtual void generateDot(etk::FSNode& _node);
 		};
 	}
 }

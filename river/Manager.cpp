@@ -153,3 +153,13 @@ std::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
 	m_listOpenInterface.push_back(interface);
 	return interface;
 }
+
+void river::Manager::generateDotAll(const std::string& _filename) {
+	// get global hardware interface:
+	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	if (manager == nullptr) {
+		RIVER_ERROR("Can not get the harware manager");
+		return;
+	}
+	manager->generateDot(_filename);
+}
