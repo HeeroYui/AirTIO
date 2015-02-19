@@ -67,6 +67,7 @@ namespace river {
 			protected:
 				std::vector<std::weak_ptr<river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
 				std::vector<std::shared_ptr<river::Interface> > m_list;
+				size_t getNumberOfInterface(enum river::modeInterface _interfaceType);
 			public:
 				void registerAsRemote(const std::shared_ptr<river::Interface>& _interface);
 				void interfaceAdd(const std::shared_ptr<river::Interface>& _interface);

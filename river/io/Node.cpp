@@ -38,6 +38,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	*/
 	std::string interfaceType = m_config->getStringValue("io");
 	if (    interfaceType == "input"
+	     || interfaceType == "PAinput"
 	     || interfaceType == "aec") {
 		m_isInput = true;
 	} else {
@@ -102,6 +103,19 @@ river::io::Node::~Node() {
 	RIVER_INFO("-----------------------------------------------------------------");
 };
 
+size_t river::io::Node::getNumberOfInterface(enum river::modeInterface _interfaceType) {
+	size_t out = 0;
+	for (auto &it : m_list) {
+		if (it == nullptr) {
+			continue;
+		}
+		if (it->getMode() == _interfaceType) {
+			out++;
+		}
+	}
+	return out;
+}
+
 void river::io::Node::registerAsRemote(const std::shared_ptr<river::Interface>& _interface) {
 	auto it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
@@ -116,8 +130,8 @@ void river::io::Node::registerAsRemote(const std::shared_ptr<river::Interface>& 
 void river::io::Node::interfaceAdd(const std::shared_ptr<river::Interface>& _interface) {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
-		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (_interface == m_list[iii]) {
+		for (auto &it : m_list) {
+			if (_interface == it) {
 				return;
 			}
 		}
@@ -226,81 +240,85 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 	return 0;
 }
 
+static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second) {
+	if (_op == "->") {
+		_node << "		" << _first << " -> " << _second << ";\n";
+	} else if (_op == "<-") {
+		_node << "		" << _first << " -> " <<_second<< " [color=transparent];\n";
+		_node << "		" << _second << " -> " << _first << " [constraint=false];\n";
+	}
+}
+
+
 void river::io::Node::generateDot(etk::FSNode& _node) {
 	_node << "subgraph clusterNode_" << m_uid << " {\n";
 	_node << "	color=blue;\n";
-	_node << "	label=\"IO::Node : " << m_name << "\";\n";
+	_node << "	label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
 	if (m_isInput == true) {
-		_node << "	node [shape=larrow];\n";
+		_node << "	node [shape=rarrow];\n";
 		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=MICROPHONE\n type=input\" ];\n";
 		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
 		_node << "			label=\"Drain::Process\";\n";
 		_node << "			node [shape=ellipse];\n";
-		_node << "			ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-		_node << "			ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
 		
 		_node << "		}\n";
 		_node << "	node [shape=square];\n";
 		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
 		// Link all nodes :
-		_node << "		NODE_" << m_uid << "_HW_interface -> ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
-		_node << "		ALGO_" << m_uid << "_in -> ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
-		_node << "		ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+		_node << "		NODE_" << m_uid << "_HW_interface -> node_ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
+		_node << "		node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
+		_node << "		node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
 	} else {
-		_node << "	node [shape=rarrow];\n";
+		size_t nbOutput = getNumberOfInterface(river::modeInterface_output);
+		size_t nbfeedback = getNumberOfInterface(river::modeInterface_feedback);
+		_node << "	node [shape=larrow];\n";
 		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=SPEAKER\n type=output\" ];\n";
-		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "			label=\"Drain::Process\";\n";
-		_node << "			node [shape=ellipse];\n";
-		_node << "			ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-		_node << "			ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-		_node << "		}\n";
+		if (nbOutput>0) {
+			_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
+			_node << "			label=\"Drain::Process\";\n";
+			_node << "			node [shape=ellipse];\n";
+			_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+			_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+			_node << "		}\n";
+		}
 		_node << "	node [shape=square];\n";
-		_node << "		NODE_" << m_uid << "_muxer [ label=\"MUXER\n format=xxx\" ];\n";
-		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		if (nbOutput>0) {
+			_node << "		NODE_" << m_uid << "_muxer [ label=\"MUXER\n format=xxx\" ];\n";
+		}
+		if (nbfeedback>0) {
+			_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		}
 		// Link all nodes :
-		_node << "		NODE_" << m_uid << "_muxer -> ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
-		_node << "		ALGO_" << m_uid << "_in -> ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
-		_node << "		ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_HW_interface [arrowhead=\"open\"];\n";
-		_node << "		NODE_" << m_uid << "_HW_interface -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
-		_node << "		{ rank=same; NODE_" << m_uid << "_demuxer; NODE_" << m_uid << "_muxer }\n";
+		if (nbOutput>0) {
+			link(_node, "NODE_" + etk::to_string(m_uid) + "_HW_interface", "<-", "node_ALGO_" + etk::to_string(m_uid) + "_out");
+			link(_node, "node_ALGO_" + etk::to_string(m_uid) + "_out", "<-", "node_ALGO_" + etk::to_string(m_uid) + "_in");
+			link(_node, "node_ALGO_" + etk::to_string(m_uid) + "_in", "<-", "NODE_" + etk::to_string(m_uid) + "_muxer");
+		}
+		if (nbfeedback>0) {
+			_node << "		NODE_" << m_uid << "_HW_interface -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+		}
+		if (    nbOutput>0
+		     && nbfeedback>0) {
+			_node << "		{ rank=same; NODE_" << m_uid << "_demuxer; NODE_" << m_uid << "_muxer }\n";
+		}
 		
 	}
+	_node << "}\n";
 	
 	for (auto &it : m_list) {
 		if (it != nullptr) {
 			if (it->getMode() == modeInterface_input) {
-				_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\n type=input\" ];\n";
-				_node << "		NODE_" << m_uid << "_demuxer -> interface_" << it->m_uid << " [ arrowhead=\"open\"];\n";
+				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
 			} else if (it->getMode() == modeInterface_output) {
-				_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\n type=output\" ];\n";
-				_node << "		interface_" << it->m_uid << " -> NODE_" << m_uid << "_muxer [ arrowhead=\"open\"];\n";
+				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
 			} else if (it->getMode() == modeInterface_feedback) {
-				_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\n type=feedback\" ];\n";
-				_node << "		NODE_" << m_uid << "_demuxer -> interface_" << it->m_uid << " [ arrowhead=\"open\"];\n";
+				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
 			} else {
 				
 			}
 		}
 	}
-	
-	/*
-	// configure display:
-	_node << "	node [shape=record, fontname=Helvetica, fontsize=10, color=lightsteelblue1, style=filled];\n";
-	//_node << "	node [shape=diamond, fontname=Helvetica, fontsize=10, color=orangered, style=filled];\n"
-	//_node << "	node [shape=ellipse, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
-	// add elements
-	_node << "		NODE_" << m_uid << " [ label=\"name=" << m_name << "\n type=" << (m_isInput?"input":"output") << "\" ];\n";
-	// add IO
-	_node << "	node [shape=record, fontname=Helvetica, fontsize=8, color=aquamarine2, style=filled];\n";
-	int32_t id = 0;
-	for (auto &it : m_list) {
-		if (it != nullptr) {
-			_node << "		interface_" << it->m_uid << " [ label=\"name=" << it->getName() << "\" ];\n";
-			_node << "		NODE_" << m_uid << " -> interface_" << it->m_uid << " [ arrowhead=\"open\"];\n";
-		}
-	}
-	*/
-	_node << "}\n";
 }
 

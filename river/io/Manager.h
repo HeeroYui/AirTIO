@@ -33,7 +33,7 @@ namespace river {
 				/**
 				 * @brief Destructor
 				 */
-				virtual ~Manager() {};
+				virtual ~Manager();
 			private:
 				ejson::Document m_config; // harware configuration
 				std::vector<std::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time

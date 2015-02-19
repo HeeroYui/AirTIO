@@ -17,11 +17,21 @@ def create(target):
 		'river/CircularBuffer.cpp',
 		'river/io/Node.cpp',
 		'river/io/NodeAirTAudio.cpp',
+		'river/io/NodePortAudio.cpp',
 		'river/io/NodeAEC.cpp',
 		'river/io/Manager.cpp'
 		])
+	if False:
+		myModule.add_optionnal_module_depend('airtaudio', "__AIRTAUDIO_INFERFACE__")
+		myModule.add_optionnal_module_depend('portaudio', "__PORTAUDIO_INFERFACE__")
+	else:
+		myModule.compile_flags_CC([
+			'-D__AIRTAUDIO_INFERFACE__',
+			'-D__PORTAUDIO_INFERFACE__'
+			])
+		myModule.add_module_depend(['airtaudio', 'portaudio'])
 	
-	myModule.add_module_depend(['audio', 'airtaudio', 'drain', 'ejson'])
+	myModule.add_module_depend(['audio', 'drain', 'ejson'])
 	myModule.add_export_path(tools.get_current_path(__file__))
 	
 	# add the currrent module at the 

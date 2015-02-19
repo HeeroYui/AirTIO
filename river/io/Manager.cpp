@@ -10,11 +10,15 @@
 #include "Node.h"
 #include "NodeAEC.h"
 #include "NodeAirTAudio.h"
+#include "NodePortAudio.h"
 #include <etk/os/FSNode.h>
 
 #undef __class__
 #define __class__ "io::Manager"
 
+#ifdef __PORTAUDIO_INFERFACE__
+	#include <portaudio.h>
+#endif
 
 static std::string basicAutoConfig =
 	"{\n"
@@ -55,6 +59,22 @@ river::io::Manager::Manager() {
 		m_config.parse(basicAutoConfig);
 	}
 	// TODO : Load virtual.json and check if all is correct ...
+	
+	#ifdef __PORTAUDIO_INFERFACE__
+	PaError err = Pa_Initialize();
+	if(err != paNoError) {
+		RIVER_WARNING("Can not initialize portaudio : " << Pa_GetErrorText(err));
+	}
+	#endif
+};
+
+river::io::Manager::~Manager() {
+	#ifdef __PORTAUDIO_INFERFACE__
+	PaError err = Pa_Terminate();
+	if(err != paNoError) {
+		RIVER_WARNING("Can not initialize portaudio : " << Pa_GetErrorText(err));
+	}
+	#endif
 };
 
 
@@ -64,13 +84,16 @@ std::shared_ptr<river::io::Manager> river::io::Manager::getInstance() {
 }
 
 std::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& _name) {
+	RIVER_WARNING("Get node : " << _name);
 	for (auto &it : m_list) {
 		std::shared_ptr<river::io::Node> tmppp = it.lock();
 		if (    tmppp != nullptr
 		     && _name == tmppp->getName()) {
+			RIVER_WARNING(" find it ... ");
 			return tmppp;
 		}
 	}
+	RIVER_WARNING("Create a new one : " << _name);
 	// check if the node can be open :
 	const std::shared_ptr<const ejson::Object> tmpObject = m_config.getObject(_name);
 	if (tmpObject != nullptr) {
@@ -79,6 +102,11 @@ std::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& 
 		if (    ioType == "input"
 		     || ioType == "output") {
 			std::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_name, tmpObject);
+			m_list.push_back(tmp);
+			return tmp;
+		} else if (    ioType == "PAinput"
+		            || ioType == "PAoutput") {
+			std::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_name, tmpObject);
 			m_list.push_back(tmp);
 			return tmp;
 		} else if (ioType == "aec") {
@@ -152,7 +180,7 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 		return;
 	}
 	node << "digraph G {" << "\n";
-	node << "	rankdir=\"RL\";\n";
+	node << "	rankdir=\"LR\";\n";
 	int32_t id = 0;
 	for (auto &it2 : m_list) {
 		std::shared_ptr<river::io::Node> val = it2.lock();

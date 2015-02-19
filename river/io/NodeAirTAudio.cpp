@@ -12,7 +12,7 @@
 #undef __class__
 #define __class__ "io::NodeAirTAudio"
 
-std::string asString(const std::chrono::system_clock::time_point& tp) {
+static std::string asString(const std::chrono::system_clock::time_point& tp) {
      // convert to system time:
      std::time_t t = std::chrono::system_clock::to_time_t(tp);
      // convert in human string

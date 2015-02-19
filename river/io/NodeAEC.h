@@ -53,6 +53,8 @@ namespace river {
 				std::chrono::nanoseconds m_sampleTime; //!< represent the sample time at the specify frequency.
 				void process();
 				void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std::chrono::system_clock::time_point& _time);
+			public:
+				virtual void generateDot(etk::FSNode& _node);
 		};
 	}
 }

@@ -20,6 +20,7 @@
 #include <drain/EndPointWrite.h>
 #include <memory>
 #include <ejson/ejson.h>
+#include <etk/os/FSNode.h>
 
 namespace river {
 	namespace io {
@@ -204,6 +205,8 @@ namespace river {
 			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
 			virtual void systemVolumeChange();
 			float m_volume; //!< Local channel Volume
+		public:
+			virtual void generateDot(etk::FSNode& _node, const std::string& _nameIO);
 	};
 };
 

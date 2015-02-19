@@ -127,7 +127,7 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<cons
   Node(_name, _config) {
 	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
-	m_sampleTime = std::chrono::nanoseconds(1000000000*int64_t(hardwareFormat.getFrequency()));
+	m_sampleTime = std::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
 		map-on-microphone:{
@@ -311,8 +311,15 @@ void river::io::NodeAEC::process() {
 	}
 	std::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
 	std::chrono::system_clock::time_point fbTime = m_bufferFeedBack.getReadTimeStamp();
+	std::chrono::nanoseconds delta;
+	if (MicTime < fbTime) {
+		delta = fbTime - MicTime;
+	} else {
+		delta = MicTime - fbTime;
+	}
 	
-	if (MicTime-fbTime > m_sampleTime) {
+	RIVER_INFO("check delta " << delta.count() << " > " << m_sampleTime.count());
+	if (delta > m_sampleTime) {
 		// Synchronize if possible
 		if (MicTime < fbTime) {
 			RIVER_INFO("micTime < fbTime : Change Microphone time start " << fbTime);
@@ -349,7 +356,7 @@ void river::io::NodeAEC::process() {
 	while (true) {
 		MicTime = m_bufferMicrophone.getReadTimeStamp();
 		fbTime = m_bufferFeedBack.getReadTimeStamp();
-		RIVER_INFO(" process 256 samples ... " << MicTime);
+		RIVER_INFO(" process 256 samples ... micTime=" << MicTime << " fbTime=" << fbTime << " delta = " << (MicTime-fbTime).count());
 		m_bufferMicrophone.read(&dataMic[0], 256);
 		m_bufferFeedBack.read(&dataFB[0], 256);
 		SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], 256*2);
@@ -370,3 +377,47 @@ void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbC
 	newInput(_dataMic, _nbChunk, _time);
 }
 
+
+void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
+	_node << "subgraph clusterNode_" << m_uid << " {\n";
+	_node << "	color=blue;\n";
+	_node << "	label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
+
+		_node << "	node [shape=box];\n";
+		// TODO : Create a structure ...
+		_node << "		NODE_" << m_uid << "_HW_AEC [ label=\"AEC\" ];\n";
+		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
+		_node << "			label=\"Drain::Process\";\n";
+		_node << "			node [shape=ellipse];\n";
+		_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		
+		_node << "		}\n";
+		_node << "	node [shape=square];\n";
+		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		// Link all nodes :
+		_node << "		NODE_" << m_uid << "_HW_AEC -> node_ALGO_" << m_uid << "_in;\n";
+		_node << "		node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
+		_node << "		node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
+	_node << "}\n";
+		if (m_interfaceMicrophone != nullptr) {
+			_node << "		API_" << m_interfaceMicrophone->m_uid << "_input -> NODE_" << m_uid << "_HW_AEC;\n";
+		}
+		if (m_interfaceFeedBack != nullptr) {
+			_node << "		API_" << m_interfaceFeedBack->m_uid << "_feedback -> NODE_" << m_uid << "_HW_AEC;\n";
+		}
+	
+	for (auto &it : m_list) {
+		if (it != nullptr) {
+			if (it->getMode() == modeInterface_input) {
+				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+			} else if (it->getMode() == modeInterface_output) {
+				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
+			} else if (it->getMode() == modeInterface_feedback) {
+				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+			} else {
+				
+			}
+		}
+	}
+}
