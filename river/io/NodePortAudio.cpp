@@ -4,6 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
+#ifdef __PORTTAUDIO_INFERFACE__
+
 #include <river/io/NodePortAudio.h>
 #include <river/debug.h>
 
@@ -150,3 +152,5 @@ void river::io::NodePortAudio::stop() {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << Pa_GetErrorText(err));
 	}
 }
+#endif
+

@@ -99,17 +99,23 @@ std::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& 
 	if (tmpObject != nullptr) {
 		// get type : io
 		std::string ioType = tmpObject->getStringValue("io", "error");
+		#ifdef __AIRTAUDIO_INFERFACE__
 		if (    ioType == "input"
 		     || ioType == "output") {
 			std::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_name, tmpObject);
 			m_list.push_back(tmp);
 			return tmp;
-		} else if (    ioType == "PAinput"
-		            || ioType == "PAoutput") {
+		} else
+		#endif
+		#ifdef __PORTAUDIO_INFERFACE__
+		if (    ioType == "PAinput"
+		     || ioType == "PAoutput") {
 			std::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_name, tmpObject);
 			m_list.push_back(tmp);
 			return tmp;
-		} else if (ioType == "aec") {
+		} else 
+		#endif
+		if (ioType == "aec") {
 			std::shared_ptr<river::io::Node> tmp = river::io::NodeAEC::create(_name, tmpObject);
 			m_list.push_back(tmp);
 			return tmp;

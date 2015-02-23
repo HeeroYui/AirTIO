@@ -4,6 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
+#ifdef __AIRTAUDIO_INFERFACE__
+
 #include <river/io/NodeAirTAudio.h>
 #include <river/debug.h>
 
@@ -261,3 +263,5 @@ void river::io::NodeAirTAudio::stop() {
 		RIVER_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
 	}
 }
+
+#endif

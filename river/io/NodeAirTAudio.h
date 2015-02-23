@@ -7,6 +7,8 @@
 #ifndef __RIVER_IO_NODE_AIRTAUDIO_H__
 #define __RIVER_IO_NODE_AIRTAUDIO_H__
 
+#ifdef __AIRTAUDIO_INFERFACE__
+
 #include <river/io/Node.h>
 
 namespace river {
@@ -49,6 +51,7 @@ namespace river {
 		};
 	}
 }
+#endif
 
 #endif
 
