@@ -181,29 +181,21 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<co
 	// set callback mode ...
 	m_interfaceFeedBack->setInputCallback(std11::bind(&river::io::NodeAEC::onDataReceivedFeedBack,
 	                                                  this,
-#if __cplusplus >= 201103L
 	                                                  std11::placeholders::_1,
 	                                                  std11::placeholders::_2,
 	                                                  std11::placeholders::_3,
 	                                                  std11::placeholders::_4,
 	                                                  std11::placeholders::_5,
 	                                                  std11::placeholders::_6));
-#else
-	                                                  _1, _2, _3, _4, _5, _6));
-#endif
 	// set callback mode ...
 	m_interfaceMicrophone->setInputCallback(std11::bind(&river::io::NodeAEC::onDataReceivedMicrophone,
 	                                                    this,
-#if __cplusplus >= 201103L
 	                                                    std11::placeholders::_1,
 	                                                    std11::placeholders::_2,
 	                                                    std11::placeholders::_3,
 	                                                    std11::placeholders::_4,
 	                                                    std11::placeholders::_5,
 	                                                    std11::placeholders::_6));
-#else
-	                                                  _1, _2, _3, _4, _5, _6));
-#endif
 	
 	m_bufferMicrophone.setCapacity(std11::chrono::milliseconds(1000),
 	                               audio::getFormatBytes(hardwareFormat.getFormat())*hardwareFormat.getMap().size(),

@@ -220,28 +220,20 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std11::bind(&river::io::NodeAirTAudio::recordCallback,
 		                                    this,
-		                                    #if __cplusplus >= 201103L
-		                                        std::placeholders::_1,
-		                                        std::placeholders::_2,
-		                                        std::placeholders::_5,
-		                                        std::placeholders::_6)
-		                                    #else
-		                                        _1, _2, _5, _6)
-		                                    #endif
+		                                    std11::placeholders::_1,
+		                                    std11::placeholders::_2,
+		                                    std11::placeholders::_5,
+		                                    std11::placeholders::_6)
 		                        );
 	} else {
 		err = m_adac.openStream(&params, nullptr,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std11::bind(&river::io::NodeAirTAudio::playbackCallback,
 		                                    this,
-		                                    #if __cplusplus >= 201103L
-		                                        std::placeholders::_3,
-		                                        std::placeholders::_4,
-		                                        std::placeholders::_5,
-		                                        std::placeholders::_6)
-		                                    #else
-		                                        _3, _4, _5, _6)
-		                                    #endif
+		                                    std11::placeholders::_3,
+		                                    std11::placeholders::_4,
+		                                    std11::placeholders::_5,
+		                                    std11::placeholders::_6)
 		                        );
 	}
 	if (err != airtaudio::error_none) {

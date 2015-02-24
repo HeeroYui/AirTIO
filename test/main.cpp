@@ -12,8 +12,13 @@
 #include <math.h>
 
 #include <sstream>
-#include <thread>
 #include <unistd.h>
+
+#if __cplusplus >= 201103L
+	#include <thread>
+#else
+	#include <etk/thread.h>
+#endif
 
 #undef __class__
 #define __class__ "test"
@@ -78,12 +83,11 @@ TEST(TestALL, testOutputWrite) {
 	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (write mode)");
-	std11::shared_ptr<testOutWrite> process = std::make_shared<testOutWrite>(manager);
+	std11::shared_ptr<testOutWrite> process = std11::make_shared<testOutWrite>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
 }
-
 
 class testOutWriteCallback {
 	private:
@@ -104,13 +108,13 @@ class testOutWriteCallback {
 			                                      "speaker",
 			                                      "WriteMode+Callback");
 			m_interface->setReadwrite();
-			m_interface->setWriteCallback(std::bind(&testOutWriteCallback::onDataNeeded,
-			                                        this,
-			                                        std::placeholders::_1,
-			                                        std::placeholders::_2,
-			                                        std::placeholders::_3,
-			                                        std::placeholders::_4,
-			                                        std::placeholders::_5));
+			m_interface->setWriteCallback(std11::bind(&testOutWriteCallback::onDataNeeded,
+			                                          this,
+			                                          std11::placeholders::_1,
+			                                          std11::placeholders::_2,
+			                                          std11::placeholders::_3,
+			                                          std11::placeholders::_4,
+			                                          std11::placeholders::_5));
 		}
 		void onDataNeeded(const std11::chrono::system_clock::time_point& _time,
 		                  size_t _nbChunk,
@@ -147,7 +151,7 @@ TEST(TestALL, testOutputWriteWithCallback) {
 	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (write with callback event mode)");
-	std11::shared_ptr<testOutWriteCallback> process = std::make_shared<testOutWriteCallback>(manager);
+	std11::shared_ptr<testOutWriteCallback> process = std11::make_shared<testOutWriteCallback>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -173,14 +177,14 @@ class testOutCallback {
 			                                      _io,
 			                                      "WriteModeCallback");
 			// set callback mode ...
-			m_interface->setOutputCallback(std::bind(&testOutCallback::onDataNeeded,
-			                                         this,
-			                                         std::placeholders::_1,
-			                                         std::placeholders::_2,
-			                                         std::placeholders::_3,
-			                                         std::placeholders::_4,
-			                                         std::placeholders::_5,
-			                                         std::placeholders::_6));
+			m_interface->setOutputCallback(std11::bind(&testOutCallback::onDataNeeded,
+			                                           this,
+			                                           std11::placeholders::_1,
+			                                           std11::placeholders::_2,
+			                                           std11::placeholders::_3,
+			                                           std11::placeholders::_4,
+			                                           std11::placeholders::_5,
+			                                           std11::placeholders::_6));
 		}
 		void onDataNeeded(void* _data,
 		                  const std11::chrono::system_clock::time_point& _time,
@@ -216,7 +220,7 @@ TEST(TestALL, testOutputCallBack) {
 	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (callback mode)");
-	std11::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker");
+	std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker");
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -227,7 +231,7 @@ TEST(TestALL, testOutputCallBackPulse) {
 	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (callback mode)");
-	std11::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker-pulse");
+	std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker-pulse");
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -238,7 +242,7 @@ TEST(TestALL, testOutputCallBackJack) {
 	manager = river::Manager::create("testApplication");
 	
 	APPL_INFO("test output (callback mode)");
-	std11::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker-jack");
+	std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker-jack");
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -283,7 +287,7 @@ TEST(TestALL, testInputCallBack) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
 	APPL_INFO("test input (callback mode)");
-	std11::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
+	std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -309,14 +313,14 @@ class testInCallback {
 			                                     _input,
 			                                     "WriteModeCallback");
 			// set callback mode ...
-			m_interface->setInputCallback(std::bind(&testInCallback::onDataReceived,
-			                                        this,
-			                                        std::placeholders::_1,
-			                                        std::placeholders::_2,
-			                                        std::placeholders::_3,
-			                                        std::placeholders::_4,
-			                                        std::placeholders::_5,
-			                                        std::placeholders::_6));
+			m_interface->setInputCallback(std11::bind(&testInCallback::onDataReceived,
+			                                          this,
+			                                          std11::placeholders::_1,
+			                                          std11::placeholders::_2,
+			                                          std11::placeholders::_3,
+			                                          std11::placeholders::_4,
+			                                          std11::placeholders::_5,
+			                                          std11::placeholders::_6));
 		}
 		void onDataReceived(const void* _data,
 		                    const std11::chrono::system_clock::time_point& _time,
@@ -349,7 +353,7 @@ TEST(TestALL, testInputCallBack) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
 	APPL_INFO("test input (callback mode)");
-	std11::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
+	std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -398,14 +402,14 @@ class testOutCallbackType {
 			                                      "speaker",
 			                                      "WriteModeCallbackType");
 			// set callback mode ...
-			m_interface->setOutputCallback(std::bind(&testOutCallbackType::onDataNeeded,
-			                                         this,
-			                                         std::placeholders::_1,
-			                                         std::placeholders::_2,
-			                                         std::placeholders::_3,
-			                                         std::placeholders::_4,
-			                                         std::placeholders::_5,
-			                                         std::placeholders::_6));
+			m_interface->setOutputCallback(std11::bind(&testOutCallbackType::onDataNeeded,
+			                                           this,
+			                                           std11::placeholders::_1,
+			                                           std11::placeholders::_2,
+			                                           std11::placeholders::_3,
+			                                           std11::placeholders::_4,
+			                                           std11::placeholders::_5,
+			                                           std11::placeholders::_6));
 		}
 		void onDataNeeded(void* _data,
 		                  const std11::chrono::system_clock::time_point& _time,
@@ -479,7 +483,7 @@ class testResampling : public ::testing::TestWithParam<float> {};
 TEST_P(testResampling, base) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
+	std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -494,7 +498,7 @@ class testFormat : public ::testing::TestWithParam<audio::format> {};
 TEST_P(testFormat, base) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, 2, GetParam());
+	std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, 48000, 2, GetParam());
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -508,7 +512,7 @@ class testChannels : public ::testing::TestWithParam<int32_t> {};
 TEST_P(testChannels, base) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
+	std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -538,14 +542,14 @@ class testCallbackVolume {
 			                                      "speaker",
 			                                      "WriteModeCallback");
 			// set callback mode ...
-			m_interface->setOutputCallback(std::bind(&testCallbackVolume::onDataNeeded,
-			                                         this,
-			                                         std::placeholders::_1,
-			                                         std::placeholders::_2,
-			                                         std::placeholders::_3,
-			                                         std::placeholders::_4,
-			                                         std::placeholders::_5,
-			                                         std::placeholders::_6));
+			m_interface->setOutputCallback(std11::bind(&testCallbackVolume::onDataNeeded,
+			                                           this,
+			                                           std11::placeholders::_1,
+			                                           std11::placeholders::_2,
+			                                           std11::placeholders::_3,
+			                                           std11::placeholders::_4,
+			                                           std11::placeholders::_5,
+			                                           std11::placeholders::_6));
 			m_interface->addVolumeGroup("MEDIA");
 			m_interface->addVolumeGroup("FLOW");
 		}
@@ -610,7 +614,7 @@ class testCallbackVolume {
 void threadVolume(void* _userData) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
+	std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -623,7 +627,7 @@ TEST(TestALL, testInputCallBackMicClean) {
 	usleep(100000);
 	
 	APPL_INFO("test input (callback mode)");
-	std11::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager, "microphone-clean");
+	std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager, "microphone-clean");
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -634,7 +638,7 @@ TEST(TestALL, testInputCallBackMicClean) {
 TEST(TestALL, testVolume) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
+	std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -666,11 +670,11 @@ TEST(TestALL, testChannelsFormatResampling) {
 	listFormat.push_back(audio::format_int16_on_int32);
 	listFormat.push_back(audio::format_int32);
 	listFormat.push_back(audio::format_float);
-	for (auto &itFreq : listFreq) {
-		for (auto &itChannel : listChannel) {
-			for (auto &itFormat : listFormat) {
-				APPL_INFO("freq=" << itFreq << " channel=" << itChannel << " format=" << getFormatString(itFormat));
-				std11::shared_ptr<testOutCallbackType> process = std::make_shared<testOutCallbackType>(manager, itFreq, itChannel, itFormat);
+	for (size_t fff=0; fff<listFreq.size(); ++fff) {
+		for (size_t ccc=0; ccc<listChannel.size(); ++ccc) {
+			for (size_t iii=0; iii<listFormat.size(); ++iii) {
+				APPL_INFO("freq=" << listFreq[fff] << " channel=" << listChannel[ccc] << " format=" << getFormatString(listFormat[iii]));
+				std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, listFreq[fff], listChannel[ccc], listFormat[iii]);
 				process->run();
 				process.reset();
 				usleep(500000);

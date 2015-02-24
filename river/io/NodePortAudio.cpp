@@ -4,7 +4,7 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifdef __PORTTAUDIO_INFERFACE__
+#ifdef __PORTAUDIO_INFERFACE__
 
 #include <river/io/NodePortAudio.h>
 #include <river/debug.h>
@@ -30,7 +30,7 @@ static std::string asString(const std11::chrono::system_clock::time_point& tp) {
 
 namespace std {
 	static std::ostream& operator <<(std::ostream& _os, const std11::chrono::system_clock::time_point& _obj) {
-		std11::chrono::microseconds us = std11::chrono::duration_cast<std::chrono::microseconds>(_obj.time_since_epoch());
+		std11::chrono::microseconds us = std11::chrono::duration_cast<std11::chrono::microseconds>(_obj.time_since_epoch());
 		_os << us.count();
 		return _os;
 	}
@@ -45,10 +45,10 @@ static int portAudioStreamCallback(const void *_input,
 	river::io::NodePortAudio* myClass = reinterpret_cast<river::io::NodePortAudio*>(_userData);
 	int64_t sec = int64_t(_timeInfo->inputBufferAdcTime);
 	int64_t nsec = (_timeInfo->inputBufferAdcTime-double(sec))*1000000000LL;
-	std11::chrono::system_clock::time_point timeInput = std11::chrono::system_clock::from_time_t(sec) + std::chrono::nanoseconds(nsec);
+	std11::chrono::system_clock::time_point timeInput = std11::chrono::system_clock::from_time_t(sec) + std11::chrono::nanoseconds(nsec);
 	sec = int64_t(_timeInfo->outputBufferDacTime);
 	nsec = (_timeInfo->outputBufferDacTime-double(sec))*1000000000LL;
-	std11::chrono::system_clock::time_point timeOutput = std11::chrono::system_clock::from_time_t(sec) + std::chrono::nanoseconds(nsec);
+	std11::chrono::system_clock::time_point timeOutput = std11::chrono::system_clock::from_time_t(sec) + std11::chrono::nanoseconds(nsec);
 	return myClass->duplexCallback(_input,
 	                               timeInput,
 	                               _output,

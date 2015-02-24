@@ -7,7 +7,7 @@
 #ifndef __RIVER_IO_NODE_PORTAUDIO_H__
 #define __RIVER_IO_NODE_PORTAUDIO_H__
 
-#ifdef __PORTTAUDIO_INFERFACE__
+#ifdef __PORTAUDIO_INFERFACE__
 
 #include <river/Interface.h>
 #include <river/io/Node.h>
