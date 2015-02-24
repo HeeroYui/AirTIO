@@ -10,15 +10,22 @@
 #include <string>
 #include <vector>
 #include <stdint.h>
-#include <chrono>
-#include <functional>
-#include <mutex>
+#if __cplusplus >= 201103L
+	#include <mutex>
+	#include <chrono>
+	#include <functional>
+	#include <memory>
+#else
+	#include <etk/mutex.h>
+	#include <etk/chrono.h>
+	#include <etk/functional.h>
+	#include <etk/memory.h>
+#endif
 #include <audio/format.h>
 #include <audio/channel.h>
 #include <drain/Process.h>
 #include <drain/EndPointCallback.h>
 #include <drain/EndPointWrite.h>
-#include <memory>
 #include <ejson/ejson.h>
 #include <etk/os/FSNode.h>
 
@@ -34,7 +41,7 @@ namespace river {
 		modeInterface_output,
 		modeInterface_feedback,
 	};
-	class Interface : public std::enable_shared_from_this<Interface> {
+	class Interface : public std11::enable_shared_from_this<Interface> {
 		friend class io::Node;
 		friend class io::NodeAirTAudio;
 		friend class io::NodeAEC;
@@ -50,23 +57,23 @@ namespace river {
 			          float _freq,
 			          const std::vector<audio::channel>& _map,
 			          audio::format _format,
-			          const std::shared_ptr<river::io::Node>& _node,
-			          const std::shared_ptr<const ejson::Object>& _config);
+			          const std11::shared_ptr<river::io::Node>& _node,
+			          const std11::shared_ptr<const ejson::Object>& _config);
 		public:
 			/**
 			 * @brief Destructor
 			 */
 			virtual ~Interface();
-			static std::shared_ptr<Interface> create(const std::string& _name,
+			static std11::shared_ptr<Interface> create(const std::string& _name,
 			                                         float _freq,
 			                                         const std::vector<audio::channel>& _map,
 			                                         audio::format _format,
-			                                         const std::shared_ptr<river::io::Node>& _node,
-			                                         const std::shared_ptr<const ejson::Object>& _config);
+			                                         const std11::shared_ptr<river::io::Node>& _node,
+			                                         const std11::shared_ptr<const ejson::Object>& _config);
 		
 		protected:
-			mutable std::recursive_mutex m_mutex;
-			std::shared_ptr<const ejson::Object> m_config;
+			mutable std11::recursive_mutex m_mutex;
+			std11::shared_ptr<const ejson::Object> m_config;
 		protected:
 			enum modeInterface m_mode;
 		public:
@@ -85,7 +92,7 @@ namespace river {
 			}
 		
 		protected:
-			std::shared_ptr<river::io::Node> m_node;
+			std11::shared_ptr<river::io::Node> m_node;
 		protected:
 			std::string m_name;
 		public:
@@ -122,7 +129,7 @@ namespace river {
 			 * @note _time to play buffer when output interface (if possible)
 			 * @note _time to read buffer when inut interface (if possible)
 			 */
-			virtual void start(const std::chrono::system_clock::time_point& _time = std::chrono::system_clock::time_point());
+			virtual void start(const std11::chrono::system_clock::time_point& _time = std11::chrono::system_clock::time_point());
 			/**
 			 * @brief Stop the current flow.
 			 * @param[in] _fast The stream stop as fast as possible (not write all the buffer in speaker) but apply cross fade out.
@@ -190,7 +197,7 @@ namespace river {
 			 * @brief Set buffer size in chunk number
 			 * @param[in] _nbChunk Number of chunk in the buffer
 			 */
-			virtual void setBufferSize(const std::chrono::duration<int64_t, std::micro>& _time);
+			virtual void setBufferSize(const std11::chrono::microseconds& _time);
 			/**
 			 * @brief Remove internal Buffer
 			 */
@@ -199,10 +206,10 @@ namespace river {
 			 * @brief Write : Get the time of the next sample time to write in the local buffer
 			 * @brief Read : Get the time of the next sample time to read in the local buffer
 			 */
-			virtual std::chrono::system_clock::time_point getCurrentTime() const;
+			virtual std11::chrono::system_clock::time_point getCurrentTime() const;
 		private:
-			virtual void systemNewInputData(std::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk);
-			virtual void systemNeedOutputData(std::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
+			virtual void systemNewInputData(std11::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk);
+			virtual void systemNeedOutputData(std11::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
 			virtual void systemVolumeChange();
 			float m_volume; //!< Local channel Volume
 		public:

@@ -67,7 +67,7 @@ void river::CircularBuffer::setCapacity(size_t _capacity, size_t _chunkSize, uin
 	m_write = &m_data[0];
 }
 
-void river::CircularBuffer::setCapacity(std::chrono::milliseconds _capacity, size_t _chunkSize, uint32_t _frequency) {
+void river::CircularBuffer::setCapacity(std11::chrono::milliseconds _capacity, size_t _chunkSize, uint32_t _frequency) {
 	uint32_t nbSampleNeeded = _frequency*_capacity.count()/1000;
 	RIVER_DEBUG("buffer setCapacity(" << _capacity.count() << "ms ," << _chunkSize << ")");
 	setCapacity(nbSampleNeeded, _chunkSize, _frequency);
@@ -102,7 +102,7 @@ size_t river::CircularBuffer::getFreeSizeBeforEnd() const {
 		return size;
 }
 
-size_t river::CircularBuffer::write(const void* _data, size_t _nbChunk, const std::chrono::system_clock::time_point& _time) {
+size_t river::CircularBuffer::write(const void* _data, size_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
 	size_t nbElementDrop = 0;
 	size_t freeSizeBeforeEnd = getFreeSizeBeforEnd();
 	size_t freeSize = m_capacity - m_size;
@@ -168,14 +168,14 @@ size_t river::CircularBuffer::read(void* _data, size_t _nbChunk) {
 	return read(_data, _nbChunk, m_timeRead);
 }
 
-size_t river::CircularBuffer::read(void* _data, size_t _nbChunk, const std::chrono::system_clock::time_point& _time) {
+size_t river::CircularBuffer::read(void* _data, size_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
 	size_t nbElementDrop = 0;
 	// Critical section (theoriquely protected by Mutex)
 	size_t usedSizeBeforeEnd = getUsedSizeBeforEnd();
 	// verify if we have elements in the Buffer
 	if (0 < m_size) {
 		// check the time of the read :
-		std::chrono::nanoseconds deltaTime = m_timeRead - _time;
+		std11::chrono::nanoseconds deltaTime = m_timeRead - _time;
 		if (deltaTime.count() == 0) {
 			// nothing to do ==> just copy data ...
 		} else if (deltaTime.count() > 0) {
@@ -196,7 +196,7 @@ size_t river::CircularBuffer::read(void* _data, size_t _nbChunk, const std::chro
 			nbElementDrop = _nbChunk - m_size;
 			_nbChunk = m_size;
 		}
-		m_timeRead += std::chrono::microseconds(_nbChunk*1000000/m_frequency);
+		m_timeRead += std11::chrono::microseconds(_nbChunk*1000000/m_frequency);
 		if (usedSizeBeforeEnd >= _nbChunk) {
 			// all Data will be copy
 			memcpy(_data, m_read, _nbChunk * m_sizeChunk);
@@ -234,16 +234,16 @@ size_t river::CircularBuffer::read(void* _data, size_t _nbChunk, const std::chro
 	// return the number of element droped
 	return nbElementDrop;
 }
-void river::CircularBuffer::setReadPosition(const std::chrono::system_clock::time_point& _time) {
+void river::CircularBuffer::setReadPosition(const std11::chrono::system_clock::time_point& _time) {
 	// Critical section (theoriquely protected by Mutex)
 	size_t usedSizeBeforeEnd = getUsedSizeBeforEnd();
 	if (0 < m_size) {
 		// check the time of the read :
-		std::chrono::nanoseconds deltaTime = _time - m_timeRead;
+		std11::chrono::nanoseconds deltaTime = _time - m_timeRead;
 		size_t nbSampleToRemove = m_frequency*deltaTime.count()/1000000000;
 		nbSampleToRemove = std::min(nbSampleToRemove, m_size);
 		RIVER_WARNING("Remove sample in the buffer " << nbSampleToRemove << " / " << m_size);
-		std::chrono::nanoseconds updateTime((nbSampleToRemove*1000000000)/int64_t(m_frequency));
+		std11::chrono::nanoseconds updateTime((nbSampleToRemove*1000000000)/int64_t(m_frequency));
 		if (usedSizeBeforeEnd >= nbSampleToRemove) {
 			usedSizeBeforeEnd -= nbSampleToRemove;
 			m_size -= nbSampleToRemove;
@@ -256,7 +256,7 @@ void river::CircularBuffer::setReadPosition(const std::chrono::system_clock::tim
 		m_timeRead += updateTime;
 		//m_timeRead += deltaTime;
 	} else {
-		m_timeRead = std::chrono::system_clock::time_point();
+		m_timeRead = std11::chrono::system_clock::time_point();
 	}
 }
 

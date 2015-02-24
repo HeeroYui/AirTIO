@@ -9,7 +9,11 @@
 
 #include <string>
 #include <stdint.h>
-#include <memory>
+#if __cplusplus >= 201103L
+	#include <memory>
+#else
+	#include <etk/memory.h>
+#endif
 #include <river/Interface.h>
 #include <audio/format.h>
 #include <audio/channel.h>
@@ -23,14 +27,14 @@ namespace river {
 		private:
 			ejson::Document m_config; // virtual configuration
 			const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
-			std::vector<std::weak_ptr<river::Interface> > m_listOpenInterface; //!< List of all open Stream.
+			std::vector<std11::weak_ptr<river::Interface> > m_listOpenInterface; //!< List of all open Stream.
 		protected:
 			/**
 			 * @brief Constructor
 			 */
 			Manager(const std::string& _applicationUniqueId);
 		public:
-			static std::shared_ptr<river::Manager> create(const std::string& _applicationUniqueId);
+			static std11::shared_ptr<river::Manager> create(const std::string& _applicationUniqueId);
 			/**
 			 * @brief Destructor
 			 */
@@ -80,7 +84,7 @@ namespace river {
 			 * @param[in] _name Name of this interface
 			 * @return a pointer on the interface
 			 */
-			virtual std::shared_ptr<Interface> createOutput(float _freq,
+			virtual std11::shared_ptr<Interface> createOutput(float _freq,
 			                                                const std::vector<audio::channel>& _map,
 			                                                audio::format _format,
 			                                                const std::string& _streamName = "",
@@ -94,7 +98,7 @@ namespace river {
 			 * @param[in] _name Name of this interface
 			 * @return a pointer on the interface
 			 */
-			virtual std::shared_ptr<Interface> createInput(float _freq,
+			virtual std11::shared_ptr<Interface> createInput(float _freq,
 			                                               const std::vector<audio::channel>& _map,
 			                                               audio::format _format,
 			                                               const std::string& _streamName = "",

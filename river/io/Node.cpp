@@ -7,13 +7,11 @@
 #include "Node.h"
 #include <river/debug.h>
 
-#include <memory>
-
 #undef __class__
 #define __class__ "io::Node"
 
 
-river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
@@ -58,7 +56,7 @@ river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejso
 	}
 	// Get map type :
 	std::vector<audio::channel> map;
-	const std::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("channel-map");
+	const std11::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("channel-map");
 	if (    listChannelMap == nullptr
 	     || listChannelMap->size() == 0) {
 		// set default channel property:
@@ -105,19 +103,19 @@ river::io::Node::~Node() {
 
 size_t river::io::Node::getNumberOfInterface(enum river::modeInterface _interfaceType) {
 	size_t out = 0;
-	for (auto &it : m_list) {
-		if (it == nullptr) {
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] == nullptr) {
 			continue;
 		}
-		if (it->getMode() == _interfaceType) {
+		if (m_list[iii]->getMode() == _interfaceType) {
 			out++;
 		}
 	}
 	return out;
 }
 
-void river::io::Node::registerAsRemote(const std::shared_ptr<river::Interface>& _interface) {
-	auto it = m_listAvaillable.begin();
+void river::io::Node::registerAsRemote(const std11::shared_ptr<river::Interface>& _interface) {
+	std::vector<std11::weak_ptr<river::Interface> >::iterator it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
 			it = m_listAvaillable.erase(it);
@@ -127,11 +125,11 @@ void river::io::Node::registerAsRemote(const std::shared_ptr<river::Interface>& 
 	m_listAvaillable.push_back(_interface);
 }
 
-void river::io::Node::interfaceAdd(const std::shared_ptr<river::Interface>& _interface) {
+void river::io::Node::interfaceAdd(const std11::shared_ptr<river::Interface>& _interface) {
 	{
-		std::unique_lock<std::mutex> lock(m_mutex);
-		for (auto &it : m_list) {
-			if (_interface == it) {
+		std11::unique_lock<std11::mutex> lock(m_mutex);
+		for (size_t iii=0; iii<m_list.size(); ++iii) {
+			if (_interface == m_list[iii]) {
 				return;
 			}
 		}
@@ -143,9 +141,9 @@ void river::io::Node::interfaceAdd(const std::shared_ptr<river::Interface>& _int
 	}
 }
 
-void river::io::Node::interfaceRemove(const std::shared_ptr<river::Interface>& _interface) {
+void river::io::Node::interfaceRemove(const std11::shared_ptr<river::Interface>& _interface) {
 	{
-		std::unique_lock<std::mutex> lock(m_mutex);
+		std11::unique_lock<std11::mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				m_list.erase(m_list.begin()+iii);
@@ -162,8 +160,8 @@ void river::io::Node::interfaceRemove(const std::shared_ptr<river::Interface>& _
 
 
 void river::io::Node::volumeChange() {
-	for (auto &it : m_listAvaillable) {
-		std::shared_ptr<river::Interface> node = it.lock();
+	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
+		std11::shared_ptr<river::Interface> node = m_listAvaillable[iii].lock();
 		if (node != nullptr) {
 			node->systemVolumeChange();
 		}
@@ -172,20 +170,20 @@ void river::io::Node::volumeChange() {
 
 int32_t river::io::Node::newInput(const void* _inputBuffer,
                                   uint32_t _nbChunk,
-                                  const std::chrono::system_clock::time_point& _time) {
+                                  const std11::chrono::system_clock::time_point& _time) {
 	if (_inputBuffer == nullptr) {
 		return -1;
 	}
 	const int16_t* inputBuffer = static_cast<const int16_t *>(_inputBuffer);
-	for (auto &it : m_list) {
-		if (it == nullptr) {
+	for (size_t iii=0; iii< m_list.size(); ++iii) {
+		if (m_list[iii] == nullptr) {
 			continue;
 		}
-		if (it->getMode() != river::modeInterface_input) {
+		if (m_list[iii]->getMode() != river::modeInterface_input) {
 			continue;
 		}
-		RIVER_VERBOSE("    IO name="<< it->getName());
-		it->systemNewInputData(_time, inputBuffer, _nbChunk);
+		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName());
+		m_list[iii]->systemNewInputData(_time, inputBuffer, _nbChunk);
 	}
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [ END ]");
 	return 0;
@@ -193,7 +191,7 @@ int32_t river::io::Node::newInput(const void* _inputBuffer,
 
 int32_t river::io::Node::newOutput(void* _outputBuffer,
                                    uint32_t _nbChunk,
-                                   const std::chrono::system_clock::time_point& _time) {
+                                   const std11::chrono::system_clock::time_point& _time) {
 	if (_outputBuffer == nullptr) {
 		return -1;
 	}
@@ -204,18 +202,18 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 	std::vector<uint8_t> outputTmp2;
 	RIVER_VERBOSE("resize=" << sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
 	outputTmp2.resize(sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk, 0);
-	for (auto &it : m_list) {
-		if (it == nullptr) {
+	for (size_t iii=0; iii< m_list.size(); ++iii) {
+		if (m_list[iii] == nullptr) {
 			continue;
 		}
-		if (it->getMode() != river::modeInterface_output) {
+		if (m_list[iii]->getMode() != river::modeInterface_output) {
 			continue;
 		}
-		RIVER_VERBOSE("    IO name="<< it->getName());
+		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName());
 		// clear datas ...
 		memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
 		RIVER_VERBOSE("        request Data="<< _nbChunk);
-		it->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
+		m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
 		RIVER_VERBOSE("        Mix it ...");
 		outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
 		// Add data to the output tmp buffer :
@@ -226,15 +224,15 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 	RIVER_VERBOSE("    End stack process data ...");
 	m_process.processIn(&outputTmp2[0], _nbChunk, _outputBuffer, _nbChunk);
 	RIVER_VERBOSE("    Feedback :");
-	for (auto &it : m_list) {
-		if (it == nullptr) {
+	for (size_t iii=0; iii< m_list.size(); ++iii) {
+		if (m_list[iii] == nullptr) {
 			continue;
 		}
-		if (it->getMode() != river::modeInterface_feedback) {
+		if (m_list[iii]->getMode() != river::modeInterface_feedback) {
 			continue;
 		}
-		RIVER_VERBOSE("    IO name="<< it->getName() << " (feedback)");
-		it->systemNewInputData(_time, _outputBuffer, _nbChunk);
+		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " (feedback)");
+		m_list[iii]->systemNewInputData(_time, _outputBuffer, _nbChunk);
 	}
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [ END ]");
 	return 0;
@@ -307,14 +305,14 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 	}
 	_node << "}\n";
 	
-	for (auto &it : m_list) {
-		if (it != nullptr) {
-			if (it->getMode() == modeInterface_input) {
-				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
-			} else if (it->getMode() == modeInterface_output) {
-				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
-			} else if (it->getMode() == modeInterface_feedback) {
-				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+	for (size_t iii=0; iii< m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			if (m_list[iii]->getMode() == modeInterface_input) {
+				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+			} else if (m_list[iii]->getMode() == modeInterface_output) {
+				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
+			} else if (m_list[iii]->getMode() == modeInterface_feedback) {
+				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
 			} else {
 				
 			}

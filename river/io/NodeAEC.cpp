@@ -6,8 +6,15 @@
 
 #include <river/io/NodeAEC.h>
 #include <river/debug.h>
+#include <etk/types.h>
 
-#include <memory>
+#if __cplusplus >= 201103L
+	#include <memory>
+	#include <functional>
+#else
+	#include <etk/memory.h>
+	#include <etk/functional.h>
+#endif
 
 #undef __class__
 #define __class__ "io::NodeAEC"
@@ -16,9 +23,9 @@
 int32_t river::io::NodeAEC::airtAudioCallback(void* _outputBuffer,
                                                     void* _inputBuffer,
                                                     uint32_t _nbChunk,
-                                                    const std::chrono::system_clock::time_point& _time,
+                                                    const std11::chrono::system_clock::time_point& _time,
                                                     airtaudio::status _status) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std11::unique_lock<std11::mutex> lock(m_mutex);
 	//RIVER_INFO("Time=" << _time);
 	/*
 	for (int32_t iii=0; iii<400; ++iii) {
@@ -87,20 +94,20 @@ int32_t river::io::NodeAEC::airtAudioCallback(void* _outputBuffer,
 }
 #endif
 
-std::shared_ptr<river::io::NodeAEC> river::io::NodeAEC::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
-	return std::shared_ptr<river::io::NodeAEC>(new river::io::NodeAEC(_name, _config));
+std11::shared_ptr<river::io::NodeAEC> river::io::NodeAEC::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
+	return std11::shared_ptr<river::io::NodeAEC>(new river::io::NodeAEC(_name, _config));
 }
 
-std::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
+std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
                                                                   const std::vector<audio::channel>& _map,
                                                                   audio::format _format,
                                                                   const std::string& _objectName,
                                                                   const std::string& _name) {
 	// check if the output exist
-	const std::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
+	const std11::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
-		return nullptr;
+		return std11::shared_ptr<river::Interface>();
 	}
 	std::string streamName = tmppp->getStringValue("map-on", "error");
 	
@@ -110,24 +117,24 @@ std::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
-		return nullptr;
+		return std11::shared_ptr<river::Interface>();
 	}
 	// get global hardware interface:
-	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<river::io::Node> node = manager->getNode(streamName);
+	std11::shared_ptr<river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
-	std::shared_ptr<river::Interface> interface;
+	std11::shared_ptr<river::Interface> interface;
 	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);
 	return interface;
 }
 
 
-river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
 	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
-	m_sampleTime = std::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
+	m_sampleTime = std11::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
 		map-on-microphone:{
@@ -172,28 +179,36 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<cons
 	}
 	
 	// set callback mode ...
-	m_interfaceFeedBack->setInputCallback(std::bind(&river::io::NodeAEC::onDataReceivedFeedBack,
-	                                                this,
-	                                                std::placeholders::_1,
-	                                                std::placeholders::_2,
-	                                                std::placeholders::_3,
-	                                                std::placeholders::_4,
-	                                                std::placeholders::_5,
-	                                                std::placeholders::_6));
-	// set callback mode ...
-	m_interfaceMicrophone->setInputCallback(std::bind(&river::io::NodeAEC::onDataReceivedMicrophone,
+	m_interfaceFeedBack->setInputCallback(std11::bind(&river::io::NodeAEC::onDataReceivedFeedBack,
 	                                                  this,
-	                                                  std::placeholders::_1,
-	                                                  std::placeholders::_2,
-	                                                  std::placeholders::_3,
-	                                                  std::placeholders::_4,
-	                                                  std::placeholders::_5,
-	                                                  std::placeholders::_6));
+#if __cplusplus >= 201103L
+	                                                  std11::placeholders::_1,
+	                                                  std11::placeholders::_2,
+	                                                  std11::placeholders::_3,
+	                                                  std11::placeholders::_4,
+	                                                  std11::placeholders::_5,
+	                                                  std11::placeholders::_6));
+#else
+	                                                  _1, _2, _3, _4, _5, _6));
+#endif
+	// set callback mode ...
+	m_interfaceMicrophone->setInputCallback(std11::bind(&river::io::NodeAEC::onDataReceivedMicrophone,
+	                                                    this,
+#if __cplusplus >= 201103L
+	                                                    std11::placeholders::_1,
+	                                                    std11::placeholders::_2,
+	                                                    std11::placeholders::_3,
+	                                                    std11::placeholders::_4,
+	                                                    std11::placeholders::_5,
+	                                                    std11::placeholders::_6));
+#else
+	                                                  _1, _2, _3, _4, _5, _6));
+#endif
 	
-	m_bufferMicrophone.setCapacity(std::chrono::milliseconds(1000),
+	m_bufferMicrophone.setCapacity(std11::chrono::milliseconds(1000),
 	                               audio::getFormatBytes(hardwareFormat.getFormat())*hardwareFormat.getMap().size(),
 	                               hardwareFormat.getFrequency());
-	m_bufferFeedBack.setCapacity(std::chrono::milliseconds(1000),
+	m_bufferFeedBack.setCapacity(std11::chrono::milliseconds(1000),
 	                             audio::getFormatBytes(hardwareFormat.getFormat()), // only one channel ...
 	                             hardwareFormat.getFrequency());
 	
@@ -208,7 +223,7 @@ river::io::NodeAEC::~NodeAEC() {
 };
 
 void river::io::NodeAEC::start() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceFeedBack != nullptr) {
 		RIVER_INFO("Start FEEDBACK : ");
@@ -221,7 +236,7 @@ void river::io::NodeAEC::start() {
 }
 
 void river::io::NodeAEC::stop() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std11::unique_lock<std11::mutex> lock(m_mutex);
 	if (m_interfaceFeedBack != nullptr) {
 		m_interfaceFeedBack->stop();
 	}
@@ -231,8 +246,8 @@ void river::io::NodeAEC::stop() {
 }
 
 namespace std {
-	static std::ostream& operator <<(std::ostream& _os, const std::chrono::system_clock::time_point& _obj) {
-		std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(_obj.time_since_epoch());
+	static std::ostream& operator <<(std::ostream& _os, const std11::chrono::system_clock::time_point& _obj) {
+		std11::chrono::nanoseconds ns = std11::chrono::duration_cast<std11::chrono::nanoseconds>(_obj.time_since_epoch());
 		int64_t totalSecond = ns.count()/1000000000;
 		int64_t millisecond = (ns.count()%1000000000)/1000000;
 		int64_t microsecond = (ns.count()%1000000)/1000;
@@ -269,7 +284,7 @@ namespace std {
 
 
 void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
-                                                  const std::chrono::system_clock::time_point& _time,
+                                                  const std11::chrono::system_clock::time_point& _time,
                                                   size_t _nbChunk,
                                                   enum audio::format _format,
                                                   uint32_t _frequency,
@@ -279,14 +294,14 @@ void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferMicrophone.write(_data, _nbChunk, _time);
 	SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 	process();
 }
 
 void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
-                                                const std::chrono::system_clock::time_point& _time,
+                                                const std11::chrono::system_clock::time_point& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
                                                 uint32_t _frequency,
@@ -296,7 +311,7 @@ void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferFeedBack.write(_data, _nbChunk, _time);
 	SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 	process();
@@ -309,9 +324,9 @@ void river::io::NodeAEC::process() {
 	if (m_bufferFeedBack.getSize() <= 256) {
 		return;
 	}
-	std::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
-	std::chrono::system_clock::time_point fbTime = m_bufferFeedBack.getReadTimeStamp();
-	std::chrono::nanoseconds delta;
+	std11::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
+	std11::chrono::system_clock::time_point fbTime = m_bufferFeedBack.getReadTimeStamp();
+	std11::chrono::nanoseconds delta;
 	if (MicTime < fbTime) {
 		delta = fbTime - MicTime;
 	} else {
@@ -373,7 +388,7 @@ void river::io::NodeAEC::process() {
 }
 
 
-void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std::chrono::system_clock::time_point& _time) {
+void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
 	newInput(_dataMic, _nbChunk, _time);
 }
 
@@ -407,14 +422,14 @@ void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 			_node << "		API_" << m_interfaceFeedBack->m_uid << "_feedback -> NODE_" << m_uid << "_HW_AEC;\n";
 		}
 	
-	for (auto &it : m_list) {
-		if (it != nullptr) {
-			if (it->getMode() == modeInterface_input) {
-				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
-			} else if (it->getMode() == modeInterface_output) {
-				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
-			} else if (it->getMode() == modeInterface_feedback) {
-				it->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			if (m_list[iii]->getMode() == modeInterface_input) {
+				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+			} else if (m_list[iii]->getMode() == modeInterface_output) {
+				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
+			} else if (m_list[iii]->getMode() == modeInterface_feedback) {
+				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
 			} else {
 				
 			}

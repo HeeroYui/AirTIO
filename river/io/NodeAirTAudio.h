@@ -19,9 +19,9 @@ namespace river {
 				/**
 				 * @brief Constructor
 				 */
-				NodeAirTAudio(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+				NodeAirTAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
 			public:
-				static std::shared_ptr<NodeAirTAudio> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+				static std11::shared_ptr<NodeAirTAudio> create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
 				/**
 				 * @brief Destructor
 				 */
@@ -32,17 +32,17 @@ namespace river {
 				unsigned int m_rtaudioFrameSize;
 			public:
 				int32_t duplexCallback(const void* _inputBuffer,
-				                       const std::chrono::system_clock::time_point& _timeInput,
+				                       const std11::chrono::system_clock::time_point& _timeInput,
 				                       void* _outputBuffer,
-				                       const std::chrono::system_clock::time_point& _timeOutput,
+				                       const std11::chrono::system_clock::time_point& _timeOutput,
 				                       uint32_t _nbChunk,
 				                       const std::vector<airtaudio::status>& _status);
 				int32_t recordCallback(const void* _inputBuffer,
-				                       const std::chrono::system_clock::time_point& _timeInput,
+				                       const std11::chrono::system_clock::time_point& _timeInput,
 				                       uint32_t _nbChunk,
 				                       const std::vector<airtaudio::status>& _status);
 				int32_t playbackCallback(void* _outputBuffer,
-				                         const std::chrono::system_clock::time_point& _timeOutput,
+				                         const std11::chrono::system_clock::time_point& _timeOutput,
 				                         uint32_t _nbChunk,
 				                         const std::vector<airtaudio::status>& _status);
 			protected:

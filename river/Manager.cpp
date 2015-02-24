@@ -6,7 +6,6 @@
 
 #include "Manager.h"
 #include "Interface.h"
-#include <memory>
 #include <stdexcept>
 
 #include "io/Manager.h"
@@ -33,8 +32,8 @@ static std::string basicAutoConfig =
 	"}\n";
 
 
-std::shared_ptr<river::Manager> river::Manager::create(const std::string& _applicationUniqueId) {
-	return std::shared_ptr<river::Manager>(new river::Manager(_applicationUniqueId));
+std11::shared_ptr<river::Manager> river::Manager::create(const std::string& _applicationUniqueId) {
+	return std11::shared_ptr<river::Manager>(new river::Manager(_applicationUniqueId));
 }
 
 river::Manager::Manager(const std::string& _applicationUniqueId) :
@@ -54,13 +53,14 @@ river::Manager::~Manager() {
 
 std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamInput() {
 	std::vector<std::pair<std::string,std::string> > output;
-	for (auto &it : m_config.getKeys()) {
-		const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(it);
+	std::vector<std::string> keys = m_config.getKeys();
+	for (size_t iii=0; iii<keys.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
 		if (tmppp != nullptr) {
 			std::string type = tmppp->getStringValue("io", "error");
 			if (    type == "input"
 			     || type == "feedback") {
-				output.push_back(std::make_pair<std::string,std::string>(std::string(it), std::string("---")));
+				output.push_back(std::make_pair<std::string,std::string>(keys[iii], std::string("---")));
 			}
 		}
 	}
@@ -69,12 +69,13 @@ std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamIn
 
 std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamOutput() {
 	std::vector<std::pair<std::string,std::string> > output;
-	for (auto &it : m_config.getKeys()) {
-		const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(it);
+	std::vector<std::string> keys = m_config.getKeys();
+	for (size_t iii=0; iii<keys.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
 		if (tmppp != nullptr) {
 			std::string type = tmppp->getStringValue("io", "error");
 			if (type == "output") {
-				output.push_back(std::make_pair<std::string,std::string>(std::string(it), std::string("---")));
+				output.push_back(std::make_pair<std::string,std::string>(keys[iii], std::string("---")));
 			}
 		}
 	}
@@ -94,60 +95,60 @@ std::pair<float,float> river::Manager::getVolumeRange(const std::string& _volume
 	return river::io::Manager::getInstance()->getVolumeRange(_volumeName);
 }
 
-std::shared_ptr<river::Interface> river::Manager::createOutput(float _freq,
+std11::shared_ptr<river::Interface> river::Manager::createOutput(float _freq,
                                                                const std::vector<audio::channel>& _map,
                                                                audio::format _format,
                                                                const std::string& _streamName,
                                                                const std::string& _name) {
 	// check if the output exist
-	const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(_streamName);
+	const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(_streamName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual input: '" << _streamName << "' not present in : " << m_config.getKeys());
-		return nullptr;
+		return std11::shared_ptr<river::Interface>();
 	}
 	// check if it is an Output:
 	std::string type = tmppp->getStringValue("io", "error");
 	if (type != "output") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << _streamName << "' configured has : " << type);
-		return nullptr;
+		return std11::shared_ptr<river::Interface>();
 	}
 	
 	// get global hardware interface:
-	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
+	std11::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
 	// create user iterface:
-	std::shared_ptr<river::Interface> interface;
+	std11::shared_ptr<river::Interface> interface;
 	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
 	return interface;
 }
 
-std::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
+std11::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
                                                               const std::vector<audio::channel>& _map,
                                                               audio::format _format,
                                                               const std::string& _streamName,
                                                               const std::string& _name) {
 	// check if the output exist
-	const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(_streamName);
+	const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(_streamName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _streamName << "' not present in : " << m_config.getKeys());
-		return nullptr;
+		return std11::shared_ptr<river::Interface>();
 	}
 	// check if it is an Output:
 	std::string type = tmppp->getStringValue("io", "error");
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << _streamName << "' configured has : " << type);
-		return nullptr;
+		return std11::shared_ptr<river::Interface>();
 	}
 	// get global hardware interface:
-	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
+	std11::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
 	// create user iterface:
-	std::shared_ptr<river::Interface> interface;
+	std11::shared_ptr<river::Interface> interface;
 	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
@@ -156,7 +157,7 @@ std::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
 
 void river::Manager::generateDotAll(const std::string& _filename) {
 	// get global hardware interface:
-	std::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Can not get the harware manager");
 		return;

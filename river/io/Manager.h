@@ -11,12 +11,18 @@
 #include <vector>
 #include <list>
 #include <stdint.h>
-#include <chrono>
-#include <functional>
+#if __cplusplus >= 201103L
+	#include <chrono>
+	#include <functional>
+	#include <memory>
+#else
+	#include <etk/chrono.h>
+	#include <etk/functional.h>
+	#include <etk/memory.h>
+#endif
 #include <audio/format.h>
 #include <audio/channel.h>
 #include <ejson/ejson.h>
-#include <memory>
 #include <drain/Volume.h>
 
 namespace river {
@@ -29,21 +35,21 @@ namespace river {
 				 */
 				Manager();
 			public:
-				static std::shared_ptr<Manager> getInstance();
+				static std11::shared_ptr<Manager> getInstance();
 				/**
 				 * @brief Destructor
 				 */
 				virtual ~Manager();
 			private:
 				ejson::Document m_config; // harware configuration
-				std::vector<std::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
-				std::vector<std::weak_ptr<river::io::Node> > m_list; //!< List of all IO node
+				std::vector<std11::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
+				std::vector<std11::weak_ptr<river::io::Node> > m_list; //!< List of all IO node
 			public:
-				std::shared_ptr<river::io::Node> getNode(const std::string& _name);
+				std11::shared_ptr<river::io::Node> getNode(const std::string& _name);
 			private:
-				std::vector<std::shared_ptr<drain::VolumeElement>> m_volumeGroup;
+				std::vector<std11::shared_ptr<drain::VolumeElement> > m_volumeGroup;
 			public:
-				std::shared_ptr<drain::VolumeElement> getVolumeGroup(const std::string& _name);
+				std11::shared_ptr<drain::VolumeElement> getVolumeGroup(const std::string& _name);
 				
 				/**
 				 * @brief Set a volume for a specific group

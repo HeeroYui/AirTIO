@@ -21,9 +21,9 @@ namespace river {
 				/**
 				 * @brief Constructor
 				 */
-				NodePortAudio(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+				NodePortAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
 			public:
-				static std::shared_ptr<NodePortAudio> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+				static std11::shared_ptr<NodePortAudio> create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
 				/**
 				 * @brief Destructor
 				 */
@@ -32,9 +32,9 @@ namespace river {
 				PaStream* m_stream;
 			public:
 				int32_t duplexCallback(const void* _inputBuffer,
-				                       const std::chrono::system_clock::time_point& _timeInput,
+				                       const std11::chrono::system_clock::time_point& _timeInput,
 				                       void* _outputBuffer,
-				                       const std::chrono::system_clock::time_point& _timeOutput,
+				                       const std11::chrono::system_clock::time_point& _timeOutput,
 				                       uint32_t _nbChunk,
 				                       PaStreamCallbackFlags _status);
 			protected:

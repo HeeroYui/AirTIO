@@ -10,7 +10,11 @@
 
 #include <etk/types.h>
 #include <vector>
-#include <chrono>
+#if __cplusplus >= 201103L
+	#include <chrono>
+#else
+	#include <etk/chrono.h>
+#endif
 
 namespace river {
 	/**
@@ -43,7 +47,7 @@ namespace river {
 			std::vector<uint8_t> m_data; //!< data pointer
 			void* m_write; //!< write pointer
 			void* m_read; //!< read pointer
-			std::chrono::system_clock::time_point m_timeRead; //!< current read time
+			std11::chrono::system_clock::time_point m_timeRead; //!< current read time
 			uint32_t m_frequency;
 			// TODO : Remove the m_size ==> this is a bad element to be mutex-less
 			size_t m_size; //!< number of chunk availlable in this buffer
@@ -75,7 +79,7 @@ namespace river {
 			 * @param[in] _chunkSize Size of one chunk.
 			 * @param[in] _frequency Frequency of the buffer
 			 */
-			void setCapacity(std::chrono::milliseconds _capacity, size_t _chunkSize, uint32_t _frequency);
+			void setCapacity(std11::chrono::milliseconds _capacity, size_t _chunkSize, uint32_t _frequency);
 			/**
 			 * @brief get free size of the buffer.
 			 * @return Number of free chunk.
@@ -102,7 +106,7 @@ namespace river {
 			 * @param[in] _time Time to start write data (if before end ==> not replace data, write only if after end)
 			 * @return Number of chunk copied.
 			 */
-			size_t write(const void* _data, size_t _nbChunk, const std::chrono::system_clock::time_point& _time);
+			size_t write(const void* _data, size_t _nbChunk, const std11::chrono::system_clock::time_point& _time);
 			/**
 			 * @brief Read Chunk from the buffer to the pointer data.
 			 * @param[out] _data Pointer on the data.
@@ -110,12 +114,12 @@ namespace river {
 			 * @param[in] _time Time to start read data (if before start ==> add 0 at start, if after, remove unread data)
 			 * @return Number of chunk copied.
 			 */
-			size_t read(void* _data, size_t _nbChunk, const std::chrono::system_clock::time_point& _time);
+			size_t read(void* _data, size_t _nbChunk, const std11::chrono::system_clock::time_point& _time);
 			//! @previous
 			size_t read(void* _data, size_t _nbChunk);
-			void setReadPosition(const std::chrono::system_clock::time_point& _time);
+			void setReadPosition(const std11::chrono::system_clock::time_point& _time);
 			
-			std::chrono::system_clock::time_point getReadTimeStamp() {
+			std11::chrono::system_clock::time_point getReadTimeStamp() {
 				return m_timeRead;
 			}
 			/**
