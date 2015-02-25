@@ -10,15 +10,9 @@
 #include <gtest/gtest.h>
 #include <etk/os/FSNode.h>
 #include <math.h>
-
 #include <sstream>
 #include <unistd.h>
-
-#if __cplusplus >= 201103L
-	#include <thread>
-#else
-	#include <etk/thread.h>
-#endif
+#include <etk/thread.h>
 
 #undef __class__
 #define __class__ "test"

@@ -10,11 +10,7 @@
 
 #include <etk/types.h>
 #include <vector>
-#if __cplusplus >= 201103L
-	#include <chrono>
-#else
-	#include <etk/chrono.h>
-#endif
+#include <etk/chrono.h>
 
 namespace river {
 	/**

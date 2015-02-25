@@ -9,11 +9,7 @@
 
 #include <string>
 #include <stdint.h>
-#if __cplusplus >= 201103L
-	#include <memory>
-#else
-	#include <etk/memory.h>
-#endif
+#include <etk/memory.h>
 #include <river/Interface.h>
 #include <audio/format.h>
 #include <audio/channel.h>

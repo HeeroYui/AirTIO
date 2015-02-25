@@ -8,12 +8,7 @@
 
 #include <river/io/NodePortAudio.h>
 #include <river/debug.h>
-
-#if __cplusplus >= 201103L
-	#include <memory>
-#else
-	#include <etk/memory.h>
-#endif
+#include <etk/memory.h>
 
 #undef __class__
 #define __class__ "io::NodePortAudio"

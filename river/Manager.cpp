@@ -60,7 +60,7 @@ std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamIn
 			std::string type = tmppp->getStringValue("io", "error");
 			if (    type == "input"
 			     || type == "feedback") {
-				output.push_back(std::make_pair<std::string,std::string>(keys[iii], std::string("---")));
+				output.push_back(std::make_pair<std::string,std::string>(std::string(keys[iii]), std::string("---")));
 			}
 		}
 	}
@@ -75,7 +75,7 @@ std::vector<std::pair<std::string,std::string> > river::Manager::getListStreamOu
 		if (tmppp != nullptr) {
 			std::string type = tmppp->getStringValue("io", "error");
 			if (type == "output") {
-				output.push_back(std::make_pair<std::string,std::string>(keys[iii], std::string("---")));
+				output.push_back(std::make_pair<std::string,std::string>(std::string(keys[iii]), std::string("---")));
 			}
 		}
 	}

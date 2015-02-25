@@ -7,14 +7,8 @@
 #include <river/io/NodeAEC.h>
 #include <river/debug.h>
 #include <etk/types.h>
-
-#if __cplusplus >= 201103L
-	#include <memory>
-	#include <functional>
-#else
-	#include <etk/memory.h>
-	#include <etk/functional.h>
-#endif
+#include <etk/memory.h>
+#include <etk/functional.h>
 
 #undef __class__
 #define __class__ "io::NodeAEC"

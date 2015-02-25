@@ -10,17 +10,10 @@
 #include <string>
 #include <vector>
 #include <stdint.h>
-#if __cplusplus >= 201103L
-	#include <mutex>
-	#include <chrono>
-	#include <functional>
-	#include <memory>
-#else
-	#include <etk/mutex.h>
-	#include <etk/chrono.h>
-	#include <etk/functional.h>
-	#include <etk/memory.h>
-#endif
+#include <etk/mutex.h>
+#include <etk/chrono.h>
+#include <etk/functional.h>
+#include <etk/memory.h>
 #include <audio/format.h>
 #include <audio/channel.h>
 #include <drain/Process.h>
