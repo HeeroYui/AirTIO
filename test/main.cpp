@@ -611,7 +611,7 @@ class testCallbackVolume {
 		}
 };
 
-void threadVolume(void* _userData) {
+static void threadVolume() {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
 	std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
@@ -623,7 +623,7 @@ void threadVolume(void* _userData) {
 TEST(TestALL, testInputCallBackMicClean) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::thread tmpThread(&threadVolume, nullptr);
+	std11::thread tmpThread(std11::bind(&threadVolume));
 	usleep(100000);
 	
 	APPL_INFO("test input (callback mode)");
