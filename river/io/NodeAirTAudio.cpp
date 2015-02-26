@@ -23,15 +23,6 @@ static std::string asString(const std11::chrono::system_clock::time_point& tp) {
      return ts;
 }
 
-namespace std {
-	static std::ostream& operator <<(std::ostream& _os, const std11::chrono::system_clock::time_point& _obj) {
-		std11::chrono::microseconds us = std11::chrono::duration_cast<std11::chrono::microseconds>(_obj.time_since_epoch());
-		_os << us.count();
-		return _os;
-	}
-}
-
-
 int32_t river::io::NodeAirTAudio::duplexCallback(const void* _inputBuffer,
                                                  const std11::chrono::system_clock::time_point& _timeInput,
                                                  void* _outputBuffer,
@@ -118,30 +109,40 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 	RIVER_INFO("    m_map=" << hardwareFormat.getMap());
 	RIVER_INFO("    m_format=" << hardwareFormat.getFormat());
 	RIVER_INFO("    m_isInput=" << m_isInput);
-	int32_t deviceId = 0;
+	int32_t deviceId = -1;
+	// TODO : Remove this from here (create an extern interface ...)
 	RIVER_INFO("Device list:");
 	for (int32_t iii=0; iii<m_adac.getDeviceCount(); ++iii) {
 		m_info = m_adac.getDeviceInfo(iii);
 		RIVER_INFO("    " << iii << " name :" << m_info.name);
-		if (m_info.name == streamName) {
-			RIVER_INFO("        Select ...");
-			deviceId = iii;
+		m_info.display(2);
+	}
+	// special case for default IO:
+	if (streamName == "default") {
+		if (m_isInput == true) {
+			deviceId = m_adac.getDefaultInputDevice();
+		} else {
+			deviceId = m_adac.getDefaultOutputDevice();
 		}
+	} else {
+		for (int32_t iii=0; iii<m_adac.getDeviceCount(); ++iii) {
+			m_info = m_adac.getDeviceInfo(iii);
+			if (m_info.name == streamName) {
+				RIVER_INFO("    Select ... id =" << iii);
+				deviceId = iii;
+			}
+		}
+	}
+	if (deviceId == -1) {
+		RIVER_ERROR("Can not find the " << streamName << " audio interface ... (use O default ...)");
+		deviceId = 0;
 	}
 	// Open specific ID :
 	m_info = m_adac.getDeviceInfo(deviceId);
 	// display property :
 	{
 		RIVER_INFO("Device " << deviceId << " property :");
-		RIVER_INFO("    probe=" << m_info.probed);
-		RIVER_INFO("    name=" << m_info.name);
-		RIVER_INFO("    outputChannels=" << m_info.outputChannels);
-		RIVER_INFO("    inputChannels=" << m_info.inputChannels);
-		RIVER_INFO("    duplexChannels=" << m_info.duplexChannels);
-		RIVER_INFO("    isDefaultOutput=" << m_info.isDefaultOutput);
-		RIVER_INFO("    isDefaultInput=" << m_info.isDefaultInput);
-		RIVER_INFO("    rates=" << m_info.sampleRates);
-		RIVER_INFO("    native Format: " << m_info.nativeFormats);
+		m_info.display();
 		
 		if (etk::isIn(hardwareFormat.getFormat(), m_info.nativeFormats) == false) {
 			if (type == "auto") {
