@@ -8,7 +8,8 @@
 			# interface : "alsa", "pulse", "core", ...
 			interface:"alsa",
 			# name of the interface
-			name:"default",
+			# name:"default",
+			name:"hw:0,0",
 		},
 		# frequency to open device
 		frequency:48000,
@@ -26,7 +27,8 @@
 		io:"output",
 		map-on:{
 			interface:"alsa",
-			name:"default",
+			#name:"default",
+			name:"hw:0,0",
 		},
 		frequency:48000,
 		channel-map:[

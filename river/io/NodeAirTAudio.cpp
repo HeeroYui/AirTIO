@@ -133,15 +133,23 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 			}
 		}
 	}
+	// TODO : Check if the devace with the specific name exist ...
+	/*
 	if (deviceId == -1) {
 		RIVER_ERROR("Can not find the " << streamName << " audio interface ... (use O default ...)");
 		deviceId = 0;
 	}
+	*/
+	
 	// Open specific ID :
-	m_info = m_adac.getDeviceInfo(deviceId);
+	if (deviceId == -1) {
+		m_info = m_adac.getDeviceInfo(streamName);
+	} else {
+		m_info = m_adac.getDeviceInfo(deviceId);
+	}
 	// display property :
 	{
-		RIVER_INFO("Device " << deviceId << " property :");
+		RIVER_INFO("Device " << deviceId << " - '" << streamName << "' property :");
 		m_info.display();
 		
 		if (etk::isIn(hardwareFormat.getFormat(), m_info.nativeFormats) == false) {
@@ -200,6 +208,8 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 	// open Audio device:
 	airtaudio::StreamParameters params;
 	params.deviceId = deviceId;
+	params.deviceName = streamName;
+	// TODO : Remove limit of 2 channels ...
 	if (m_isInput == true) {
 		m_info.inputChannels = 2;
 		params.nChannels = 2;
