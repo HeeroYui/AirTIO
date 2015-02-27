@@ -217,6 +217,9 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		m_info.outputChannels = 2;
 		params.nChannels = 2;
 	}
+	airtaudio::StreamOptions option;
+	etk::from_string(option.mode, m_config->getStringValue("timestamp-mode", "soft"));
+	
 	
 	m_rtaudioFrameSize = nbChunk;
 	RIVER_INFO("Open output stream nbChannels=" << params.nChannels);
@@ -229,7 +232,8 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		                                    std11::placeholders::_1,
 		                                    std11::placeholders::_2,
 		                                    std11::placeholders::_5,
-		                                    std11::placeholders::_6)
+		                                    std11::placeholders::_6),
+		                        option
 		                        );
 	} else {
 		err = m_adac.openStream(&params, nullptr,
@@ -239,13 +243,26 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		                                    std11::placeholders::_3,
 		                                    std11::placeholders::_4,
 		                                    std11::placeholders::_5,
-		                                    std11::placeholders::_6)
+		                                    std11::placeholders::_6),
+		                        option
 		                        );
 	}
 	if (err != airtaudio::error_none) {
 		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
 	}
 	m_process.updateInterAlgo();
+	// manage Link Between Nodes :
+	if (m_link != nullptr) {
+		RIVER_INFO("********   START LINK   ************");
+		std11::shared_ptr<river::io::NodeAirTAudio> link = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_link);
+		if (link == nullptr) {
+			RIVER_ERROR("Can not link 2 Interface with not the same type (reserved for HW interface)");
+			return;
+		}
+		link->m_adac.isMasterOf(m_adac);
+		// TODO : Add return ...
+		RIVER_INFO("********   LINK might be done  ************");
+	}
 }
 
 river::io::NodeAirTAudio::~NodeAirTAudio() {

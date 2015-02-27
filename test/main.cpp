@@ -609,6 +609,7 @@ static void threadVolume() {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
 	std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
+	usleep(100000);
 	process->run();
 	process.reset();
 	usleep(500000);
@@ -617,12 +618,14 @@ static void threadVolume() {
 TEST(TestALL, testInputCallBackMicClean) {
 	std11::shared_ptr<river::Manager> manager;
 	manager = river::Manager::create("testApplication");
-	std11::thread tmpThread(std11::bind(&threadVolume));
-	usleep(100000);
 	
+	std11::thread tmpThread(std11::bind(&threadVolume));
+	usleep(30000);
 	APPL_INFO("test input (callback mode)");
 	std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager, "microphone-clean");
 	process->run();
+	
+	usleep(100000);
 	process.reset();
 	usleep(500000);
 	tmpThread.join();

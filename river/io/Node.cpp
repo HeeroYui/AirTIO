@@ -93,6 +93,19 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 		m_process.setInputConfig(interfaceFormat);
 	}
 	//m_process.updateInterAlgo();
+	std::string linkWith = m_config->getStringValue("hw-link", "");
+	if (linkWith != "") {
+		std11::shared_ptr<Manager> mng = river::io::Manager::getInstance();
+		if (mng == nullptr) {
+			return;
+		}
+		m_link = mng->getNode(linkWith);
+		if (m_link == nullptr) {
+			RIVER_ERROR("can not link 2 interfaces ...");
+		} else {
+			RIVER_INFO("********    REQUEST LINK interface  ************");
+		}
+	}
 }
 
 river::io::Node::~Node() {

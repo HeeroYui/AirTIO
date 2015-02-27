@@ -63,7 +63,8 @@ namespace river {
 			protected:
 				
 				std11::shared_ptr<drain::VolumeElement> m_volume; //!< if a volume is set it is set here ...
-			
+				
+				std11::shared_ptr<river::io::Node> m_link;
 			protected:
 				std::vector<std11::weak_ptr<river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
 				std::vector<std11::shared_ptr<river::Interface> > m_list;

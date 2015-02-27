@@ -10,7 +10,10 @@
 			# name of the interface
 			# name:"default",
 			name:"hw:0,0",
+			timestamp-mode:"hardware",
 		},
+		# lik hardware ti the specified IO name :
+		hw-link:"speaker",
 		# frequency to open device
 		frequency:48000,
 		# mapping of the harware device (mapping is not get under)
@@ -29,6 +32,7 @@
 			interface:"alsa",
 			#name:"default",
 			name:"hw:0,0",
+			timestamp-mode:"hardware",
 		},
 		frequency:48000,
 		channel-map:[
