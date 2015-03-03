@@ -23,14 +23,6 @@ static std::string asString(const std11::chrono::system_clock::time_point& tp) {
      return ts;
 }
 
-namespace std {
-	static std::ostream& operator <<(std::ostream& _os, const std11::chrono::system_clock::time_point& _obj) {
-		std11::chrono::microseconds us = std11::chrono::duration_cast<std11::chrono::microseconds>(_obj.time_since_epoch());
-		_os << us.count();
-		return _os;
-	}
-}
-
 static int portAudioStreamCallback(const void *_input,
                                    void *_output,
                                    unsigned long _frameCount,
