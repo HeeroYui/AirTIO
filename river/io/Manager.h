@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <list>
 #include <stdint.h>
 #include <etk/chrono.h>
@@ -18,6 +19,7 @@
 #include <audio/channel.h>
 #include <ejson/ejson.h>
 #include <drain/Volume.h>
+#include <river/io/Group.h>
 
 namespace river {
 	namespace io {
@@ -73,6 +75,10 @@ namespace river {
 				 * @param[in] _filename Name of the file to write data.
 				 */
 				virtual void generateDot(const std::string& _filename);
+			private:
+				std::map<std::string, std11::shared_ptr<river::io::Group> > m_listGroup; //!< List of all groups
+				std11::shared_ptr<river::io::Group> getGroup(const std::string& _name);
+				
 		};
 	}
 }

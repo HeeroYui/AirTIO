@@ -10,10 +10,10 @@
 			# name of the interface
 			# name:"default",
 			name:"hw:0,0",
-			timestamp-mode:"hardware",
+			timestamp-mode:"trigered",
 		},
-		# lik hardware ti the specified IO name :
-		hw-link:"speaker",
+		# Link 2 ios with the same time in low level (named group) :
+		group:"baseIOSynchrone",
 		# frequency to open device
 		frequency:48000,
 		# mapping of the harware device (mapping is not get under)
@@ -32,8 +32,9 @@
 			interface:"alsa",
 			#name:"default",
 			name:"hw:0,0",
-			timestamp-mode:"hardware",
+			timestamp-mode:"trigered",
 		},
+		group:"baseIOSynchrone",
 		frequency:48000,
 		channel-map:[
 			"front-left", "front-right",

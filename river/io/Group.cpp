@@ -1,0 +1,135 @@
+/** @file
+ * @author Edouard DUPIN 
+ * @copyright 2015, Edouard DUPIN, all right reserved
+ * @license APACHE v2.0 (see license file)
+ */
+
+#include <river/io/Group.h>
+#include <river/debug.h>
+#include "Node.h"
+#include "NodeAEC.h"
+#include "NodeAirTAudio.h"
+#include "NodePortAudio.h"
+#include "Node.h"
+
+#undef __class__
+#define __class__ "io::Group"
+
+void river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
+	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");
+	for (size_t iii=0; iii<_obj.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmpObject = _obj.getObject(_obj.getKey(iii));
+		if (tmpObject == nullptr) {
+			continue;
+		}
+		std::string groupName = tmpObject->getStringValue("group", "");
+		if (groupName == _name) {
+			RIVER_INFO("Add element in Group[" << _name << "]: " << _obj.getKey(iii));
+			// get type : io
+			std::string ioType = tmpObject->getStringValue("io", "error");
+			#ifdef __AIRTAUDIO_INFERFACE__
+				if (    ioType == "input"
+				     || ioType == "output") {
+					std11::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_obj.getKey(iii), tmpObject);
+					tmp->setGroup(shared_from_this());
+					m_list.push_back(tmp);
+				}
+			#endif
+			#ifdef __PORTAUDIO_INFERFACE__
+				if (    ioType == "PAinput"
+				     || ioType == "PAoutput") {
+					std11::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_obj.getKey(iii), tmpObject);
+					tmp->setGroup(shared_from_this());
+					m_list.push_back(tmp);
+				}
+			#endif
+		}
+	}
+	// Link all the IO together : (not needed if one device ...
+	// Note : The interlink work only for alsa (NOW) and with AirTAudio...
+	if(m_list.size() > 1) {
+		#ifdef __AIRTAUDIO_INFERFACE__
+			std11::shared_ptr<river::io::NodeAirTAudio> linkRef = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_list[0]);
+			for (size_t iii=1; iii<m_list.size(); ++iii) {
+				if (m_list[iii] != nullptr) {
+					std11::shared_ptr<river::io::NodeAirTAudio> link = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_list[iii]);
+					linkRef->m_adac.isMasterOf(link->m_adac);
+				}
+			}
+		#endif
+	}
+	/*
+	// manage Link Between Nodes :
+	if (m_link != nullptr) {
+		RIVER_INFO("********   START LINK   ************");
+		std11::shared_ptr<river::io::NodeAirTAudio> link = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_link);
+		if (link == nullptr) {
+			RIVER_ERROR("Can not link 2 Interface with not the same type (reserved for HW interface)");
+			return;
+		}
+		link->m_adac.isMasterOf(m_adac);
+		// TODO : Add return ...
+		RIVER_INFO("********   LINK might be done  ************");
+	}
+	*/
+	RIVER_INFO("Create Group[" << _name << "] ( END )    ___________________________");
+	RIVER_INFO("Group[" << _name << "] List elements : ");
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			RIVER_INFO("    " << m_list[iii]->getName());
+		}
+	}
+}
+
+
+std11::shared_ptr<river::io::Node> river::io::Group::getNode(const std::string& _name) {
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			if (m_list[iii]->getName() == _name) {
+				return m_list[iii];
+			}
+		}
+	}
+	return std11::shared_ptr<river::io::Node>();
+}
+
+void river::io::Group::start() {
+	RIVER_ERROR("request start ");
+	int32_t count = 0;
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			count += m_list[iii]->getNumberOfInterface();
+		}
+	}
+	RIVER_ERROR(" have " << count << " interfaces ...");
+	if (count == 1) {
+		RIVER_ERROR("GROUP :::::::::::: START() [START]");
+		for (size_t iii=0; iii<m_list.size(); ++iii) {
+			if (m_list[iii] != nullptr) {
+				m_list[iii]->start();
+			}
+		}
+		RIVER_ERROR("GROUP :::::::::::: START() [DONE]");
+	}
+}
+
+void river::io::Group::stop() {
+	RIVER_ERROR("request stop ");
+	int32_t count = 0;
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			count += m_list[iii]->getNumberOfInterface();
+		}
+	}
+	RIVER_ERROR(" have " << count << " interfaces ...");
+	if (count == 0) {
+		RIVER_ERROR("GROUP :::::::::::: STOP() [START]");
+		for (size_t iii=0; iii<m_list.size(); ++iii) {
+			if (m_list[iii] != nullptr) {
+				m_list[iii]->stop();
+			}
+		}
+		RIVER_ERROR("GROUP :::::::::::: STOP() [DONE]");
+	}
+}
+

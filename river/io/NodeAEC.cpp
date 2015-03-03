@@ -246,7 +246,7 @@ void river::io::NodeAEC::stop() {
 		} \
 		if (pointerOnFile != nullptr) { \
 			fwrite((dataPointer), sizeof(type), (nbElement), pointerOnFile); \
-			fflush(pointerOnFile); \
+			/* fflush(pointerOnFile);*/ \
 		} \
 	}while(0)
 
@@ -258,13 +258,14 @@ void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
                                                   uint32_t _frequency,
                                                   const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
+	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferMicrophone.write(_data, _nbChunk, _time);
-	SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
+	//SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 	process();
 }
 
@@ -275,13 +276,14 @@ void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
                                                 uint32_t _frequency,
                                                 const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
+	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferFeedBack.write(_data, _nbChunk, _time);
-	SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
+	//SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 	process();
 }
 

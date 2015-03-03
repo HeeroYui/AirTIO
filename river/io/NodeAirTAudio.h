@@ -14,7 +14,9 @@
 namespace river {
 	namespace io {
 		class Manager;
+		class Group;
 		class NodeAirTAudio : public Node {
+			friend river::io::Group;
 			protected:
 				/**
 				 * @brief Constructor

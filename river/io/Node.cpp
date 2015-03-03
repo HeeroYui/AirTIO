@@ -93,19 +93,6 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 		m_process.setInputConfig(interfaceFormat);
 	}
 	//m_process.updateInterAlgo();
-	std::string linkWith = m_config->getStringValue("hw-link", "");
-	if (linkWith != "") {
-		std11::shared_ptr<Manager> mng = river::io::Manager::getInstance();
-		if (mng == nullptr) {
-			return;
-		}
-		m_link = mng->getNode(linkWith);
-		if (m_link == nullptr) {
-			RIVER_ERROR("can not link 2 interfaces ...");
-		} else {
-			RIVER_INFO("********    REQUEST LINK interface  ************");
-		}
-	}
 }
 
 river::io::Node::~Node() {
@@ -150,7 +137,7 @@ void river::io::Node::interfaceAdd(const std11::shared_ptr<river::Interface>& _i
 		m_list.push_back(_interface);
 	}
 	if (m_list.size() == 1) {
-		start();
+		startInGroup();
 	}
 }
 
@@ -166,7 +153,7 @@ void river::io::Node::interfaceRemove(const std11::shared_ptr<river::Interface>&
 		}
 	}
 	if (m_list.size() == 0) {
-		stop();
+		stopInGroup();
 	}
 	return;
 }
@@ -225,7 +212,7 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName());
 		// clear datas ...
 		memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
-		RIVER_VERBOSE("        request Data="<< _nbChunk);
+		RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
 		m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
 		RIVER_VERBOSE("        Mix it ...");
 		outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
@@ -244,7 +231,7 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 		if (m_list[iii]->getMode() != river::modeInterface_feedback) {
 			continue;
 		}
-		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " (feedback)");
+		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " (feedback) time=" << _time);
 		m_list[iii]->systemNewInputData(_time, _outputBuffer, _nbChunk);
 	}
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [ END ]");
@@ -333,3 +320,21 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 	}
 }
 
+
+void river::io::Node::startInGroup() {
+	std11::shared_ptr<river::io::Group> group = m_group.lock();
+	if (group != nullptr) {
+		group->start();
+	} else {
+		start();
+	}
+}
+
+void river::io::Node::stopInGroup() {
+	std11::shared_ptr<river::io::Group> group = m_group.lock();
+	if (group != nullptr) {
+		group->stop();
+	} else {
+		stop();
+	}
+}

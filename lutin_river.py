@@ -15,6 +15,7 @@ def create(target):
 		'river/Manager.cpp',
 		'river/Interface.cpp',
 		'river/CircularBuffer.cpp',
+		'river/io/Group.cpp',
 		'river/io/Node.cpp',
 		'river/io/NodeAirTAudio.cpp',
 		'river/io/NodePortAudio.cpp',

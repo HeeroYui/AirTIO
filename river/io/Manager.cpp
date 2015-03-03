@@ -11,6 +11,9 @@
 #include "NodeAirTAudio.h"
 #include "NodePortAudio.h"
 #include <etk/os/FSNode.h>
+#include <etk/memory.h>
+#include <etk/types.h>
+#include <utility>
 
 #undef __class__
 #define __class__ "io::Manager"
@@ -84,40 +87,74 @@ std11::shared_ptr<river::io::Manager> river::io::Manager::getInstance() {
 
 std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& _name) {
 	RIVER_WARNING("Get node : " << _name);
+	// search in the standalone list :
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		std11::shared_ptr<river::io::Node> tmppp = m_list[iii].lock();
 		if (    tmppp != nullptr
 		     && _name == tmppp->getName()) {
-			RIVER_WARNING(" find it ... ");
+			RIVER_WARNING(" find it ... in standalone");
 			return tmppp;
+		}
+	}
+	// search in the group list:
+	{
+		for (std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it(m_listGroup.begin());
+		     it != m_listGroup.end();
+		     ++it) {
+			if (it->second != nullptr) {
+				std11::shared_ptr<river::io::Node> node = it->second->getNode(_name);
+				if (node != nullptr) {
+					RIVER_WARNING(" find it ... in group: " << it->first);
+					return node;
+				}
+			}
 		}
 	}
 	RIVER_WARNING("Create a new one : " << _name);
 	// check if the node can be open :
 	const std11::shared_ptr<const ejson::Object> tmpObject = m_config.getObject(_name);
 	if (tmpObject != nullptr) {
+		//Check if it is in a group:
+		std::string groupName = tmpObject->getStringValue("group", "");
 		// get type : io
 		std::string ioType = tmpObject->getStringValue("io", "error");
-		#ifdef __AIRTAUDIO_INFERFACE__
-		if (    ioType == "input"
-		     || ioType == "output") {
-			std11::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_name, tmpObject);
-			m_list.push_back(tmp);
-			return tmp;
-		} else
-		#endif
-		#ifdef __PORTAUDIO_INFERFACE__
-		if (    ioType == "PAinput"
-		     || ioType == "PAoutput") {
-			std11::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_name, tmpObject);
-			m_list.push_back(tmp);
-			return tmp;
-		} else 
-		#endif
-		if (ioType == "aec") {
-			std11::shared_ptr<river::io::Node> tmp = river::io::NodeAEC::create(_name, tmpObject);
-			m_list.push_back(tmp);
-			return tmp;
+		if (    groupName != ""
+		     && (    ioType == "input"
+		          || ioType == "output"
+		          || ioType == "PAinput"
+		          || ioType == "PAoutput") ) {
+			std11::shared_ptr<river::io::Group> tmpGroup = getGroup(groupName);
+			if (tmpGroup == nullptr) {
+				RIVER_WARNING("Can not get group ... '" << groupName << "'");
+				return std11::shared_ptr<river::io::Node>();
+			}
+			return tmpGroup->getNode(_name);
+		} else {
+			if (groupName != "") {
+				RIVER_WARNING("Group is only availlable for Hardware interface ... '" << _name << "'");
+			}
+			// TODO : Create a standalone group for every single element ==> simplify understanding ... but not for virtual interface ...
+			#ifdef __AIRTAUDIO_INFERFACE__
+			if (    ioType == "input"
+			     || ioType == "output") {
+				std11::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_name, tmpObject);
+				m_list.push_back(tmp);
+				return tmp;
+			}
+			#endif
+			#ifdef __PORTAUDIO_INFERFACE__
+			if (    ioType == "PAinput"
+			     || ioType == "PAoutput") {
+				std11::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_name, tmpObject);
+				m_list.push_back(tmp);
+				return tmp;
+			}
+			#endif
+			if (ioType == "aec") {
+				std11::shared_ptr<river::io::Node> tmp = river::io::NodeAEC::create(_name, tmpObject);
+				m_list.push_back(tmp);
+				return tmp;
+			}
 		}
 	}
 	RIVER_ERROR("Can not create the interface : '" << _name << "' the node is not DEFINED in the configuration file availlable : " << m_config.getKeys());
@@ -195,4 +232,25 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 	node << "}" << "\n";
 	node.fileClose();
 	RIVER_INFO("Generate the DOT files: " << node << " (DONE)");
+}
+
+std11::shared_ptr<river::io::Group> river::io::Manager::getGroup(const std::string& _name) {
+	std11::shared_ptr<river::io::Group> out;
+	std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it = m_listGroup.find(_name);
+	if (it == m_listGroup.end()) {
+		RIVER_INFO("Create a new group: " << _name << " (START)");
+		out = std11::make_shared<river::io::Group>();
+		if (out != nullptr) {
+			out->createFrom(m_config, _name);
+			std::pair<std::string, std11::shared_ptr<river::io::Group> > plop(std::string(_name), out);
+			m_listGroup.insert(plop);
+			RIVER_INFO("Create a new group: " << _name << " ( END )");
+		} else {
+			RIVER_ERROR("Can not create new group: " << _name << " ( END )");
+		}
+	} else {
+		out = it->second;
+	}
+	
+	return out;
 }

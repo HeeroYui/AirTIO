@@ -26,7 +26,9 @@
 namespace river {
 	namespace io {
 		class Manager;
+		class Group;
 		class Node : public std11::enable_shared_from_this<Node> {
+			friend river::io::Group;
 			protected:
 				uint32_t m_uid; // uniqueNodeID
 			protected:
@@ -63,12 +65,14 @@ namespace river {
 			protected:
 				
 				std11::shared_ptr<drain::VolumeElement> m_volume; //!< if a volume is set it is set here ...
-				
-				std11::shared_ptr<river::io::Node> m_link;
 			protected:
 				std::vector<std11::weak_ptr<river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
 				std::vector<std11::shared_ptr<river::Interface> > m_list;
 				size_t getNumberOfInterface(enum river::modeInterface _interfaceType);
+			public:
+				size_t getNumberOfInterface() {
+					return m_list.size();
+				}
 			public:
 				void registerAsRemote(const std11::shared_ptr<river::Interface>& _interface);
 				void interfaceAdd(const std11::shared_ptr<river::Interface>& _interface);
@@ -89,6 +93,14 @@ namespace river {
 					return !m_isInput;
 				}
 			protected:
+				std11::weak_ptr<river::io::Group> m_group;
+			public:
+				void setGroup(std11::shared_ptr<river::io::Group> _group) {
+					m_group = _group;
+				}
+			protected:
+				void startInGroup();
+				void stopInGroup();
 				virtual void start() = 0;
 				virtual void stop() = 0;
 			public:
