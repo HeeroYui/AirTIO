@@ -28,7 +28,7 @@ namespace river {
 		class Manager;
 		class Group;
 		class Node : public std11::enable_shared_from_this<Node> {
-			friend river::io::Group;
+			friend class river::io::Group;
 			protected:
 				uint32_t m_uid; // uniqueNodeID
 			protected:

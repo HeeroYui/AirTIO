@@ -86,6 +86,7 @@ std11::shared_ptr<river::io::Manager> river::io::Manager::getInstance() {
 }
 
 std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& _name) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	RIVER_WARNING("Get node : " << _name);
 	// search in the standalone list :
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
@@ -162,6 +163,7 @@ std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string
 }
 
 std11::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const std::string& _name) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	if (_name == "") {
 		RIVER_ERROR("Try to create an audio group with no name ...");
 		return std11::shared_ptr<drain::VolumeElement>();
@@ -181,6 +183,7 @@ std11::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const
 }
 
 bool river::io::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std11::shared_ptr<drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
@@ -202,6 +205,7 @@ bool river::io::Manager::setVolume(const std::string& _volumeName, float _valued
 }
 
 float river::io::Manager::getVolume(const std::string& _volumeName) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std11::shared_ptr<drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
@@ -215,6 +219,7 @@ std::pair<float,float> river::io::Manager::getVolumeRange(const std::string& _vo
 }
 
 void river::io::Manager::generateDot(const std::string& _filename) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	etk::FSNode node(_filename);
 	RIVER_INFO("Generate the DOT files: " << node);
 	if (node.fileOpenWrite() == false) {
@@ -235,6 +240,7 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 }
 
 std11::shared_ptr<river::io::Group> river::io::Manager::getGroup(const std::string& _name) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std11::shared_ptr<river::io::Group> out;
 	std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it = m_listGroup.find(_name);
 	if (it == m_listGroup.end()) {

@@ -12,6 +12,7 @@
 #include <map>
 #include <list>
 #include <stdint.h>
+#include <etk/mutex.h>
 #include <etk/chrono.h>
 #include <etk/functional.h>
 #include <etk/memory.h>
@@ -25,6 +26,8 @@ namespace river {
 	namespace io {
 		class Node;
 		class Manager {
+			private:
+				mutable std11::recursive_mutex m_mutex;
 			private:
 				/**
 				 * @brief Constructor
