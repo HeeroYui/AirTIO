@@ -103,5 +103,31 @@
 		algo-mode:"cutter",
 		feedback-delay:10000, # in nanosecond
 		mux-demux-type:"int16",
-	}
+	},
+	# virtual Nodes :
+	microphone-muxed:{
+		io:"muxer",
+		# connect in input mode
+		map-on-input-1:{
+			# generic virtual definition
+			io:"input",
+			map-on:"microphone",
+			resampling-type:"speexdsp",
+			resampling-option:"quality=10"
+		},
+		# connect in feedback mode
+		map-on-input-2:{
+			io:"feedback",
+			map-on:"speaker",
+			resampling-type:"speexdsp",
+			resampling-option:"quality=10",
+		},
+		#classical format configuration:
+		frequency:48000,
+		channel-map:[
+			"front-left", "front-right", "rear-left", "rear-right"
+		],
+		type:"int16",
+		mux-demux-type:"int16",
+	},
 }

@@ -29,4 +29,10 @@
 		resampling-type:"speexdsp",
 		resampling-option:"quality=10"
 	},
+	microphone-muxed:{
+		io:"input",
+		map-on:"microphone-muxed",
+		resampling-type:"speexdsp",
+		resampling-option:"quality=10"
+	},
 }

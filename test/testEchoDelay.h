@@ -269,8 +269,8 @@ namespace river_test_echo_delay {
 						if (    valueMax > m_volumeInputMax
 						     && valueMin < m_volumeInputMin
 						     && (    m_gain == 0.0
-						          || (    valueMax > INT16_MAX/2
-						               && valueMin < INT16_MIN/2
+						          || (    valueMax > INT16_MAX*2/3
+						               && valueMin < INT16_MIN*2/3
 						             )
 						         )
 						   ) {

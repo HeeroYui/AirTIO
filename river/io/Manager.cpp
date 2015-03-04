@@ -8,6 +8,7 @@
 #include <river/debug.h>
 #include "Node.h"
 #include "NodeAEC.h"
+#include "NodeMuxer.h"
 #include "NodeAirTAudio.h"
 #include "NodePortAudio.h"
 #include <etk/os/FSNode.h>
@@ -153,6 +154,11 @@ std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string
 			#endif
 			if (ioType == "aec") {
 				std11::shared_ptr<river::io::Node> tmp = river::io::NodeAEC::create(_name, tmpObject);
+				m_list.push_back(tmp);
+				return tmp;
+			}
+			if (ioType == "muxer") {
+				std11::shared_ptr<river::io::Node> tmp = river::io::NodeMuxer::create(_name, tmpObject);
 				m_list.push_back(tmp);
 				return tmp;
 			}

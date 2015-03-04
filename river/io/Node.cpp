@@ -37,7 +37,8 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 	std::string interfaceType = m_config->getStringValue("io");
 	if (    interfaceType == "input"
 	     || interfaceType == "PAinput"
-	     || interfaceType == "aec") {
+	     || interfaceType == "aec"
+	     || interfaceType == "muxer") {
 		m_isInput = true;
 	} else {
 		m_isInput = false;

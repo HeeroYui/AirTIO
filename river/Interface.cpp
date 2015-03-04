@@ -31,6 +31,7 @@ bool river::Interface::init(const std::string& _name,
                             audio::format _format,
                             const std11::shared_ptr<river::io::Node>& _node,
                             const std11::shared_ptr<const ejson::Object>& _config) {
+	std::vector<audio::channel> map(_map);
 	m_name = _name;
 	m_node = _node;
 	m_volume = 0.0f;
@@ -46,6 +47,13 @@ bool river::Interface::init(const std::string& _name,
 	}
 	// register interface to be notify from the volume change.
 	m_node->registerAsRemote(shared_from_this());
+	
+	if (map.size() == 0) {
+		RIVER_INFO("Select auto map system ...");
+		map = m_node->getInterfaceFormat().getMap();
+		RIVER_INFO("    ==> " << map);
+	}
+	
 	// Create convertion interface
 	if (    m_node->isInput() == true
 	     && m_mode == river::modeInterface_input) {
@@ -61,10 +69,10 @@ bool river::Interface::init(const std::string& _name,
 			RIVER_INFO(" add volume for node");
 			algo->addVolumeStage(tmpVolume);
 		}
-		m_process.setOutputConfig(drain::IOFormatInterface(_map, _format, _freq));
+		m_process.setOutputConfig(drain::IOFormatInterface(map, _format, _freq));
 	} else if (    m_node->isOutput() == true
 	            && m_mode == river::modeInterface_output) {
-		m_process.setInputConfig(drain::IOFormatInterface(_map, _format, _freq));
+		m_process.setInputConfig(drain::IOFormatInterface(map, _format, _freq));
 		// add all time the volume stage :
 		std11::shared_ptr<drain::Volume> algo = drain::Volume::create();
 		//algo->setOutputFormat(m_node->getInterfaceFormat());
@@ -88,7 +96,7 @@ bool river::Interface::init(const std::string& _name,
 		m_process.pushBack(algo);
 		*/
 		// note : feedback has no volume stage ...
-		m_process.setOutputConfig(drain::IOFormatInterface(_map, _format, _freq));
+		m_process.setOutputConfig(drain::IOFormatInterface(map, _format, _freq));
 	} else {
 		RIVER_ERROR("Can not link virtual interface with type : " << m_mode << " to a hardware interface " << (m_node->isInput()==true?"input":"output"));
 		return false;

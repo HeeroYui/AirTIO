@@ -27,6 +27,7 @@ namespace river {
 		class Node;
 		class NodeAirTAudio;
 		class NodeAEC;
+		class NodeMuxer;
 	}
 	enum modeInterface {
 		modeInterface_unknow,
@@ -38,6 +39,7 @@ namespace river {
 		friend class io::Node;
 		friend class io::NodeAirTAudio;
 		friend class io::NodeAEC;
+		friend class io::NodeMuxer;
 		friend class Manager;
 		protected:
 			uint32_t m_uid; //!< unique ID for interface

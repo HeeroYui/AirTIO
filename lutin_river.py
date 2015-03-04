@@ -20,6 +20,7 @@ def create(target):
 		'river/io/NodeAirTAudio.cpp',
 		'river/io/NodePortAudio.cpp',
 		'river/io/NodeAEC.cpp',
+		'river/io/NodeMuxer.cpp',
 		'river/io/Manager.cpp'
 		])
 	myModule.add_optionnal_module_depend('airtaudio', "__AIRTAUDIO_INFERFACE__")
