@@ -58,6 +58,8 @@ namespace river {
 				std::vector<uint8_t> m_data;
 			public:
 				virtual void generateDot(etk::FSNode& _node);
+			private:
+				void reorder(void* _output, uint32_t _nbChunk, void* _input, const std::vector<audio::channel>& _mapInput);
 		};
 	}
 }
