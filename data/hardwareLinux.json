@@ -1,4 +1,22 @@
 {
+	speaker:{
+		io:"output",
+		map-on:{
+			interface:"alsa",
+			#name:"default",
+			name:"hw:0,0",
+			timestamp-mode:"trigered",
+		},
+		group:"baseIOSynchrone",
+		frequency:48000,
+		channel-map:[
+			"front-left", "front-right",
+		],
+		type:"int16",
+		nb-chunk:1024,
+		volume-name:"MASTER",
+		mux-demux-type:"int16-on-int32",
+	},
 	# name of the device
 	microphone:{
 		# input or output
@@ -25,24 +43,6 @@
 		# number of chunk to open device (create the latency anf the frequency to call user)
 		nb-chunk:1024,
 		mux-demux-type:"int16",
-	},
-	speaker:{
-		io:"output",
-		map-on:{
-			interface:"alsa",
-			#name:"default",
-			name:"hw:0,0",
-			timestamp-mode:"trigered",
-		},
-		group:"baseIOSynchrone",
-		frequency:48000,
-		channel-map:[
-			"front-left", "front-right",
-		],
-		type:"int16",
-		nb-chunk:1024,
-		volume-name:"MASTER",
-		mux-demux-type:"int16-on-int32",
 	},
 	speaker-pulse:{
 		io:"output",

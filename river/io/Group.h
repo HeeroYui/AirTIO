@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <ejson/ejson.h>
+#include <etk/os/FSNode.h>
 
 namespace river {
 	namespace io {
@@ -26,6 +27,7 @@ namespace river {
 				std11::shared_ptr<river::io::Node> getNode(const std::string& _name);
 				void start();
 				void stop();
+				void generateDot(etk::FSNode& _node);
 		};
 	}
 }

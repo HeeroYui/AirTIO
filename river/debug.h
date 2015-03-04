@@ -47,5 +47,26 @@ namespace river {
 		} \
 	} while (0)
 
+
+#define RIVER_SAVE_FILE_MACRO(type,fileName,dataPointer,nbElement) \
+	do { \
+		static FILE *pointerOnFile = nullptr; \
+		static bool errorOpen = false; \
+		if (NULL==pointerOnFile) { \
+			RIVER_WARNING("open file '" << fileName << "' type=" << #type); \
+			pointerOnFile = fopen(fileName,"w"); \
+			if (    errorOpen == false \
+			     && pointerOnFile == nullptr) { \
+				RIVER_ERROR("ERROR OPEN file ... '" << fileName << "' type=" << #type); \
+				errorOpen=true; \
+			} \
+		} \
+		if (pointerOnFile != nullptr) { \
+			fwrite((dataPointer), sizeof(type), (nbElement), pointerOnFile); \
+			/* fflush(pointerOnFile);*/ \
+		} \
+	}while(0)
+
+
 #endif
 

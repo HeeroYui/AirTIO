@@ -113,6 +113,19 @@ size_t river::io::Node::getNumberOfInterface(enum river::modeInterface _interfac
 	}
 	return out;
 }
+size_t river::io::Node::getNumberOfInterfaceAvaillable(enum river::modeInterface _interfaceType) {
+	size_t out = 0;
+	for (size_t iii=0; iii<m_listAvaillable.size(); ++iii) {
+		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		if (element == nullptr) {
+			continue;
+		}
+		if (element->getMode() == _interfaceType) {
+			out++;
+		}
+	}
+	return out;
+}
 
 void river::io::Node::registerAsRemote(const std11::shared_ptr<river::Interface>& _interface) {
 	std::vector<std11::weak_ptr<river::Interface> >::iterator it = m_listAvaillable.begin();
@@ -269,8 +282,8 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 		_node << "		node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
 		_node << "		node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
 	} else {
-		size_t nbOutput = getNumberOfInterface(river::modeInterface_output);
-		size_t nbfeedback = getNumberOfInterface(river::modeInterface_feedback);
+		size_t nbOutput = getNumberOfInterfaceAvaillable(river::modeInterface_output);
+		size_t nbfeedback = getNumberOfInterfaceAvaillable(river::modeInterface_feedback);
 		_node << "	node [shape=larrow];\n";
 		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=SPEAKER\n type=output\" ];\n";
 		if (nbOutput>0) {
@@ -305,14 +318,27 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 	}
 	_node << "}\n";
 	
-	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
-			if (m_list[iii]->getMode() == modeInterface_input) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
-			} else if (m_list[iii]->getMode() == modeInterface_output) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
-			} else if (m_list[iii]->getMode() == modeInterface_feedback) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
+		if (m_listAvaillable[iii].expired() == true) {
+			continue;
+		}
+		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		if (element == nullptr) {
+			continue;
+		}
+		bool isLink = false;
+		for (size_t jjj=0; jjj<m_list.size(); ++jjj) {
+			if (element == m_list[jjj]) {
+				isLink = true;
+			}
+		}
+		if (element != nullptr) {
+			if (element->getMode() == modeInterface_input) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+			} else if (element->getMode() == modeInterface_output) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer", isLink);
+			} else if (element->getMode() == modeInterface_feedback) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
 			} else {
 				
 			}

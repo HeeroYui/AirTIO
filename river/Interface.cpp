@@ -80,11 +80,13 @@ bool river::Interface::init(const std::string& _name,
 	} else if (    m_node->isOutput() == true
 	            && m_mode == river::modeInterface_feedback) {
 		m_process.setInputConfig(m_node->getHarwareFormat());
+		/*
 		// add all time the volume stage :
 		std11::shared_ptr<drain::Volume> algo = drain::Volume::create();
 		//algo->setInputFormat(m_node->getInterfaceFormat());
 		algo->setName("volume");
 		m_process.pushBack(algo);
+		*/
 		// note : feedback has no volume stage ...
 		m_process.setOutputConfig(drain::IOFormatInterface(_map, _format, _freq));
 	} else {
@@ -135,6 +137,10 @@ void river::Interface::setReadwrite() {
 
 void river::Interface::setOutputCallback(drain::playbackFunction _function) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_mode != river::modeInterface_output) {
+		RIVER_ERROR("Can not set output endpoint on other than a output IO");
+		return;
+	}
 	m_process.removeAlgoDynamic();
 	m_process.removeIfFirst<drain::EndPoint>();
 	std11::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
@@ -143,6 +149,10 @@ void river::Interface::setOutputCallback(drain::playbackFunction _function) {
 
 void river::Interface::setInputCallback(drain::recordFunction _function) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_mode == river::modeInterface_output) {
+		RIVER_ERROR("Can not set output endpoint on other than a input or feedback IO");
+		return;
+	}
 	m_process.removeAlgoDynamic();
 	m_process.removeIfLast<drain::EndPoint>();
 	std11::shared_ptr<drain::Algo> algo = drain::EndPointCallback::create(_function);
@@ -151,6 +161,10 @@ void river::Interface::setInputCallback(drain::recordFunction _function) {
 
 void river::Interface::setWriteCallback(drain::playbackFunctionWrite _function) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_mode != river::modeInterface_output) {
+		RIVER_ERROR("Can not set output endpoint on other than a output IO");
+		return;
+	}
 	m_process.removeAlgoDynamic();
 	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
 	if (algo == nullptr) {
@@ -325,6 +339,7 @@ void river::Interface::systemNewInputData(std11::chrono::system_clock::time_poin
 
 void river::Interface::systemNeedOutputData(std11::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize) {
 	std11::unique_lock<std11::recursive_mutex> lockProcess(m_mutex);
+	//RIVER_INFO("time :                           " << _time);
 	m_process.pull(_time, _data, _nbChunk, _chunkSize);
 }
 
@@ -337,16 +352,24 @@ void river::Interface::systemVolumeChange() {
 	algo->volumeChange();
 }
 
-static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second) {
+static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second, bool _isLink=true) {
 	if (_op == "->") {
-		_node << "		" << _first << " -> " << _second << ";\n";
+		if (_isLink) {
+			_node << "		" << _first << " -> " << _second << ";\n";
+		} else {
+			_node << "		" << _first << " -> " << _second << " [style=dashed];\n";
+		}
 	} else if (_op == "<-") {
 		_node << "		" << _first << " -> " <<_second<< " [color=transparent];\n";
-		_node << "		" << _second << " -> " << _first << " [constraint=false];\n";
+		if (_isLink) {
+			_node << "		" << _second << " -> " << _first << " [constraint=false];\n";
+		} else {
+			_node << "		" << _second << " -> " << _first << " [constraint=false, style=dashed];\n";
+		}
 	}
 }
 
-void river::Interface::generateDot(etk::FSNode& _node, const std::string& _nameIO) {
+void river::Interface::generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink) {
 	_node << "subgraph clusterInterface_" << m_uid << " {\n";
 	_node << "	color=orange;\n";
 	_node << "	label=\"[" << m_uid << "] Interface : " << m_name << "\";\n";
@@ -359,10 +382,10 @@ void river::Interface::generateDot(etk::FSNode& _node, const std::string& _nameI
 	_node << "		}\n";
 	if (    m_mode == river::modeInterface_input
 	     || m_mode == river::modeInterface_feedback) {
-		link(_node, _nameIO,                                           "->", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in");
+		link(_node, _nameIO,                                           "->", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in", _isLink);
 		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in", "->", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out");
 	} else {
-		link(_node, _nameIO,                                            "<-", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out");
+		link(_node, _nameIO,                                            "<-", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", _isLink);
 		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", "<-", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in");
 	}
 	_node << "	node [shape=Mdiamond];\n";

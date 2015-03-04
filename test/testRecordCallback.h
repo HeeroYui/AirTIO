@@ -15,11 +15,9 @@ namespace river_test_record_callback {
 		private:
 			std11::shared_ptr<river::Manager> m_manager;
 			std11::shared_ptr<river::Interface> m_interface;
-			double m_phase;
 		public:
 			testInCallback(std11::shared_ptr<river::Manager> _manager, const std::string& _input="microphone") :
-			  m_manager(_manager),
-			  m_phase(0) {
+			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
 				channelMap.push_back(audio::channel_frontLeft);
@@ -61,7 +59,7 @@ namespace river_test_record_callback {
 				// wait 2 second ...
 				usleep(2000000);
 				
-				m_manager->generateDotAll("activeProcess.dot");
+				
 				m_interface->stop();
 			}
 	};

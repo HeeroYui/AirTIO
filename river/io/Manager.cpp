@@ -228,10 +228,18 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 	}
 	node << "digraph G {" << "\n";
 	node << "	rankdir=\"LR\";\n";
+	// standalone
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		std11::shared_ptr<river::io::Node> val = m_list[iii].lock();
 		if (val != nullptr) {
 			val->generateDot(node);
+		}
+	}
+	for (std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it(m_listGroup.begin());
+	     it != m_listGroup.end();
+	     ++it) {
+		if (it->second != nullptr) {
+			it->second->generateDot(node);
 		}
 	}
 	node << "}" << "\n";

@@ -112,11 +112,15 @@ std11::shared_ptr<river::Interface> river::Manager::createOutput(float _freq,
 		RIVER_ERROR("can not open in output a virtual interface: '" << _streamName << "' configured has : " << type);
 		return std11::shared_ptr<river::Interface>();
 	}
-	
+	std::string mapOn = tmppp->getStringValue("map-on", "");
+	if (mapOn == "") {
+		RIVER_ERROR("can not open in output a virtual interface: '" << _streamName << "' No 'map-on' element in json file ... ");
+		return std11::shared_ptr<river::Interface>();
+	}
 	// get global hardware interface:
 	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std11::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
+	std11::shared_ptr<river::io::Node> node = manager->getNode(mapOn);
 	// create user iterface:
 	std11::shared_ptr<river::Interface> interface;
 	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);
@@ -143,10 +147,15 @@ std11::shared_ptr<river::Interface> river::Manager::createInput(float _freq,
 		RIVER_ERROR("can not open in output a virtual interface: '" << _streamName << "' configured has : " << type);
 		return std11::shared_ptr<river::Interface>();
 	}
+	std::string mapOn = tmppp->getStringValue("map-on", "");
+	if (mapOn == "") {
+		RIVER_ERROR("can not open in output a virtual interface: '" << _streamName << "' No 'map-on' element in json file ... ");
+		return std11::shared_ptr<river::Interface>();
+	}
 	// get global hardware interface:
 	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
 	// get the output or input channel :
-	std11::shared_ptr<river::io::Node> node = manager->getNode(_streamName);
+	std11::shared_ptr<river::io::Node> node = manager->getNode(mapOn);
 	// create user iterface:
 	std11::shared_ptr<river::Interface> interface;
 	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);

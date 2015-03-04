@@ -231,25 +231,6 @@ void river::io::NodeAEC::stop() {
 	}
 }
 
-#define SAVE_FILE_MACRO(type,fileName,dataPointer,nbElement) \
-	do { \
-		static FILE *pointerOnFile = nullptr; \
-		static bool errorOpen = false; \
-		if (NULL==pointerOnFile) { \
-			RIVER_WARNING("open file '" << fileName << "' type=" << #type); \
-			pointerOnFile = fopen(fileName,"w"); \
-			if (    errorOpen == false \
-			     && pointerOnFile == nullptr) { \
-				RIVER_ERROR("ERROR OPEN file ... '" << fileName << "' type=" << #type); \
-				errorOpen=true; \
-			} \
-		} \
-		if (pointerOnFile != nullptr) { \
-			fwrite((dataPointer), sizeof(type), (nbElement), pointerOnFile); \
-			/* fflush(pointerOnFile);*/ \
-		} \
-	}while(0)
-
 
 void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
                                                   const std11::chrono::system_clock::time_point& _time,
@@ -265,7 +246,7 @@ void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
 	// push data synchronize
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferMicrophone.write(_data, _nbChunk, _time);
-	//SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
+	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 	process();
 }
 
@@ -283,7 +264,7 @@ void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 	// push data synchronize
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferFeedBack.write(_data, _nbChunk, _time);
-	//SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
+	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 	process();
 }
 
@@ -344,8 +325,8 @@ void river::io::NodeAEC::process() {
 		RIVER_INFO(" process 256 samples ... micTime=" << MicTime << " fbTime=" << fbTime << " delta = " << (MicTime-fbTime).count());
 		m_bufferMicrophone.read(&dataMic[0], 256);
 		m_bufferFeedBack.read(&dataFB[0], 256);
-		SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], 256*2);
-		SAVE_FILE_MACRO(int16_t, "REC_FeedBack_sync.raw", &dataFB[0], 256);
+		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], 256*2);
+		RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack_sync.raw", &dataFB[0], 256);
 		// if threaded : send event / otherwise, process ...
 		//processAEC(&dataMic[0], &dataFB[0], 256, _time);
 		if (m_bufferMicrophone.getSize() <= 256) {

@@ -69,6 +69,7 @@ namespace river {
 				std::vector<std11::weak_ptr<river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
 				std::vector<std11::shared_ptr<river::Interface> > m_list;
 				size_t getNumberOfInterface(enum river::modeInterface _interfaceType);
+				size_t getNumberOfInterfaceAvaillable(enum river::modeInterface _interfaceType);
 			public:
 				size_t getNumberOfInterface() {
 					return m_list.size();

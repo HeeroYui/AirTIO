@@ -133,3 +133,11 @@ void river::io::Group::stop() {
 	}
 }
 
+void river::io::Group::generateDot(etk::FSNode& _node) {
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		if (m_list[iii] != nullptr) {
+			m_list[iii]->generateDot(_node);
+		}
+	}
+}
+
