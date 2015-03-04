@@ -124,7 +124,7 @@ void river::io::Group::stop() {
 	RIVER_ERROR(" have " << count << " interfaces ...");
 	if (count == 0) {
 		RIVER_ERROR("GROUP :::::::::::: STOP() [START]");
-		for (size_t iii=0; iii<m_list.size(); ++iii) {
+		for (int32_t iii=m_list.size()-1; iii>=0; --iii) {
 			if (m_list[iii] != nullptr) {
 				m_list[iii]->stop();
 			}
