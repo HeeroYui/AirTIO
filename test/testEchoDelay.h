@@ -300,10 +300,10 @@ namespace river_test_echo_delay {
 						//for (size_t jjj=0; jjj<_map.size(); ++jjj) {
 						size_t jjj=0; {
 							if (m_stateMic == 0) {
-								if (data[iii*_map.size() + jjj] > 400/*INT16_MAX/15*/) {
+								if (data[iii*_map.size() + jjj] > m_volumeInputMax) {
 									m_stateMic = 1;
 									APPL_VERBOSE("Mic: detect Normal " << iii);
-								} else if (data[iii*_map.size() + jjj] < -400/*INT16_MAX/15*/) {
+								} else if (data[iii*_map.size() + jjj] < m_volumeInputMin) {
 									m_stateMic = 2;
 									APPL_VERBOSE("Mic: detect inverse " << iii);
 								}
