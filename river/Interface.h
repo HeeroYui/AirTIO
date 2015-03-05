@@ -209,6 +209,7 @@ namespace river {
 			float m_volume; //!< Local channel Volume
 		public:
 			virtual void generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink=true);
+			virtual std::string getDotNodeName() const;
 	};
 };
 

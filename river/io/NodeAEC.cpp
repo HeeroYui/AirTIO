@@ -345,33 +345,37 @@ void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbC
 
 
 void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
-	_node << "subgraph clusterNode_" << m_uid << " {\n";
-	_node << "	color=blue;\n";
-	_node << "	label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
+	_node << "	subgraph clusterNode_" << m_uid << " {\n";
+	_node << "		color=blue;\n";
+	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
 
-		_node << "	node [shape=box];\n";
+		_node << "		node [shape=box];\n";
 		// TODO : Create a structure ...
-		_node << "		NODE_" << m_uid << "_HW_AEC [ label=\"AEC\" ];\n";
-		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "			label=\"Drain::Process\";\n";
-		_node << "			node [shape=ellipse];\n";
-		_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-		_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\" ];\n";
+		_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
+		_node << "				label=\"Drain::Process\";\n";
+		_node << "				node [shape=ellipse];\n";
+		_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
+		                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
+		                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
+		_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
+		                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
+		                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
 		
-		_node << "		}\n";
-		_node << "	node [shape=square];\n";
-		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		_node << "			}\n";
+		_node << "		node [shape=square];\n";
+		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "		NODE_" << m_uid << "_HW_AEC -> node_ALGO_" << m_uid << "_in;\n";
-		_node << "		node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
-		_node << "		node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
-	_node << "}\n";
-		if (m_interfaceMicrophone != nullptr) {
-			_node << "		API_" << m_interfaceMicrophone->m_uid << "_input -> NODE_" << m_uid << "_HW_AEC;\n";
-		}
-		if (m_interfaceFeedBack != nullptr) {
-			_node << "		API_" << m_interfaceFeedBack->m_uid << "_feedback -> NODE_" << m_uid << "_HW_AEC;\n";
-		}
+		_node << "			NODE_" << m_uid << "_HW_AEC -> node_ALGO_" << m_uid << "_in;\n";
+		_node << "			node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
+		_node << "			node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
+	_node << "	}\n";
+	if (m_interfaceMicrophone != nullptr) {
+		_node << "	" << m_interfaceMicrophone->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
+	}
+	if (m_interfaceFeedBack != nullptr) {
+		_node << "	" << m_interfaceFeedBack->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
+	}
 	
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] != nullptr) {

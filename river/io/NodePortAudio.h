@@ -28,6 +28,9 @@ namespace river {
 				 * @brief Destructor
 				 */
 				virtual ~NodePortAudio();
+				virtual bool isHarwareNode() {
+					return true;
+				};
 			protected:
 				PaStream* m_stream;
 			public:

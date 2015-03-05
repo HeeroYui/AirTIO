@@ -128,7 +128,7 @@ river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_pt
 	}
 	
 	// set callback mode ...
-	m_interfaceInput1->setInputCallback(std11::bind(&river::io::NodeMuxer::onDataReceivedFeedBack,
+	m_interfaceInput1->setInputCallback(std11::bind(&river::io::NodeMuxer::onDataReceivedInput1,
 	                                                this,
 	                                                std11::placeholders::_1,
 	                                                std11::placeholders::_2,
@@ -137,7 +137,7 @@ river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_pt
 	                                                std11::placeholders::_5,
 	                                                std11::placeholders::_6));
 	// set callback mode ...
-	m_interfaceInput2->setInputCallback(std11::bind(&river::io::NodeMuxer::onDataReceivedMicrophone,
+	m_interfaceInput2->setInputCallback(std11::bind(&river::io::NodeMuxer::onDataReceivedInput2,
 	                                                this,
 	                                                std11::placeholders::_1,
 	                                                std11::placeholders::_2,
@@ -187,12 +187,12 @@ void river::io::NodeMuxer::stop() {
 }
 
 
-void river::io::NodeMuxer::onDataReceivedMicrophone(const void* _data,
-                                                  const std11::chrono::system_clock::time_point& _time,
-                                                  size_t _nbChunk,
-                                                  enum audio::format _format,
-                                                  uint32_t _frequency,
-                                                  const std::vector<audio::channel>& _map) {
+void river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
+                                                const std11::chrono::system_clock::time_point& _time,
+                                                size_t _nbChunk,
+                                                enum audio::format _format,
+                                                uint32_t _frequency,
+                                                const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
 	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
@@ -205,7 +205,7 @@ void river::io::NodeMuxer::onDataReceivedMicrophone(const void* _data,
 	process();
 }
 
-void river::io::NodeMuxer::onDataReceivedFeedBack(const void* _data,
+void river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
                                                 const std11::chrono::system_clock::time_point& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
@@ -430,34 +430,38 @@ void river::io::NodeMuxer::processMuxer(void* _dataIn1, void* _dataIn2, uint32_t
 
 
 void river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
-	_node << "subgraph clusterNode_" << m_uid << " {\n";
-	_node << "	color=blue;\n";
-	_node << "	label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
+	_node << "	subgraph clusterNode_" << m_uid << " {\n";
+	_node << "		color=blue;\n";
+	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
 
-		_node << "	node [shape=box];\n";
+		_node << "		node [shape=box];\n";
 		// TODO : Create a structure ...
-		_node << "		NODE_" << m_uid << "_HW_AEC [ label=\"AEC\" ];\n";
-		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "			label=\"Drain::Process\";\n";
-		_node << "			node [shape=ellipse];\n";
-		_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-		_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "			NODE_" << m_uid << "_HW_MUXER [ label=\"Muxer\\n channelMap=" << etk::to_string(getInterfaceFormat().getMap()) << "\" ];\n";
+		_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
+		_node << "				label=\"Drain::Process\";\n";
+		_node << "				node [shape=ellipse];\n";
+		_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
+		                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
+		                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
+		_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
+		                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
+		                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
 		
-		_node << "		}\n";
-		_node << "	node [shape=square];\n";
-		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		_node << "			}\n";
+		_node << "		node [shape=square];\n";
+		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "		NODE_" << m_uid << "_HW_AEC -> node_ALGO_" << m_uid << "_in;\n";
-		_node << "		node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
-		_node << "		node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
-	_node << "}\n";
-		if (m_interfaceInput2 != nullptr) {
-			_node << "		API_" << m_interfaceInput2->m_uid << "_input -> NODE_" << m_uid << "_HW_AEC;\n";
-		}
-		if (m_interfaceInput1 != nullptr) {
-			_node << "		API_" << m_interfaceInput1->m_uid << "_feedback -> NODE_" << m_uid << "_HW_AEC;\n";
-		}
-	
+		_node << "			NODE_" << m_uid << "_HW_MUXER -> node_ALGO_" << m_uid << "_in;\n";
+		_node << "			node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
+		_node << "			node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
+	_node << "	}\n";
+	if (m_interfaceInput2 != nullptr) {
+		_node << "	" << m_interfaceInput2->getDotNodeName() << " -> NODE_" << m_uid << "_HW_MUXER;\n";
+	}
+	if (m_interfaceInput1 != nullptr) {
+		_node << "	" << m_interfaceInput1->getDotNodeName() << " -> NODE_" << m_uid << "_HW_MUXER;\n";
+	}
+	_node << "	\n";
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] != nullptr) {
 			if (m_list[iii]->getMode() == modeInterface_input) {
@@ -471,4 +475,5 @@ void river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 			}
 		}
 	}
+	_node << "\n";
 }

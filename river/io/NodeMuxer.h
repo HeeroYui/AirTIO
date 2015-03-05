@@ -36,18 +36,18 @@ namespace river {
 				                                              audio::format _format,
 				                                              const std::string& _streamName,
 				                                              const std::string& _name);
-				void onDataReceivedMicrophone(const void* _data,
-				                              const std11::chrono::system_clock::time_point& _time,
-				                              size_t _nbChunk,
-				                              enum audio::format _format,
-				                              uint32_t _frequency,
-				                              const std::vector<audio::channel>& _map);
-				void onDataReceivedFeedBack(const void* _data,
-				                            const std11::chrono::system_clock::time_point& _time,
-				                            size_t _nbChunk,
-				                            enum audio::format _format,
-				                            uint32_t _frequency,
-				                            const std::vector<audio::channel>& _map);
+				void onDataReceivedInput1(const void* _data,
+				                          const std11::chrono::system_clock::time_point& _time,
+				                          size_t _nbChunk,
+				                          enum audio::format _format,
+				                          uint32_t _frequency,
+				                          const std::vector<audio::channel>& _map);
+				void onDataReceivedInput2(const void* _data,
+				                          const std11::chrono::system_clock::time_point& _time,
+				                          size_t _nbChunk,
+				                          enum audio::format _format,
+				                          uint32_t _frequency,
+				                          const std::vector<audio::channel>& _map);
 				std::vector<audio::channel> m_mapInput1;
 				std::vector<audio::channel> m_mapInput2;
 				river::CircularBuffer m_bufferInput1;

@@ -28,6 +28,9 @@ namespace river {
 				 * @brief Destructor
 				 */
 				virtual ~NodeAirTAudio();
+				virtual bool isHarwareNode() {
+					return true;
+				};
 			protected:
 				airtaudio::Interface m_adac; //!< Real audio interface
 				airtaudio::DeviceInfo m_info;

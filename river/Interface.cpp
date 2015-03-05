@@ -363,31 +363,46 @@ void river::Interface::systemVolumeChange() {
 static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second, bool _isLink=true) {
 	if (_op == "->") {
 		if (_isLink) {
-			_node << "		" << _first << " -> " << _second << ";\n";
+			_node << "			" << _first << " -> " << _second << ";\n";
 		} else {
-			_node << "		" << _first << " -> " << _second << " [style=dashed];\n";
+			_node << "			" << _first << " -> " << _second << " [style=dashed];\n";
 		}
 	} else if (_op == "<-") {
-		_node << "		" << _first << " -> " <<_second<< " [color=transparent];\n";
+		_node << "			" << _first << " -> " <<_second<< " [color=transparent];\n";
 		if (_isLink) {
-			_node << "		" << _second << " -> " << _first << " [constraint=false];\n";
+			_node << "			" << _second << " -> " << _first << " [constraint=false];\n";
 		} else {
-			_node << "		" << _second << " -> " << _first << " [constraint=false, style=dashed];\n";
+			_node << "			" << _second << " -> " << _first << " [constraint=false, style=dashed];\n";
 		}
 	}
 }
 
+std::string river::Interface::getDotNodeName() const {
+	if (m_mode == river::modeInterface_input) {
+		return "API_" + etk::to_string(m_uid) + "_input";
+	} else if (m_mode == river::modeInterface_feedback) {
+		return "API_" + etk::to_string(m_uid) + "_feedback";
+	} else if (m_mode == river::modeInterface_output) {
+		return "API_" + etk::to_string(m_uid) + "_output";
+	}
+	return "error";
+}
+
 void river::Interface::generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink) {
-	_node << "subgraph clusterInterface_" << m_uid << " {\n";
-	_node << "	color=orange;\n";
-	_node << "	label=\"[" << m_uid << "] Interface : " << m_name << "\";\n";
+	_node << "	subgraph clusterInterface_" << m_uid << " {\n";
+	_node << "		color=orange;\n";
+	_node << "		label=\"[" << m_uid << "] Interface : " << m_name << "\";\n";
 	
-	_node << "		subgraph clusterInterface_" << m_uid << "_process {\n";
-	_node << "			label=\"Drain::Process\";\n";
-	_node << "			node [shape=ellipse];\n";
-	_node << "			INTERFACE_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\n in\" ];\n";
-	_node << "			INTERFACE_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\n out\" ];\n";
-	_node << "		}\n";
+	_node << "			subgraph clusterInterface_" << m_uid << "_process {\n";
+	_node << "				label=\"Drain::Process\";\n";
+	_node << "				node [shape=ellipse];\n";
+	_node << "				INTERFACE_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
+	                                                               << "\\n freq=" << m_process.getInputConfig().getFrequency()
+	                                                         << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\\n in\" ];\n";
+	_node << "				INTERFACE_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
+	                                                                << "\\n freq=" << m_process.getOutputConfig().getFrequency()
+	                                                          << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\\n out\" ];\n";
+	_node << "			}\n";
 	if (    m_mode == river::modeInterface_input
 	     || m_mode == river::modeInterface_feedback) {
 		link(_node, _nameIO,                                           "->", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in", _isLink);
@@ -396,17 +411,17 @@ void river::Interface::generateDot(etk::FSNode& _node, const std::string& _nameI
 		link(_node, _nameIO,                                            "<-", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", _isLink);
 		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", "<-", "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in");
 	}
-	_node << "	node [shape=Mdiamond];\n";
+	_node << "		node [shape=Mdiamond];\n";
 	if (m_mode == river::modeInterface_input) {
-		_node << "		API_" << m_uid << "_input [ label=\"API\nINPUT\" ];\n";
-		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", "->", "API_" + etk::to_string(m_uid) + "_input");
+		_node << "			" << getDotNodeName() << " [ label=\"API\\nINPUT\" ];\n";
+		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", "->", getDotNodeName());
 	} else if (m_mode == river::modeInterface_feedback) {
-		_node << "		API_" << m_uid << "_feedback [ label=\"API\nFEEDBACK\" ];\n";
-		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", "->", "API_" + etk::to_string(m_uid) + "_feedback");
+		_node << "			" << getDotNodeName() << " [ label=\"API\\nFEEDBACK\" ];\n";
+		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_out", "->", getDotNodeName());
 	} else if (m_mode == river::modeInterface_output) {
-		_node << "		API_" << m_uid << "_output [ label=\"API\nOUTPUT\" ];\n";
-		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in", "<-", "API_" + etk::to_string(m_uid) + "_output");
+		_node << "			" << getDotNodeName() << " [ label=\"API\\nOUTPUT\" ];\n";
+		link(_node, "INTERFACE_ALGO_" + etk::to_string(m_uid) + "_in", "<-", getDotNodeName());
 	}
-	_node << "}\n";
+	_node << "	}\n	\n";
 }
 

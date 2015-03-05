@@ -41,7 +41,9 @@ namespace river {
 				 * @brief Destructor
 				 */
 				virtual ~Node();
-			
+				virtual bool isHarwareNode() {
+					return false;
+				};
 			protected:
 				mutable std11::mutex m_mutex;
 				std11::shared_ptr<const ejson::Object> m_config;

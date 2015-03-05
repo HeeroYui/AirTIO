@@ -254,53 +254,61 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 
 static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second) {
 	if (_op == "->") {
-		_node << "		" << _first << " -> " << _second << ";\n";
+		_node << "			" << _first << " -> " << _second << ";\n";
 	} else if (_op == "<-") {
-		_node << "		" << _first << " -> " <<_second<< " [color=transparent];\n";
-		_node << "		" << _second << " -> " << _first << " [constraint=false];\n";
+		_node << "			" << _first << " -> " <<_second<< " [color=transparent];\n";
+		_node << "			" << _second << " -> " << _first << " [constraint=false];\n";
 	}
 }
 
 
 void river::io::Node::generateDot(etk::FSNode& _node) {
-	_node << "subgraph clusterNode_" << m_uid << " {\n";
-	_node << "	color=blue;\n";
-	_node << "	label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
+	_node << "	subgraph clusterNode_" << m_uid << " {\n";
+	_node << "		color=blue;\n";
+	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
 	if (m_isInput == true) {
-		_node << "	node [shape=rarrow];\n";
-		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=MICROPHONE\n type=input\" ];\n";
-		_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "			label=\"Drain::Process\";\n";
-		_node << "			node [shape=ellipse];\n";
-		_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-		_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
+		_node << "		node [shape=rarrow];\n";
+		_node << "			NODE_" << m_uid << "_HW_interface [ label=\"HW interface\\n interface=ALSA\\n stream=" << m_name << "\\n type=input\" ];\n";
+		_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
+		_node << "				label=\"Drain::Process\";\n";
+		_node << "				node [shape=ellipse];\n";
+		_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
+		                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
+		                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
+		_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
+		                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
+		                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
 		
-		_node << "		}\n";
-		_node << "	node [shape=square];\n";
-		_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+		_node << "			}\n";
+		_node << "		node [shape=square];\n";
+		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "		NODE_" << m_uid << "_HW_interface -> node_ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
-		_node << "		node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
-		_node << "		node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+		_node << "			NODE_" << m_uid << "_HW_interface -> node_ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
+		_node << "			node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
+		_node << "			node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
 	} else {
 		size_t nbOutput = getNumberOfInterfaceAvaillable(river::modeInterface_output);
 		size_t nbfeedback = getNumberOfInterfaceAvaillable(river::modeInterface_feedback);
-		_node << "	node [shape=larrow];\n";
-		_node << "		NODE_" << m_uid << "_HW_interface [ label=\"HW interface\n interface=ALSA\n stream=SPEAKER\n type=output\" ];\n";
+		_node << "		node [shape=larrow];\n";
+		_node << "			NODE_" << m_uid << "_HW_interface [ label=\"HW interface\\n interface=ALSA\\n stream=" << m_name << "\\n type=output\" ];\n";
 		if (nbOutput>0) {
-			_node << "		subgraph clusterNode_" << m_uid << "_process {\n";
-			_node << "			label=\"Drain::Process\";\n";
-			_node << "			node [shape=ellipse];\n";
-			_node << "			node_ALGO_" << m_uid << "_out [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-			_node << "			node_ALGO_" << m_uid << "_in [ label=\"format=xxx\n freq=yyy\n channelMap={left,right}\" ];\n";
-			_node << "		}\n";
+			_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
+			_node << "				label=\"Drain::Process\";\n";
+			_node << "				node [shape=ellipse];\n";
+			_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
+			                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
+			                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
+			_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
+			                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
+			                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
+			_node << "			}\n";
 		}
-		_node << "	node [shape=square];\n";
+		_node << "		node [shape=square];\n";
 		if (nbOutput>0) {
-			_node << "		NODE_" << m_uid << "_muxer [ label=\"MUXER\n format=xxx\" ];\n";
+			_node << "			NODE_" << m_uid << "_muxer [ label=\"MUXER\\n format=" << etk::to_string(m_process.getInputConfig().getFormat()) << "\" ];\n";
 		}
 		if (nbfeedback>0) {
-			_node << "		NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\n format=xxx\" ];\n";
+			_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		}
 		// Link all nodes :
 		if (nbOutput>0) {
@@ -309,15 +317,15 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 			link(_node, "node_ALGO_" + etk::to_string(m_uid) + "_in", "<-", "NODE_" + etk::to_string(m_uid) + "_muxer");
 		}
 		if (nbfeedback>0) {
-			_node << "		NODE_" << m_uid << "_HW_interface -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+			_node << "			NODE_" << m_uid << "_HW_interface -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
 		}
 		if (    nbOutput>0
 		     && nbfeedback>0) {
-			_node << "		{ rank=same; NODE_" << m_uid << "_demuxer; NODE_" << m_uid << "_muxer }\n";
+			_node << "			{ rank=same; NODE_" << m_uid << "_demuxer; NODE_" << m_uid << "_muxer }\n";
 		}
 		
 	}
-	_node << "}\n";
+	_node << "	}\n	\n";
 	
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
 		if (m_listAvaillable[iii].expired() == true) {

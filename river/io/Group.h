@@ -27,7 +27,7 @@ namespace river {
 				std11::shared_ptr<river::io::Node> getNode(const std::string& _name);
 				void start();
 				void stop();
-				void generateDot(etk::FSNode& _node);
+				void generateDot(etk::FSNode& _node, bool _hardwareNode);
 		};
 	}
 }
