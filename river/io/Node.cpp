@@ -269,39 +269,23 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 	if (m_isInput == true) {
 		_node << "		node [shape=rarrow];\n";
 		_node << "			NODE_" << m_uid << "_HW_interface [ label=\"HW interface\\n interface=ALSA\\n stream=" << m_name << "\\n type=input\" ];\n";
-		_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "				label=\"Drain::Process\";\n";
-		_node << "				node [shape=ellipse];\n";
-		_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
-		                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
-		                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
-		_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
-		                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
-		                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
-		
-		_node << "			}\n";
+		std::string nameIn;
+		std::string nameOut;
+		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
 		_node << "		node [shape=square];\n";
 		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "			NODE_" << m_uid << "_HW_interface -> node_ALGO_" << m_uid << "_in [arrowhead=\"open\"];\n";
-		_node << "			node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out [arrowhead=\"open\"];\n";
-		_node << "			node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
+		_node << "			NODE_" << m_uid << "_HW_interface -> " << nameIn << " [arrowhead=\"open\"];\n";
+		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
 	} else {
 		size_t nbOutput = getNumberOfInterfaceAvaillable(river::modeInterface_output);
 		size_t nbfeedback = getNumberOfInterfaceAvaillable(river::modeInterface_feedback);
 		_node << "		node [shape=larrow];\n";
 		_node << "			NODE_" << m_uid << "_HW_interface [ label=\"HW interface\\n interface=ALSA\\n stream=" << m_name << "\\n type=output\" ];\n";
+		std::string nameIn;
+		std::string nameOut;
 		if (nbOutput>0) {
-			_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
-			_node << "				label=\"Drain::Process\";\n";
-			_node << "				node [shape=ellipse];\n";
-			_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
-			                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
-			                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
-			_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
-			                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
-			                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
-			_node << "			}\n";
+			m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, true);
 		}
 		_node << "		node [shape=square];\n";
 		if (nbOutput>0) {
@@ -312,9 +296,8 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 		}
 		// Link all nodes :
 		if (nbOutput>0) {
-			link(_node, "NODE_" + etk::to_string(m_uid) + "_HW_interface", "<-", "node_ALGO_" + etk::to_string(m_uid) + "_out");
-			link(_node, "node_ALGO_" + etk::to_string(m_uid) + "_out", "<-", "node_ALGO_" + etk::to_string(m_uid) + "_in");
-			link(_node, "node_ALGO_" + etk::to_string(m_uid) + "_in", "<-", "NODE_" + etk::to_string(m_uid) + "_muxer");
+			link(_node, "NODE_" + etk::to_string(m_uid) + "_HW_interface", "<-", nameOut);
+			link(_node, nameIn, "<-", "NODE_" + etk::to_string(m_uid) + "_muxer");
 		}
 		if (nbfeedback>0) {
 			_node << "			NODE_" << m_uid << "_HW_interface -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";

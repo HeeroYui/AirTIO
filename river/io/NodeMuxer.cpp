@@ -281,8 +281,8 @@ void river::io::NodeMuxer::process() {
 		//RIVER_INFO(" process 256 samples ... in1Time=" << in1Time << " in2Time=" << in2Time << " delta = " << (in1Time-in2Time).count());
 		m_bufferInput1.read(&dataIn1[0], 256);
 		m_bufferInput2.read(&dataIn2[0], 256);
-		RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT1.raw", &dataIn1[0], 256 * m_mapInput1.size());
-		RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT2.raw", &dataIn2[0], 256 * m_mapInput2.size());
+		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT1.raw", &dataIn1[0], 256 * m_mapInput1.size());
+		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT2.raw", &dataIn2[0], 256 * m_mapInput2.size());
 		// if threaded : send event / otherwise, process ...
 		processMuxer(&dataIn1[0], &dataIn2[0], 256, in1Time);
 		if (    m_bufferInput1.getSize() <= 256
@@ -437,23 +437,14 @@ void river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 		_node << "		node [shape=box];\n";
 		// TODO : Create a structure ...
 		_node << "			NODE_" << m_uid << "_HW_MUXER [ label=\"Muxer\\n channelMap=" << etk::to_string(getInterfaceFormat().getMap()) << "\" ];\n";
-		_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "				label=\"Drain::Process\";\n";
-		_node << "				node [shape=ellipse];\n";
-		_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
-		                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
-		                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
-		_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
-		                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
-		                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
-		
-		_node << "			}\n";
+		std::string nameIn;
+		std::string nameOut;
+		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
 		_node << "		node [shape=square];\n";
 		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "			NODE_" << m_uid << "_HW_MUXER -> node_ALGO_" << m_uid << "_in;\n";
-		_node << "			node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
-		_node << "			node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
+		_node << "			NODE_" << m_uid << "_HW_MUXER -> " << nameIn << ";\n";
+		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
 	_node << "	}\n";
 	if (m_interfaceInput2 != nullptr) {
 		_node << "	" << m_interfaceInput2->getDotNodeName() << " -> NODE_" << m_uid << "_HW_MUXER;\n";
@@ -462,14 +453,27 @@ void river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 		_node << "	" << m_interfaceInput1->getDotNodeName() << " -> NODE_" << m_uid << "_HW_MUXER;\n";
 	}
 	_node << "	\n";
-	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
-			if (m_list[iii]->getMode() == modeInterface_input) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
-			} else if (m_list[iii]->getMode() == modeInterface_output) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
-			} else if (m_list[iii]->getMode() == modeInterface_feedback) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
+		if (m_listAvaillable[iii].expired() == true) {
+			continue;
+		}
+		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		if (element == nullptr) {
+			continue;
+		}
+		bool isLink = false;
+		for (size_t jjj=0; jjj<m_list.size(); ++jjj) {
+			if (element == m_list[jjj]) {
+				isLink = true;
+			}
+		}
+		if (element != nullptr) {
+			if (element->getMode() == modeInterface_input) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+			} else if (element->getMode() == modeInterface_output) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer", isLink);
+			} else if (element->getMode() == modeInterface_feedback) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
 			} else {
 				
 			}
