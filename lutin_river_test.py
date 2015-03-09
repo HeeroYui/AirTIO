@@ -18,7 +18,8 @@ def create(target):
 	if target.name=="Windows":
 		myModule.copy_file('data/hardwareWindows.json', 'hardware.json')
 	elif target.name=="Linux":
-		myModule.copy_file('data/hardwareLinux.json', 'hardware.json')
+		#myModule.copy_file('data/hardwareLinux.json', 'hardware.json')
+		myModule.copy_file('data/hardwareNao.json', 'hardware.json')
 	elif target.name=="MacOs":
 		myModule.copy_file('data/hardwareMacOs.json', 'hardware.json')
 	elif target.name=="IOs":

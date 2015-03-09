@@ -198,6 +198,7 @@ void river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
+	RIVER_SAVE_FILE_MACRO(int16_t, "REC_input1.raw", _data, _nbChunk*_map.size());
 	// push data synchronize
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferInput1.write(_data, _nbChunk, _time);
@@ -216,6 +217,7 @@ void river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
+	RIVER_SAVE_FILE_MACRO(int16_t, "REC_input2.raw", _data, _nbChunk*_map.size());
 	// push data synchronize
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	m_bufferInput2.write(_data, _nbChunk, _time);

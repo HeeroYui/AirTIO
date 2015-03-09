@@ -41,7 +41,7 @@ namespace river_test_muxer {
 				                                              std11::placeholders::_5,
 				                                              std11::placeholders::_6));
 				m_interfaceOut->addVolumeGroup("FLOW");
-				m_interfaceOut->setParameter("volume", "FLOW", "-6dB");
+			//	m_interfaceOut->setParameter("volume", "FLOW", "-6dB");
 				
 				//Set stereo output:
 				m_interfaceIn = m_manager->createInput(48000,
@@ -71,7 +71,7 @@ namespace river_test_muxer {
 				double baseCycle = 2.0*M_PI/(double)48000 * 440;
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
 					for (int32_t jjj=0; jjj<_map.size(); jjj++) {
-						data[_map.size()*iii+jjj] = sin(m_phase) * 30000;
+						data[_map.size()*iii+jjj] = sin(m_phase) * 7000;
 					}
 					m_phase += baseCycle;
 					if (m_phase >= 2*M_PI) {

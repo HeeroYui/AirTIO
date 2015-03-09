@@ -3,9 +3,8 @@
 		io:"output",
 		map-on:{
 			interface:"alsa",
+			name:"hw:0,0",
 			#name:"default",
-			#name:"hw:0,0",
-			name:"default",
 			timestamp-mode:"trigered",
 		},
 		group:"baseIOSynchrone",
@@ -15,65 +14,43 @@
 		],
 		type:"int16",
 		nb-chunk:1024,
-		volume-name:"MASTER",
+		#volume-name:"MASTER",
 		mux-demux-type:"int16-on-int32",
 	},
-	# name of the device
-	microphone:{
-		# input or output
+	microphone-front:{
 		io:"input",
-		# select hardware interface and name
 		map-on:{
-			# interface : "alsa", "pulse", "core", ...
 			interface:"alsa",
-			# name of the interface
-			# name:"default",
-			name:"hw:0,0",
+			name:"hw:0,0,0",
+			#name:"AD1989A_inputs",
+			#name:"default",
 			timestamp-mode:"trigered",
 		},
-		# Link 2 ios with the same time in low level (named group) :
 		group:"baseIOSynchrone",
-		# frequency to open device
 		frequency:48000,
-		# mapping of the harware device (mapping is not get under)
 		channel-map:[
 			"front-left", "front-right"
+			#, "rear-left", "rear-right"
 		],
-		# format to open device (int8, int16, int16-on-ont32, int24, int32, float)
 		type:"int16",
-		# number of chunk to open device (create the latency anf the frequency to call user)
-		nb-chunk:1024,
+		nb-chunk:1024, #16384,
 		mux-demux-type:"int16",
 	},
-	speaker-pulse:{
-		io:"output",
+	microphone-rear:{
+		io:"input",
 		map-on:{
-			interface:"pulse",
-			name:"default",
+			interface:"alsa",
+			name:"hw:0,0,1",
+			timestamp-mode:"trigered",
 		},
+		#group:"baseIOSynchrone",
 		frequency:48000,
 		channel-map:[
-			"front-left", "front-right",
+			"rear-left", "rear-right"
 		],
 		type:"int16",
 		nb-chunk:1024,
-		volume-name:"MASTER",
-		mux-demux-type:"int16-on-int32",
-	},
-	speaker-jack:{
-		io:"output",
-		map-on:{
-			interface:"jack",
-			name:"default",
-		},
-		frequency:48000,
-		channel-map:[
-			"front-left", "front-right",
-		],
-		type:"float",
-		nb-chunk:1024,
-		volume-name:"MASTER",
-		mux-demux-type:"float",
+		mux-demux-type:"int16",
 	},
 	# virtual Nodes :
 	microphone-clean:{
@@ -82,7 +59,7 @@
 		map-on-microphone:{
 			# generic virtual definition
 			io:"input",
-			map-on:"microphone",
+			map-on:"microphone-muxed",
 			resampling-type:"speexdsp",
 			resampling-option:"quality=10"
 		},
@@ -96,7 +73,7 @@
 		#classical format configuration:
 		frequency:16000,
 		channel-map:[
-			"front-left", "front-right"
+			"front-left", "front-right", "rear-left", "rear-right"
 		],
 		type:"int16",
 		# AEC algo definition
@@ -105,26 +82,21 @@
 		feedback-delay:10000, # in nanosecond
 		mux-demux-type:"int16",
 	},
-	# virtual Nodes :
 	microphone-muxed:{
 		io:"muxer",
-		# connect in input mode
 		map-on-input-1:{
 			# generic virtual definition
 			io:"input",
-			map-on:"microphone",
+			map-on:"microphone-front",
 			resampling-type:"speexdsp",
 			resampling-option:"quality=10"
 		},
-		# connect in feedback mode
 		map-on-input-2:{
-			io:"feedback",
-			map-on:"speaker",
+			io:"input",
+			map-on:"microphone-rear",
 			resampling-type:"speexdsp",
 			resampling-option:"quality=10",
 		},
-		input-2-remap:["rear-left", "rear-right"],
-		#classical format configuration:
 		frequency:48000,
 		channel-map:[
 			"front-left", "front-right", "rear-left", "rear-right"

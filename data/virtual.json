@@ -4,7 +4,7 @@
 		# input or output
 		io:"input",
 		# name of the harware device
-		map-on:"microphone",
+		map-on:"microphone-front",
 		# name of the resampler
 		resampling-type:"speexdsp",
 		# some option to the resampler
