@@ -58,7 +58,7 @@ namespace river_test_record_callback {
 			void run() {
 				m_interface->start();
 				// wait 2 second ...
-				usleep(2000000);
+				usleep(20000000);
 				
 				
 				m_interface->stop();

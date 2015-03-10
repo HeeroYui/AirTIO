@@ -343,6 +343,9 @@ namespace river_test_echo_delay {
 				m_interfaceOut->start();
 				m_interfaceIn->start();
 				//m_interfaceFB->start();
+				while (m_estimateVolumeInput == true) {
+					usleep(10000);
+				}
 				usleep(10000000);
 				//m_interfaceFB->stop();
 				m_interfaceIn->stop();
