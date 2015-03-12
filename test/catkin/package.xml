@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package>
+  <name>river_test</name>
+  <version>0.3.0</version>
+  <description>Ewol River test</description>
+  <maintainer email="yui.heero@gmail.com">Edouard DUPIN</maintainer>
+  <license>Apache-2.0</license>
+  <build_depend>gtest</build_depend>
+  <build_depend>river</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>river</run_depend>
+  <run_depend>gtest</run_depend>
+</package>
