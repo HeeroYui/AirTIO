@@ -11,6 +11,8 @@
 #define __class__ "test_playback_write"
 
 namespace river_test_playback_write {
+	static const std::string configurationRiver = "";
+	
 	class testOutWrite {
 		private:
 			std::vector<audio::channel> m_channelMap;
@@ -67,6 +69,7 @@ namespace river_test_playback_write {
 	};
 	
 	TEST(TestALL, testOutputWrite) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		
@@ -75,6 +78,7 @@ namespace river_test_playback_write {
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 	
 	class testOutWriteCallback {

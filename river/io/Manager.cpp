@@ -4,13 +4,14 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include "Manager.h"
+#include <river/io/Manager.h>
 #include <river/debug.h>
-#include "Node.h"
-#include "NodeAEC.h"
-#include "NodeMuxer.h"
-#include "NodeAirTAudio.h"
-#include "NodePortAudio.h"
+#include <river/river.h>
+#include <river/io/Node.h>
+#include <river/io/NodeAEC.h>
+#include <river/io/NodeMuxer.h>
+#include <river/io/NodeAirTAudio.h>
+#include <river/io/NodePortAudio.h>
 #include <etk/os/FSNode.h>
 #include <etk/memory.h>
 #include <etk/types.h>
@@ -65,7 +66,7 @@ river::io::Manager::Manager() {
 	#endif
 }
 
-void river::io::Manager::init(const std::string _filename) {
+void river::io::Manager::init(const std::string& _filename) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	if (_filename == "") {
 		RIVER_INFO("Load default config");
@@ -74,9 +75,15 @@ void river::io::Manager::init(const std::string _filename) {
 		RIVER_ERROR("you must set a basic configuration file for harware configuration: '" << _filename << "'");
 	}
 }
+
+void river::io::Manager::initString(const std::string& _data) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	m_config.parse(_data);
+}
+
 void river::io::Manager::unInit() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
-	
+	// TODO : ...
 }
 
 river::io::Manager::~Manager() {

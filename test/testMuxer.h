@@ -100,13 +100,17 @@ namespace river_test_muxer {
 			}
 	};
 	
+	static const std::string configurationRiver = "";
+	
 	TEST(TestMuxer, testMuxing) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		std11::shared_ptr<TestClass> process = std11::make_shared<TestClass>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 };
 

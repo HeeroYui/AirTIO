@@ -11,6 +11,7 @@
 #define __class__ "test_volume"
 
 namespace river_test_volume {
+	static const std::string configurationRiver = "";
 	
 	class testCallbackVolume {
 		private:
@@ -101,12 +102,14 @@ namespace river_test_volume {
 	};
 	
 	TEST(TestALL, testVolume) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 
 };

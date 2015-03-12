@@ -39,7 +39,8 @@ namespace river {
 				 * @brief Destructor
 				 */
 				~Manager();
-				void init();
+				void init(const std::string& _filename);
+				void initString(const std::string& _data);
 				void unInit();
 			private:
 				ejson::Document m_config; // harware configuration

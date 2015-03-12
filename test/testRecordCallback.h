@@ -13,6 +13,8 @@
 #define __class__ "test_record_callback"
 
 namespace river_test_record_callback {
+	static const std::string configurationRiver = "";
+	
 	class testInCallback {
 		private:
 			std11::shared_ptr<river::Manager> m_manager;
@@ -64,6 +66,7 @@ namespace river_test_record_callback {
 	};
 	
 	TEST(TestALL, testInputCallBack) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		APPL_INFO("test input (callback mode)");
@@ -71,6 +74,7 @@ namespace river_test_record_callback {
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 
 };

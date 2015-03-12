@@ -5,6 +5,7 @@
  */
 
 #include "debug.h"
+#include <river/river.h>
 #include <river/Manager.h>
 #include <river/Interface.h>
 #include <gtest/gtest.h>

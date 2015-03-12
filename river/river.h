@@ -7,7 +7,7 @@
 #ifndef __RIVER_H__
 #define __RIVER_H__
 
-#include <etk/type.h>
+#include <etk/types.h>
 
 namespace river {
 	/**
@@ -15,6 +15,11 @@ namespace river {
 	 * @param[in] _filename Name of the configuration file (if "" ==> default config file)
 	 */
 	void init(const std::string& _filename);
+	/**
+	 * @brief Initialize the River Library with a json data string
+	 * @param[in] _config json sting data
+	 */
+	void initString(const std::string& _config);
 	/**
 	 * @brief Un-initialize the River Library
 	 * @note this close all stream of all interfaces.

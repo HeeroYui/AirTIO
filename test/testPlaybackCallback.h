@@ -69,7 +69,10 @@ namespace river_test_playback_callback {
 			}
 	};
 	
+	static const std::string configurationRiver = "";
+	
 	TEST(TestALL, testOutputCallBack) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		
@@ -78,9 +81,11 @@ namespace river_test_playback_callback {
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 	
 	TEST(TestALL, testOutputCallBackPulse) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		
@@ -89,9 +94,11 @@ namespace river_test_playback_callback {
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 	
 	TEST(TestALL, testOutputCallBackJack) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		
@@ -100,6 +107,7 @@ namespace river_test_playback_callback {
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 
 

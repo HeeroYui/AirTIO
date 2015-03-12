@@ -128,15 +128,18 @@ namespace river_test_format {
 			}
 	};
 	
+	static const std::string configurationRiver = "";
 	
 	class testResampling : public ::testing::TestWithParam<float> {};
 	TEST_P(testResampling, base) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 	
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
@@ -146,12 +149,14 @@ namespace river_test_format {
 	
 	class testFormat : public ::testing::TestWithParam<audio::format> {};
 	TEST_P(testFormat, base) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, 48000, 2, GetParam());
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
 	                        testFormat,
@@ -160,12 +165,14 @@ namespace river_test_format {
 	
 	class testChannels : public ::testing::TestWithParam<int32_t> {};
 	TEST_P(testChannels, base) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
 	                        testChannels,
@@ -173,6 +180,7 @@ namespace river_test_format {
 	
 	
 	TEST(TestALL, testChannelsFormatResampling) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		APPL_INFO("test convert flaot to output (callback mode)");
@@ -209,6 +217,7 @@ namespace river_test_format {
 				}
 			}
 		}
+		river::unInit();
 	}
 
 
