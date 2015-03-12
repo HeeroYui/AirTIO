@@ -18,26 +18,23 @@
 
 river::Interface::Interface(void) :
   m_node(),
-  m_name(""),
-  m_volume(0.0f) {
+  m_name("") {
 	static uint32_t uid = 0;
 	m_uid = uid++;
 	
 }
 
-bool river::Interface::init(const std::string& _name,
-                            float _freq,
+bool river::Interface::init(float _freq,
                             const std::vector<audio::channel>& _map,
                             audio::format _format,
                             const std11::shared_ptr<river::io::Node>& _node,
                             const std11::shared_ptr<const ejson::Object>& _config) {
 	std::vector<audio::channel> map(_map);
-	m_name = _name;
 	m_node = _node;
-	m_volume = 0.0f;
 	m_config = _config;
 	m_mode = river::modeInterface_unknow;
 	std::string type = m_config->getStringValue("io", "error");
+	m_name = _node->getName() + "__" + (_node->isInput()==true?"input":"output") + "__" + type;
 	if (type == "output") {
 		m_mode = river::modeInterface_output;
 	} else if (type == "input") {
@@ -97,14 +94,13 @@ bool river::Interface::init(const std::string& _name,
 	return true;
 }
 
-std11::shared_ptr<river::Interface> river::Interface::create(const std::string& _name,
-                                                           float _freq,
-                                                           const std::vector<audio::channel>& _map,
-                                                           audio::format _format,
-                                                           const std11::shared_ptr<river::io::Node>& _node,
-                                                           const std11::shared_ptr<const ejson::Object>& _config) {
+std11::shared_ptr<river::Interface> river::Interface::create(float _freq,
+                                                             const std::vector<audio::channel>& _map,
+                                                             audio::format _format,
+                                                             const std11::shared_ptr<river::io::Node>& _node,
+                                                             const std11::shared_ptr<const ejson::Object>& _config) {
 	std11::shared_ptr<river::Interface> out = std11::shared_ptr<river::Interface>(new river::Interface());
-	out->init(_name, _freq, _map, _format, _node, _config);
+	out->init(_freq, _map, _format, _node, _config);
 	return out;
 }
 

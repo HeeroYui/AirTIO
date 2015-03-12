@@ -7,6 +7,8 @@
 #ifndef __RIVER_TEST_RECORD_CALLBACK_H__
 #define __RIVER_TEST_RECORD_CALLBACK_H__
 
+#include <river/debug.h>
+
 #undef __class__
 #define __class__ "test_record_callback"
 
@@ -20,8 +22,6 @@ namespace river_test_record_callback {
 			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
-				channelMap.push_back(audio::channel_frontLeft);
-				channelMap.push_back(audio::channel_frontRight);
 				m_interface = m_manager->createInput(48000,
 				                                     channelMap,
 				                                     audio::format_int16,
@@ -46,6 +46,7 @@ namespace river_test_record_callback {
 				if (_format != audio::format_int16) {
 					APPL_ERROR("call wrong type ... (need int16_t)");
 				}
+				RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT.raw", _data, _nbChunk * _map.size());
 				const int16_t* data = static_cast<const int16_t*>(_data);
 				int64_t value = 0;
 				for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
@@ -57,9 +58,7 @@ namespace river_test_record_callback {
 			void run() {
 				m_interface->start();
 				// wait 2 second ...
-				usleep(2000000);
-				
-				
+				usleep(20000000);
 				m_interface->stop();
 			}
 	};

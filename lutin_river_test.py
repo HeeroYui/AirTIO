@@ -28,7 +28,6 @@ def create(target):
 	else:
 		debug.warning("unknow target for AIRTAudio : " + target.name);
 	
-	myModule.copy_file('data/virtual.json', 'virtual.json')
 	myModule.add_module_depend(['river', 'gtest', 'etk'])
 	
 	# add the currrent module at the 

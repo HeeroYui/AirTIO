@@ -45,8 +45,6 @@ namespace river_test_echo_delay {
 			  m_gain(-40) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
-				channelMap.push_back(audio::channel_frontLeft);
-				channelMap.push_back(audio::channel_frontRight);
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
 				                                         audio::format_int16,
@@ -345,6 +343,9 @@ namespace river_test_echo_delay {
 				m_interfaceOut->start();
 				m_interfaceIn->start();
 				//m_interfaceFB->start();
+				while (m_estimateVolumeInput == true) {
+					usleep(10000);
+				}
 				usleep(10000000);
 				//m_interfaceFB->stop();
 				m_interfaceIn->stop();

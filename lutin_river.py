@@ -12,6 +12,7 @@ def create(target):
 	
 	myModule.add_src_file([
 		'river/debug.cpp',
+		'river/river.cpp',
 		'river/Manager.cpp',
 		'river/Interface.cpp',
 		'river/CircularBuffer.cpp',

@@ -13,90 +13,15 @@
 #undef __class__
 #define __class__ "io::NodeAEC"
 
-#if 0
-int32_t river::io::NodeAEC::airtAudioCallback(void* _outputBuffer,
-                                                    void* _inputBuffer,
-                                                    uint32_t _nbChunk,
-                                                    const std11::chrono::system_clock::time_point& _time,
-                                                    airtaudio::status _status) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
-	//RIVER_INFO("Time=" << _time);
-	/*
-	for (int32_t iii=0; iii<400; ++iii) {
-		RIVER_VERBOSE("dummy=" << uint64_t(dummy[iii]));
-	}
-	*/
-	if (_outputBuffer != nullptr) {
-		RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
-		std::vector<int32_t> output;
-		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
-		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-		const int32_t* outputTmp = nullptr;
-		std::vector<uint8_t> outputTmp2;
-		RIVER_VERBOSE("resize=" << sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
-		outputTmp2.resize(sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk, 0);
-		for (auto &it : m_list) {
-			if (it == nullptr) {
-				continue;
-			}
-			if (it->getMode() != river::modeInterface_output) {
-				continue;
-			}
-			RIVER_VERBOSE("    IO name="<< it->getName());
-			// clear datas ...
-			memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
-			RIVER_VERBOSE("        request Data="<< _nbChunk);
-			it->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
-			RIVER_VERBOSE("        Mix it ...");
-			outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
-			// Add data to the output tmp buffer :
-			for (size_t kkk=0; kkk<output.size(); ++kkk) {
-				output[kkk] += outputTmp[kkk];
-			}
-		}
-		RIVER_VERBOSE("    End stack process data ...");
-		m_process.processIn(&outputTmp2[0], _nbChunk, _outputBuffer, _nbChunk);
-		RIVER_VERBOSE("    Feedback :");
-		for (auto &it : m_list) {
-			if (it == nullptr) {
-				continue;
-			}
-			if (it->getMode() != river::modeInterface_feedback) {
-				continue;
-			}
-			RIVER_VERBOSE("    IO name="<< it->getName() << " (feedback)");
-			it->systemNewInputData(_time, _outputBuffer, _nbChunk);
-		}
-		RIVER_VERBOSE("data Output size request :" << _nbChunk << " [ END ]");
-	}
-	if (_inputBuffer != nullptr) {
-		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
-		int16_t* inputBuffer = static_cast<int16_t *>(_inputBuffer);
-		for (auto &it : m_list) {
-			if (it == nullptr) {
-				continue;
-			}
-			if (it->getMode() != river::modeInterface_input) {
-				continue;
-			}
-			RIVER_INFO("    IO name="<< it->getName());
-			it->systemNewInputData(_time, inputBuffer, _nbChunk);
-		}
-		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [ END ]");
-	}
-	return 0;
-}
-#endif
-
 std11::shared_ptr<river::io::NodeAEC> river::io::NodeAEC::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
 	return std11::shared_ptr<river::io::NodeAEC>(new river::io::NodeAEC(_name, _config));
 }
 
 std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
-                                                                  const std::vector<audio::channel>& _map,
-                                                                  audio::format _format,
-                                                                  const std::string& _objectName,
-                                                                  const std::string& _name) {
+                                                                    const std::vector<audio::channel>& _map,
+                                                                    audio::format _format,
+                                                                    const std::string& _objectName,
+                                                                    const std::string& _name) {
 	// check if the output exist
 	const std11::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
 	if (tmppp == nullptr) {
@@ -119,7 +44,10 @@ std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 	std11::shared_ptr<river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
 	std11::shared_ptr<river::Interface> interface;
-	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);
+	interface = river::Interface::create(_freq, _map, _format, node, tmppp);
+	if (interface != nullptr) {
+		interface->setName(_name);
+	}
 	return interface;
 }
 

@@ -21,7 +21,6 @@ namespace river {
 	 */
 	class Manager {
 		private:
-			ejson::Document m_config; // virtual configuration
 			const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
 			std::vector<std11::weak_ptr<river::Interface> > m_listOpenInterface; //!< List of all open Stream.
 		protected:
@@ -37,15 +36,25 @@ namespace river {
 			virtual ~Manager();
 		public:
 			/**
-			 * @brief Get all input audio stream description.
-			 * @return a list of all availlables input stream (name + description)
+			 * @brief Get all input audio stream.
+			 * @return a list of all availlables input stream name
 			 */
-			virtual std::vector<std::pair<std::string,std::string> > getListStreamInput();
+			std::vector<std::string> getListStreamInput();
 			/**
-			 * @brief Get all output audio stream description.
-			 * @return a list of all availlables output stream (name + description)
+			 * @brief Get all output audio stream.
+			 * @return a list of all availlables output stream name
 			 */
-			virtual std::vector<std::pair<std::string,std::string> > getListStreamOutput();
+			std::vector<std::string> getListStreamOutput();
+			/**
+			 * @brief Get all audio virtual stream.
+			 * @return a list of all availlables virtual stream name
+			 */
+			std::vector<std::string> getListStreamVirtual();
+			/**
+			 * @brief Get all audio stream.
+			 * @return a list of all availlables stream name
+			 */
+			std::vector<std::string> getListStream();
 			
 			/**
 			 * @brief Set a volume for a specific group
@@ -75,30 +84,44 @@ namespace river {
 			 * @brief Create output Interface
 			 * @param[in] _freq Frequency to open Interface [8,16,22,32,48] kHz
 			 * @param[in] _map ChannelMap of the Output
-			 * @param[in] _format Sample Format to open the stream [int8_t]
+			 * @param[in] _format Sample Format to open the stream [int8_t, int16_t, ...]
 			 * @param[in] _streamName Stream name to open: "" or "default" open current selected output
-			 * @param[in] _name Name of this interface
+			 * @param[in] _options Json option to configure default resampling and many other things.
 			 * @return a pointer on the interface
 			 */
-			virtual std11::shared_ptr<Interface> createOutput(float _freq,
-			                                                const std::vector<audio::channel>& _map,
-			                                                audio::format _format,
-			                                                const std::string& _streamName = "",
-			                                                const std::string& _name = "");
+			virtual std11::shared_ptr<Interface> createOutput(float _freq = 48000,
+			                                                  const std::vector<audio::channel>& _map = std::vector<audio::channel>(),
+			                                                  audio::format _format = audio::format_int16,
+			                                                  const std::string& _streamName = "",
+			                                                  const std::string& _options = "");
 			/**
 			 * @brief Create input Interface
 			 * @param[in] _freq Frequency to open Interface [8,16,22,32,48] kHz
 			 * @param[in] _map ChannelMap of the Output
-			 * @param[in] _format Sample Format to open the stream [int8_t]
+			 * @param[in] _format Sample Format to open the stream [int8_t, int16_t, ...]
 			 * @param[in] _streamName Stream name to open: "" or "default" open current selected input
-			 * @param[in] _name Name of this interface
+			 * @param[in] _options Json option to configure default resampling and many other things.
 			 * @return a pointer on the interface
 			 */
-			virtual std11::shared_ptr<Interface> createInput(float _freq,
-			                                               const std::vector<audio::channel>& _map,
-			                                               audio::format _format,
-			                                               const std::string& _streamName = "",
-			                                               const std::string& _name = "");
+			virtual std11::shared_ptr<Interface> createInput(float _freq = 48000,
+			                                                 const std::vector<audio::channel>& _map = std::vector<audio::channel>(),
+			                                                 audio::format _format = audio::format_int16,
+			                                                 const std::string& _streamName = "",
+			                                                 const std::string& _options = "");
+			/**
+			 * @brief Create input Feedback Interface
+			 * @param[in] _freq Frequency to open Interface [8,16,22,32,48] kHz
+			 * @param[in] _map ChannelMap of the Output
+			 * @param[in] _format Sample Format to open the stream [int8_t, int16_t, ...]
+			 * @param[in] _streamName Stream name to open: "" or "default" open current selected input
+			 * @param[in] _options Json option to configure default resampling and many other things.
+			 * @return a pointer on the interface
+			 */
+			virtual std11::shared_ptr<Interface> createFeedback(float _freq = 48000,
+			                                                    const std::vector<audio::channel>& _map = std::vector<audio::channel>(),
+			                                                    audio::format _format = audio::format_int16,
+			                                                    const std::string& _streamName = "",
+			                                                    const std::string& _options = "");
 			/**
 			 * @brief Generate the dot file corresponding at all the actif nodes.
 			 * @param[in] _filename Name of the file to write data.

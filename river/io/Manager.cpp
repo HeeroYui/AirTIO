@@ -57,19 +57,27 @@ static std::string basicAutoConfig =
 
 
 river::io::Manager::Manager() {
-	if (m_config.load("DATA:hardware.json") == false) {
-		RIVER_WARNING("you must set a basic configuration file for harware configuration: DATA:hardware.json (load default interface)");
-		m_config.parse(basicAutoConfig);
-	}
-	// TODO : Load virtual.json and check if all is correct ...
-	
 	#ifdef __PORTAUDIO_INFERFACE__
 	PaError err = Pa_Initialize();
 	if(err != paNoError) {
 		RIVER_WARNING("Can not initialize portaudio : " << Pa_GetErrorText(err));
 	}
 	#endif
-};
+}
+
+void river::io::Manager::init(const std::string _filename) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (_filename == "") {
+		RIVER_INFO("Load default config");
+		m_config.parse(basicAutoConfig);
+	} else if (m_config.load(_filename) == false) {
+		RIVER_ERROR("you must set a basic configuration file for harware configuration: '" << _filename << "'");
+	}
+}
+void river::io::Manager::unInit() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	
+}
 
 river::io::Manager::~Manager() {
 	#ifdef __PORTAUDIO_INFERFACE__
@@ -80,10 +88,83 @@ river::io::Manager::~Manager() {
 	#endif
 };
 
-
 std11::shared_ptr<river::io::Manager> river::io::Manager::getInstance() {
+	if (river::isInit() == false) {
+		return std11::shared_ptr<river::io::Manager>();
+	}
 	static std11::shared_ptr<river::io::Manager> manager(new Manager());
 	return manager;
+}
+
+
+std::vector<std::string> river::io::Manager::getListStreamInput() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	std::vector<std::string> output;
+	std::vector<std::string> keys = m_config.getKeys();
+	for (size_t iii=0; iii<keys.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
+		if (tmppp != nullptr) {
+			std::string type = tmppp->getStringValue("io", "error");
+			if (    type == "input"
+			     || type == "PAinput") {
+				output.push_back(keys[iii]);
+			}
+		}
+	}
+	return output;
+}
+
+std::vector<std::string> river::io::Manager::getListStreamOutput() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	std::vector<std::string> output;
+	std::vector<std::string> keys = m_config.getKeys();
+	for (size_t iii=0; iii<keys.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
+		if (tmppp != nullptr) {
+			std::string type = tmppp->getStringValue("io", "error");
+			if (    type == "output"
+			     || type == "PAoutput") {
+				output.push_back(keys[iii]);
+			}
+		}
+	}
+	return output;
+}
+
+std::vector<std::string> river::io::Manager::getListStreamVirtual() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	std::vector<std::string> output;
+	std::vector<std::string> keys = m_config.getKeys();
+	for (size_t iii=0; iii<keys.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
+		if (tmppp != nullptr) {
+			std::string type = tmppp->getStringValue("io", "error");
+			if (    type != "input"
+			     && type != "PAinput"
+			     && type != "output"
+			     && type != "PAoutput"
+			     && type != "error") {
+				output.push_back(keys[iii]);
+			}
+		}
+	}
+	return output;
+}
+
+std::vector<std::string> river::io::Manager::getListStream() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	std::vector<std::string> output;
+	std::vector<std::string> keys = m_config.getKeys();
+	for (size_t iii=0; iii<keys.size(); ++iii) {
+		const std11::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
+		if (tmppp != nullptr) {
+			std::string type = tmppp->getStringValue("io", "error");
+			if (type != "error") {
+				output.push_back(keys[iii]);
+			}
+		}
+	}
+	return output;
 }
 
 std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& _name) {

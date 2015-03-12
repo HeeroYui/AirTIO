@@ -38,7 +38,9 @@ namespace river {
 				/**
 				 * @brief Destructor
 				 */
-				virtual ~Manager();
+				~Manager();
+				void init();
+				void unInit();
 			private:
 				ejson::Document m_config; // harware configuration
 				std::vector<std11::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
@@ -49,6 +51,26 @@ namespace river {
 				std::vector<std11::shared_ptr<drain::VolumeElement> > m_volumeGroup;
 			public:
 				std11::shared_ptr<drain::VolumeElement> getVolumeGroup(const std::string& _name);
+				/**
+				 * @brief Get all input audio stream.
+				 * @return a list of all availlables input stream name
+				 */
+				std::vector<std::string> getListStreamInput();
+				/**
+				 * @brief Get all output audio stream.
+				 * @return a list of all availlables output stream name
+				 */
+				std::vector<std::string> getListStreamOutput();
+				/**
+				 * @brief Get all audio virtual stream.
+				 * @return a list of all availlables virtual stream name
+				 */
+				std::vector<std::string> getListStreamVirtual();
+				/**
+				 * @brief Get all audio stream.
+				 * @return a list of all availlables stream name
+				 */
+				std::vector<std::string> getListStream();
 				
 				/**
 				 * @brief Set a volume for a specific group
@@ -58,26 +80,26 @@ namespace river {
 				 * @return false An error occured
 				 * @example : setVolume("MASTER", -3.0f);
 				 */
-				virtual bool setVolume(const std::string& _volumeName, float _valuedB);
+				bool setVolume(const std::string& _volumeName, float _valuedB);
 				/**
 				 * @brief Get a volume value
 				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
 				 * @return The Volume value in dB.
 				 * @example ret = getVolume("MASTER"); can return something like ret = -3.0f
 				 */
-				virtual float getVolume(const std::string& _volumeName);
+				float getVolume(const std::string& _volumeName);
 				/**
 				 * @brief Get a parameter value
 				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
 				 * @return The requested value Range.
 				 * @example ret = getVolumeRange("MASTER"); can return something like ret=(-120.0f,0.0f)
 				 */
-				virtual std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
+				std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
 				/**
 				 * @brief Generate the dot file corresponding at the actif nodes.
 				 * @param[in] _filename Name of the file to write data.
 				 */
-				virtual void generateDot(const std::string& _filename);
+				void generateDot(const std::string& _filename);
 			private:
 				std::map<std::string, std11::shared_ptr<river::io::Group> > m_listGroup; //!< List of all groups
 				std11::shared_ptr<river::io::Group> getGroup(const std::string& _name);

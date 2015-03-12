@@ -48,24 +48,21 @@ namespace river {
 			 * @brief Constructor
 			 */
 			Interface();
-			bool init(const std::string& _name,
-			          float _freq,
+			bool init(float _freq,
 			          const std::vector<audio::channel>& _map,
 			          audio::format _format,
 			          const std11::shared_ptr<river::io::Node>& _node,
 			          const std11::shared_ptr<const ejson::Object>& _config);
+			static std11::shared_ptr<Interface> create(float _freq,
+			                                           const std::vector<audio::channel>& _map,
+			                                           audio::format _format,
+			                                           const std11::shared_ptr<river::io::Node>& _node,
+			                                           const std11::shared_ptr<const ejson::Object>& _config);
 		public:
 			/**
 			 * @brief Destructor
 			 */
 			virtual ~Interface();
-			static std11::shared_ptr<Interface> create(const std::string& _name,
-			                                         float _freq,
-			                                         const std::vector<audio::channel>& _map,
-			                                         audio::format _format,
-			                                         const std11::shared_ptr<river::io::Node>& _node,
-			                                         const std11::shared_ptr<const ejson::Object>& _config);
-		
 		protected:
 			mutable std11::recursive_mutex m_mutex;
 			std11::shared_ptr<const ejson::Object> m_config;
@@ -93,6 +90,9 @@ namespace river {
 		public:
 			virtual std::string getName() {
 				return m_name;
+			};
+			virtual void setName(const std::string& _name) {
+				m_name = _name;
 			};
 			/**
 			 * @brief set the read/write mode enable.
@@ -206,7 +206,6 @@ namespace river {
 			virtual void systemNewInputData(std11::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk);
 			virtual void systemNeedOutputData(std11::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
 			virtual void systemVolumeChange();
-			float m_volume; //!< Local channel Volume
 		public:
 			virtual void generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink=true);
 			virtual std::string getDotNodeName() const;

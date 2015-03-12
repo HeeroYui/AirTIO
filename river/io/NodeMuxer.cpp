@@ -44,7 +44,10 @@ std11::shared_ptr<river::Interface> river::io::NodeMuxer::createInput(float _fre
 	std11::shared_ptr<river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
 	std11::shared_ptr<river::Interface> interface;
-	interface = river::Interface::create(_name, _freq, _map, _format, node, tmppp);
+	interface = river::Interface::create(_freq, _map, _format, node, tmppp);
+	if (interface != nullptr) {
+		interface->setName(_name);
+	}
 	return interface;
 }
 
