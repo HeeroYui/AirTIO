@@ -13,7 +13,7 @@
 namespace river_test_playback_callback {
 	
 	class testOutCallback {
-		private:
+		public:
 			std11::shared_ptr<river::Manager> m_manager;
 			std11::shared_ptr<river::Interface> m_interface;
 			double m_phase;
@@ -28,8 +28,8 @@ namespace river_test_playback_callback {
 				m_interface = m_manager->createOutput(48000,
 				                                      channelMap,
 				                                      audio::format_int16,
-				                                      _io,
-				                                      "WriteModeCallback");
+				                                      _io);
+				ASSERT_NE(m_interface, nullptr);
 				// set callback mode ...
 				m_interface->setOutputCallback(std11::bind(&testOutCallback::onDataNeeded,
 				                                           this,
@@ -62,6 +62,7 @@ namespace river_test_playback_callback {
 				}
 			}
 			void run() {
+				ASSERT_NE(m_interface, nullptr);
 				m_interface->start();
 				// wait 2 second ...
 				usleep(2000000);
@@ -69,7 +70,21 @@ namespace river_test_playback_callback {
 			}
 	};
 	
-	static const std::string configurationRiver = "";
+	static const std::string configurationRiver =
+		"{\n"
+		"	speaker:{\n"
+		"		io:'output',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"		},\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024,\n"
+		"		volume-name:'MASTER'\n"
+		"	}\n"
+		"}\n";
 	
 	TEST(TestALL, testOutputCallBack) {
 		river::initString(configurationRiver);
@@ -78,6 +93,7 @@ namespace river_test_playback_callback {
 		
 		APPL_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker");
+		ASSERT_NE(process, nullptr);
 		process->run();
 		process.reset();
 		usleep(500000);

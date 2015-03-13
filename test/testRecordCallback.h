@@ -13,7 +13,20 @@
 #define __class__ "test_record_callback"
 
 namespace river_test_record_callback {
-	static const std::string configurationRiver = "";
+	static const std::string configurationRiver =
+		"{\n"
+		"	microphone:{\n"
+		"		io:'input',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"		},\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024\n"
+		"	}\n"
+		"}\n";
 	
 	class testInCallback {
 		private:
@@ -27,8 +40,8 @@ namespace river_test_record_callback {
 				m_interface = m_manager->createInput(48000,
 				                                     channelMap,
 				                                     audio::format_int16,
-				                                     _input,
-				                                     "WriteModeCallback");
+				                                     _input);
+				EXPECT_NE(m_interface, nullptr);
 				// set callback mode ...
 				m_interface->setInputCallback(std11::bind(&testInCallback::onDataReceived,
 				                                          this,

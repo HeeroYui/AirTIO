@@ -29,8 +29,8 @@ namespace river_test_muxer {
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
 				                                         audio::format_int16,
-				                                         "speaker",
-				                                         "MuxerTestOut");
+				                                         "speaker");
+				EXPECT_NE(m_interfaceOut, nullptr);
 				// set callback mode ...
 				m_interfaceOut->setOutputCallback(std11::bind(&TestClass::onDataNeeded,
 				                                              this,
@@ -47,8 +47,8 @@ namespace river_test_muxer {
 				m_interfaceIn = m_manager->createInput(48000,
 				                                       std::vector<audio::channel>(),
 				                                       audio::format_int16,
-				                                       "microphone-muxed",
-				                                       "microphone-muxed-local-name");
+				                                       "microphone-muxed");
+				EXPECT_NE(m_interfaceIn, nullptr);
 				// set callback mode ...
 				m_interfaceIn->setInputCallback(std11::bind(&TestClass::onDataReceived,
 				                                            this,
@@ -100,7 +100,57 @@ namespace river_test_muxer {
 			}
 	};
 	
-	static const std::string configurationRiver = "";
+	static const std::string configurationRiver = 
+		"{\n"
+		"	speaker:{\n"
+		"		io:'output',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"			timestamp-mode:'trigered',\n"
+		"		},\n"
+		"		group:'groupSynchro',\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024,\n"
+		"	},\n"
+		"	microphone:{\n"
+		"		io:'input',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"			timestamp-mode:'trigered',\n"
+		"		},\n"
+		"		group:'groupSynchro',\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024\n"
+		"	},\n"
+		"	microphone-muxed:{\n"
+		"		io:'muxer',\n"
+		"		# connect in input mode\n"
+		"		map-on-input-1:{\n"
+		"			# generic virtual definition\n"
+		"			io:'input',\n"
+		"			map-on:'microphone',\n"
+		"		},\n"
+		"		# connect in feedback mode\n"
+		"		map-on-input-2:{\n"
+		"			io:'feedback',\n"
+		"			map-on:'speaker',\n"
+		"		},\n"
+		"		input-2-remap:['rear-left', 'rear-right'],\n"
+		"		#classical format configuration:\n"
+		"		frequency:48000,\n"
+		"		channel-map:[\n"
+		"			'front-left', 'front-right', 'rear-left', 'rear-right'\n"
+		"		],\n"
+		"		type:'int16',\n"
+		"		mux-demux-type:'int16',\n"
+		"	}\n"
+		"}\n";
 	
 	TEST(TestMuxer, testMuxing) {
 		river::initString(configurationRiver);

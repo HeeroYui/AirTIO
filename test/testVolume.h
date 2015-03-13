@@ -11,7 +11,21 @@
 #define __class__ "test_volume"
 
 namespace river_test_volume {
-	static const std::string configurationRiver = "";
+	static const std::string configurationRiver =
+		"{\n"
+		"	speaker:{\n"
+		"		io:'output',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"		},\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024,\n"
+		"		volume-name:'MASTER'\n"
+		"	}\n"
+		"}\n";
 	
 	class testCallbackVolume {
 		private:
@@ -29,8 +43,8 @@ namespace river_test_volume {
 				m_interface = m_manager->createOutput(48000,
 				                                      channelMap,
 				                                      audio::format_int16,
-				                                      "speaker",
-				                                      "WriteModeCallback");
+				                                      "speaker");
+				EXPECT_NE(m_interface, nullptr);
 				// set callback mode ...
 				m_interface->setOutputCallback(std11::bind(&testCallbackVolume::onDataNeeded,
 				                                           this,

@@ -48,8 +48,8 @@ namespace river_test_echo_delay {
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
 				                                         audio::format_int16,
-				                                         "speaker",
-				                                         "delayTestOut");
+				                                         "speaker");
+				EXPECT_NE(m_interfaceOut, nullptr);
 				// set callback mode ...
 				m_interfaceOut->setOutputCallback(std11::bind(&TestClass::onDataNeeded,
 				                                              this,
@@ -65,8 +65,8 @@ namespace river_test_echo_delay {
 				m_interfaceIn = m_manager->createInput(48000,
 				                                       channelMap,
 				                                       audio::format_int16,
-				                                       "microphone",
-				                                       "delayTestIn");
+				                                       "microphone");
+				EXPECT_NE(m_interfaceIn, nullptr);
 				// set callback mode ...
 				m_interfaceIn->setInputCallback(std11::bind(&TestClass::onDataReceived,
 				                                            this,
@@ -77,11 +77,11 @@ namespace river_test_echo_delay {
 				                                            std11::placeholders::_5,
 				                                            std11::placeholders::_6));
 				
-				m_interfaceFB = m_manager->createInput(48000,
-				                                       channelMap,
-				                                       audio::format_int16,
-				                                       "feedback",
-				                                       "delayTestFB");
+				m_interfaceFB = m_manager->createFeedback(48000,
+				                                          channelMap,
+				                                          audio::format_int16,
+				                                          "speaker");
+				EXPECT_NE(m_interfaceFB, nullptr);
 				// set callback mode ...
 				m_interfaceFB->setInputCallback(std11::bind(&TestClass::onDataReceivedFeedBack,
 				                                            this,
@@ -363,7 +363,37 @@ namespace river_test_echo_delay {
 			}
 	};
 	
-	static const std::string configurationRiver = "";
+	static const std::string configurationRiver =
+		"{\n"
+		"	speaker:{\n"
+		"		io:'output',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		//"			name:'hw:0,0',\n"
+		"			timestamp-mode:'trigered',\n"
+		"		},\n"
+		//"		group:'groupSynchro',\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024,\n"
+		"	},\n"
+		"	microphone:{\n"
+		"		io:'input',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		//"			name:'hw:0,0',\n"
+		"			timestamp-mode:'trigered',\n"
+		"		},\n"
+		//"		group:'groupSynchro',\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024\n"
+		"	}\n"
+		"}\n";
 	
 	TEST(TestTime, testDelay) {
 		river::initString(configurationRiver);

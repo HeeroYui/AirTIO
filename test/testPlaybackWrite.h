@@ -11,7 +11,21 @@
 #define __class__ "test_playback_write"
 
 namespace river_test_playback_write {
-	static const std::string configurationRiver = "";
+	static const std::string configurationRiver =
+		"{\n"
+		"	speaker:{\n"
+		"		io:'output',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"		},\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024,\n"
+		"		volume-name:'MASTER'\n"
+		"	}\n"
+		"}\n";
 	
 	class testOutWrite {
 		private:
@@ -27,8 +41,8 @@ namespace river_test_playback_write {
 				m_interface = m_manager->createOutput(48000,
 				                                      m_channelMap,
 				                                      audio::format_int16,
-				                                      "speaker",
-				                                      "WriteMode");
+				                                      "speaker");
+				EXPECT_NE(m_interface, nullptr);
 				m_interface->setReadwrite();
 			}
 			void run() {
@@ -97,8 +111,7 @@ namespace river_test_playback_write {
 				m_interface = m_manager->createOutput(48000,
 				                                      channelMap,
 				                                      audio::format_int16,
-				                                      "speaker",
-				                                      "WriteMode+Callback");
+				                                      "speaker");
 				m_interface->setReadwrite();
 				m_interface->setWriteCallback(std11::bind(&testOutWriteCallback::onDataNeeded,
 				                                          this,
@@ -139,6 +152,7 @@ namespace river_test_playback_write {
 	};
 	
 	TEST(TestALL, testOutputWriteWithCallback) {
+		river::initString(configurationRiver);
 		std11::shared_ptr<river::Manager> manager;
 		manager = river::Manager::create("testApplication");
 		
@@ -147,6 +161,7 @@ namespace river_test_playback_write {
 		process->run();
 		process.reset();
 		usleep(500000);
+		river::unInit();
 	}
 
 };

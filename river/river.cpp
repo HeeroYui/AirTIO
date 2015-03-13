@@ -17,7 +17,7 @@ void river::init(const std::string& _filename) {
 	if (river_isInit == false) {
 		river_isInit = true;
 		river_configFile = _filename;
-		RIVER_INFO("init RIVER :" << river_configFile);
+		RIVER_DEBUG("init RIVER :" << river_configFile);
 		std11::shared_ptr<river::io::Manager> mng = river::io::Manager::getInstance();
 		mng->init(river_configFile);
 	} else {
@@ -29,7 +29,7 @@ void river::initString(const std::string& _config) {
 	if (river_isInit == false) {
 		river_isInit = true;
 		river_configFile = _config;
-		RIVER_INFO("init RIVER with config ...");
+		RIVER_DEBUG("init RIVER with config.");
 		std11::shared_ptr<river::io::Manager> mng = river::io::Manager::getInstance();
 		mng->initString(river_configFile);
 	} else {
@@ -40,7 +40,7 @@ void river::initString(const std::string& _config) {
 void river::unInit() {
 	if (river_isInit == true) {
 		river_isInit = false;
-		RIVER_INFO("un-init RIVER :" << river_configFile);
+		RIVER_DEBUG("un-init RIVER.");
 		std11::shared_ptr<river::io::Manager> mng = river::io::Manager::getInstance();
 		mng->unInit();
 	}

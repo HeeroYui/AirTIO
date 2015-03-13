@@ -35,6 +35,7 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 		mux-demux-type:"int16_on_int32", 
 	*/
 	std::string interfaceType = m_config->getStringValue("io");
+	RIVER_INFO("interfaceType=" << interfaceType);
 	if (    interfaceType == "input"
 	     || interfaceType == "PAinput"
 	     || interfaceType == "aec"
@@ -72,7 +73,12 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 	hardwareFormat.set(map, formatType, frequency);
 	
 	
-	std::string muxerDemuxerConfig = m_config->getStringValue("mux-demux-type", "int16-on-int32");
+	std::string muxerDemuxerConfig;
+	if (m_isInput == true) {
+		muxerDemuxerConfig = m_config->getStringValue("mux-demux-type", "int16");
+	} else {
+		muxerDemuxerConfig = m_config->getStringValue("mux-demux-type", "int16-on-int32");
+	}
 	enum audio::format muxerFormatType = audio::getFormatFromString(muxerDemuxerConfig);
 	if (m_isInput == true) {
 		if (muxerFormatType != audio::format_int16) {

@@ -220,10 +220,15 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 	airtaudio::StreamOptions option;
 	etk::from_string(option.mode, tmpObject->getStringValue("timestamp-mode", "soft"));
 	
+	RIVER_DEBUG("interfaceFormat=" << interfaceFormat);
+	RIVER_DEBUG("hardwareFormat=" << hardwareFormat);
+	
 	m_rtaudioFrameSize = nbChunk;
 	RIVER_INFO("Open output stream nbChannels=" << params.nChannels);
 	enum airtaudio::error err = airtaudio::error_none;
 	if (m_isInput == true) {
+		m_process.setInputConfig(hardwareFormat);
+		m_process.setOutputConfig(interfaceFormat);
 		err = m_adac.openStream(nullptr, &params,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std11::bind(&river::io::NodeAirTAudio::recordCallback,
@@ -235,6 +240,8 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		                        option
 		                        );
 	} else {
+		m_process.setInputConfig(interfaceFormat);
+		m_process.setOutputConfig(hardwareFormat);
 		err = m_adac.openStream(&params, nullptr,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std11::bind(&river::io::NodeAirTAudio::playbackCallback,

@@ -14,7 +14,7 @@ def create(target):
 		'test/main.cpp',
 		'test/debug.cpp'
 		])
-	
+	"""
 	if target.name=="Windows":
 		myModule.copy_file('data/hardwareWindows.json', 'hardware.json')
 	elif target.name=="Linux":
@@ -27,6 +27,7 @@ def create(target):
 		myModule.copy_file('data/hardwareAndroid.json', 'hardware.json')
 	else:
 		debug.warning("unknow target for AIRTAudio : " + target.name);
+	"""
 	
 	myModule.add_module_depend(['river', 'gtest', 'etk'])
 	

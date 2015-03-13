@@ -11,6 +11,21 @@
 #define __class__ "test_format"
 
 namespace river_test_format {
+	static const std::string configurationRiver =
+		"{\n"
+		"	speaker:{\n"
+		"		io:'output',\n"
+		"		map-on:{\n"
+		"			interface:'auto',\n"
+		"			name:'default',\n"
+		"		},\n"
+		"		frequency:0,\n"
+		"		channel-map:['front-left', 'front-right'],\n"
+		"		type:'auto',\n"
+		"		nb-chunk:1024,\n"
+		"		volume-name:'MASTER'\n"
+		"	}\n"
+		"}\n";
 	class testOutCallbackType {
 		private:
 			std11::shared_ptr<river::Manager> m_manager;
@@ -51,6 +66,7 @@ namespace river_test_format {
 				                                      _format,
 				                                      "speaker",
 				                                      "WriteModeCallbackType");
+				EXPECT_NE(m_interface, nullptr);
 				// set callback mode ...
 				m_interface->setOutputCallback(std11::bind(&testOutCallbackType::onDataNeeded,
 				                                           this,
@@ -128,7 +144,6 @@ namespace river_test_format {
 			}
 	};
 	
-	static const std::string configurationRiver = "";
 	
 	class testResampling : public ::testing::TestWithParam<float> {};
 	TEST_P(testResampling, base) {
