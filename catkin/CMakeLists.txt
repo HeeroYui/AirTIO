@@ -43,6 +43,7 @@ include_directories(
 ## Declare a cpp library
 add_library(${PROJECT_NAME}
   ../${PROJECT_NAME}/debug.cpp
+  ../${PROJECT_NAME}/river.cpp
   ../${PROJECT_NAME}/Manager.cpp
   ../${PROJECT_NAME}/Interface.cpp
   ../${PROJECT_NAME}/CircularBuffer.cpp

@@ -29,7 +29,7 @@ namespace river_test_record_callback {
 		"}\n";
 	
 	class testInCallback {
-		private:
+		public:
 			std11::shared_ptr<river::Manager> m_manager;
 			std11::shared_ptr<river::Interface> m_interface;
 		public:
@@ -41,7 +41,10 @@ namespace river_test_record_callback {
 				                                     channelMap,
 				                                     audio::format_int16,
 				                                     _input);
-				EXPECT_NE(m_interface, nullptr);
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interface->setInputCallback(std11::bind(&testInCallback::onDataReceived,
 				                                          this,
@@ -71,6 +74,10 @@ namespace river_test_record_callback {
 				APPL_INFO("Get data ... average=" << int32_t(value));
 			}
 			void run() {
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interface->start();
 				// wait 2 second ...
 				usleep(20000000);

@@ -29,7 +29,10 @@ namespace river_test_playback_callback {
 				                                      channelMap,
 				                                      audio::format_int16,
 				                                      _io);
-				ASSERT_NE(m_interface, nullptr);
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interface->setOutputCallback(std11::bind(&testOutCallback::onDataNeeded,
 				                                           this,
@@ -62,7 +65,10 @@ namespace river_test_playback_callback {
 				}
 			}
 			void run() {
-				ASSERT_NE(m_interface, nullptr);
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interface->start();
 				// wait 2 second ...
 				usleep(2000000);

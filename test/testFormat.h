@@ -66,7 +66,10 @@ namespace river_test_format {
 				                                      _format,
 				                                      "speaker",
 				                                      "WriteModeCallbackType");
-				EXPECT_NE(m_interface, nullptr);
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interface->setOutputCallback(std11::bind(&testOutCallbackType::onDataNeeded,
 				                                           this,
@@ -132,15 +135,15 @@ namespace river_test_format {
 				}
 			}
 			void run() {
-				if (m_interface != nullptr) {
-					m_interface->start();
-					// wait 2 second ...
-					usleep(1000000);
-					m_interface->stop();
-					usleep(100000);
-				} else {
-					APPL_ERROR("Can not create interface !!!");
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
 				}
+				m_interface->start();
+				// wait 2 second ...
+				usleep(1000000);
+				m_interface->stop();
+				usleep(100000);
 			}
 	};
 	

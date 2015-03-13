@@ -49,7 +49,10 @@ namespace river_test_echo_delay {
 				                                         channelMap,
 				                                         audio::format_int16,
 				                                         "speaker");
-				EXPECT_NE(m_interfaceOut, nullptr);
+				if(m_interfaceOut == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interfaceOut->setOutputCallback(std11::bind(&TestClass::onDataNeeded,
 				                                              this,
@@ -66,7 +69,10 @@ namespace river_test_echo_delay {
 				                                       channelMap,
 				                                       audio::format_int16,
 				                                       "microphone");
-				EXPECT_NE(m_interfaceIn, nullptr);
+				if(m_interfaceIn == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interfaceIn->setInputCallback(std11::bind(&TestClass::onDataReceived,
 				                                            this,
@@ -81,7 +87,10 @@ namespace river_test_echo_delay {
 				                                          channelMap,
 				                                          audio::format_int16,
 				                                          "speaker");
-				EXPECT_NE(m_interfaceFB, nullptr);
+				if(m_interfaceFB == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interfaceFB->setInputCallback(std11::bind(&TestClass::onDataReceivedFeedBack,
 				                                            this,
@@ -340,6 +349,18 @@ namespace river_test_echo_delay {
 				}
 			}
 			void run() {
+				if(m_interfaceIn == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
+				if(m_interfaceOut == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
+				if(m_interfaceFB == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interfaceOut->start();
 				m_interfaceIn->start();
 				//m_interfaceFB->start();

@@ -44,7 +44,10 @@ namespace river_test_volume {
 				                                      channelMap,
 				                                      audio::format_int16,
 				                                      "speaker");
-				EXPECT_NE(m_interface, nullptr);
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interface->setOutputCallback(std11::bind(&testCallbackVolume::onDataNeeded,
 				                                           this,
@@ -76,6 +79,10 @@ namespace river_test_volume {
 				}
 			}
 			void run() {
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interface->start();
 				usleep(1000000);
 				m_interface->setParameter("volume", "FLOW", "-3dB");

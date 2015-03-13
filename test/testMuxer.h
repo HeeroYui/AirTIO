@@ -30,7 +30,10 @@ namespace river_test_muxer {
 				                                         channelMap,
 				                                         audio::format_int16,
 				                                         "speaker");
-				EXPECT_NE(m_interfaceOut, nullptr);
+				if(m_interfaceOut == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interfaceOut->setOutputCallback(std11::bind(&TestClass::onDataNeeded,
 				                                              this,
@@ -48,7 +51,10 @@ namespace river_test_muxer {
 				                                       std::vector<audio::channel>(),
 				                                       audio::format_int16,
 				                                       "microphone-muxed");
-				EXPECT_NE(m_interfaceIn, nullptr);
+				if(m_interfaceIn == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				// set callback mode ...
 				m_interfaceIn->setInputCallback(std11::bind(&TestClass::onDataReceived,
 				                                            this,
@@ -92,6 +98,14 @@ namespace river_test_muxer {
 				APPL_ERROR("Receive data ... " << _nbChunk << " map=" << _map);
 			}
 			void run() {
+				if(m_interfaceIn == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
+				if(m_interfaceOut == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interfaceOut->start();
 				m_interfaceIn->start();
 				usleep(10000000);

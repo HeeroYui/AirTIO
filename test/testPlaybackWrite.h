@@ -28,7 +28,7 @@ namespace river_test_playback_write {
 		"}\n";
 	
 	class testOutWrite {
-		private:
+		public:
 			std::vector<audio::channel> m_channelMap;
 			std11::shared_ptr<river::Manager> m_manager;
 			std11::shared_ptr<river::Interface> m_interface;
@@ -42,10 +42,17 @@ namespace river_test_playback_write {
 				                                      m_channelMap,
 				                                      audio::format_int16,
 				                                      "speaker");
-				EXPECT_NE(m_interface, nullptr);
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interface->setReadwrite();
 			}
 			void run() {
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				double phase=0;
 				std::vector<int16_t> data;
 				data.resize(1024*m_channelMap.size());
@@ -96,7 +103,7 @@ namespace river_test_playback_write {
 	}
 	
 	class testOutWriteCallback {
-		private:
+		public:
 			std11::shared_ptr<river::Manager> m_manager;
 			std11::shared_ptr<river::Interface> m_interface;
 			double m_phase;
@@ -112,6 +119,10 @@ namespace river_test_playback_write {
 				                                      channelMap,
 				                                      audio::format_int16,
 				                                      "speaker");
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interface->setReadwrite();
 				m_interface->setWriteCallback(std11::bind(&testOutWriteCallback::onDataNeeded,
 				                                          this,
@@ -145,6 +156,10 @@ namespace river_test_playback_write {
 				m_interface->write(&data[0], data.size()/_map.size());
 			}
 			void run() {
+				if(m_interface == nullptr) {
+					APPL_ERROR("nullptr interface");
+					return;
+				}
 				m_interface->start();
 				usleep(1000000);
 				m_interface->stop();
