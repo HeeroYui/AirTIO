@@ -46,7 +46,6 @@ add_library(${PROJECT_NAME}
   ../${PROJECT_NAME}/river.cpp
   ../${PROJECT_NAME}/Manager.cpp
   ../${PROJECT_NAME}/Interface.cpp
-  ../${PROJECT_NAME}/CircularBuffer.cpp
   ../${PROJECT_NAME}/io/Group.cpp
   ../${PROJECT_NAME}/io/Node.cpp
   ../${PROJECT_NAME}/io/NodeAirTAudio.cpp

@@ -139,6 +139,7 @@ void river::io::Node::registerAsRemote(const std11::shared_ptr<river::Interface>
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
 			it = m_listAvaillable.erase(it);
+			continue;
 		}
 		++it;
 	}

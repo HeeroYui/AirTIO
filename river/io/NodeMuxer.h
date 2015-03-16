@@ -9,7 +9,7 @@
 
 #include <river/io/Node.h>
 #include <river/Interface.h>
-#include <river/CircularBuffer.h>
+#include <drain/CircularBuffer.h>
 
 namespace river {
 	namespace io {
@@ -50,8 +50,8 @@ namespace river {
 				                          const std::vector<audio::channel>& _map);
 				std::vector<audio::channel> m_mapInput1;
 				std::vector<audio::channel> m_mapInput2;
-				river::CircularBuffer m_bufferInput1;
-				river::CircularBuffer m_bufferInput2;
+				drain::CircularBuffer m_bufferInput1;
+				drain::CircularBuffer m_bufferInput2;
 				std11::chrono::nanoseconds m_sampleTime; //!< represent the sample time at the specify frequency.
 				void process();
 				void processMuxer(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time);

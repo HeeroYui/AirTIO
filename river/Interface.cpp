@@ -282,19 +282,122 @@ size_t river::Interface::size() const {
 	return 0;
 }
 
+
+
+
+
 void river::Interface::setBufferSize(size_t _nbChunk) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
-	m_process.updateInterAlgo();
-	// TODO :...
-	
+	if (m_node->isInput() == true) {
+		std11::shared_ptr<drain::EndPointRead> algo = m_process.get<drain::EndPointRead>(m_process.size()-1);
+		if (algo == nullptr) {
+			RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
+			return;
+		}
+		algo->setBufferSize(_nbChunk);
+		return;
+	}
+	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
+	if (algo == nullptr) {
+		RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
+		return;
+	}
+	algo->setBufferSize(_nbChunk);
 }
 
 void river::Interface::setBufferSize(const std11::chrono::microseconds& _time) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
-	m_process.updateInterAlgo();
-	// TODO :...
+	if (m_node->isInput() == true) {
+		std11::shared_ptr<drain::EndPointRead> algo = m_process.get<drain::EndPointRead>(m_process.size()-1);
+		if (algo == nullptr) {
+			RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
+			return;
+		}
+		algo->setBufferSize(_time);
+		return;
+	}
+	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
+	if (algo == nullptr) {
+		RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
+		return;
+	}
+	algo->setBufferSize(_time);
+}
+
+size_t river::Interface::getBufferSize() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_node->isInput() == true) {
+		std11::shared_ptr<drain::EndPointRead> algo = m_process.get<drain::EndPointRead>(m_process.size()-1);
+		if (algo == nullptr) {
+			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+			return 0;
+		}
+		return algo->getBufferSize();
+	}
+	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
+	if (algo == nullptr) {
+		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+		return 0;
+	}
+	return algo->getBufferSize();
+}
+
+std11::chrono::microseconds river::Interface::getBufferSizeMicrosecond() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_node->isInput() == true) {
+		std11::shared_ptr<drain::EndPointRead> algo = m_process.get<drain::EndPointRead>(m_process.size()-1);
+		if (algo == nullptr) {
+			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+			return std11::chrono::microseconds(0);
+		}
+		return algo->getBufferSizeMicrosecond();
+	}
+	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
+	if (algo == nullptr) {
+		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+		return std11::chrono::microseconds(0);
+	}
+	return algo->getBufferSizeMicrosecond();
+}
+
+size_t river::Interface::getBufferFillSize() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_node->isInput() == true) {
+		std11::shared_ptr<drain::EndPointRead> algo = m_process.get<drain::EndPointRead>(m_process.size()-1);
+		if (algo == nullptr) {
+			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+			return 0;
+		}
+		return algo->getBufferFillSize();
+	}
+	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
+	if (algo == nullptr) {
+		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+		return 0;
+	}
+	return algo->getBufferFillSize();
 	
 }
+
+std11::chrono::microseconds river::Interface::getBufferFillSizeMicrosecond() {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	if (m_node->isInput() == true) {
+		std11::shared_ptr<drain::EndPointRead> algo = m_process.get<drain::EndPointRead>(m_process.size()-1);
+		if (algo == nullptr) {
+			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+			return std11::chrono::microseconds(0);
+		}
+		return algo->getBufferFillSizeMicrosecond();
+	}
+	std11::shared_ptr<drain::EndPointWrite> algo = m_process.get<drain::EndPointWrite>(0);
+	if (algo == nullptr) {
+		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
+		return std11::chrono::microseconds(0);
+	}
+	return algo->getBufferFillSizeMicrosecond();
+}
+
+
 
 void river::Interface::clearInternalBuffer() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
