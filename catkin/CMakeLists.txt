@@ -55,8 +55,6 @@ add_library(${PROJECT_NAME}
   ../${PROJECT_NAME}/io/Manager.cpp
 )
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -DDEBUG_LEVEL=3 -DDEBUG=1 -D__CPP_VERSION__=2011")
-
 add_definitions(-D__AIRTAUDIO_INFERFACE__)
 
 ## Specify libraries to link a library or executable target against
