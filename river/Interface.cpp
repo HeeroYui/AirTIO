@@ -34,7 +34,8 @@ bool river::Interface::init(float _freq,
 	m_config = _config;
 	m_mode = river::modeInterface_unknow;
 	std::string type = m_config->getStringValue("io", "error");
-	m_name = _node->getName() + "__" + (_node->isInput()==true?"input":"output") + "__" + type;
+	static int32_t uid=0;
+	m_name = _node->getName() + "__" + (_node->isInput()==true?"input":"output") + "__" + type + "__" + etk::to_string(uid++);
 	if (type == "output") {
 		m_mode = river::modeInterface_output;
 	} else if (type == "input") {

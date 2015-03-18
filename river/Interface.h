@@ -229,6 +229,15 @@ namespace river {
 		public:
 			virtual void generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink=true);
 			virtual std::string getDotNodeName() const;
+		private:
+			//statusFunction m_statusFunction;
+		public:
+			void generateStatus(const std::string& _origin, const std::string& _status) {
+				m_process.generateStatus(_origin, _status);
+			}
+			void setStatusFunction(drain::statusFunction _newFunction) {
+				m_process.setStatusFunction(_newFunction);
+			}
 	};
 };
 

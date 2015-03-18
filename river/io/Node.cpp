@@ -219,31 +219,34 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 	std::vector<int32_t> output;
 	RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
 	output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-	const int32_t* outputTmp = nullptr;
-	std::vector<uint8_t> outputTmp2;
-	RIVER_VERBOSE("resize=" << sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
-	outputTmp2.resize(sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk, 0);
-	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		if (m_list[iii] == nullptr) {
-			continue;
-		}
-		if (m_list[iii]->getMode() != river::modeInterface_output) {
-			continue;
-		}
-		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName());
-		// clear datas ...
-		memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
-		RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
-		m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
-		RIVER_VERBOSE("        Mix it ...");
-		outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
-		// Add data to the output tmp buffer :
-		for (size_t kkk=0; kkk<output.size(); ++kkk) {
-			output[kkk] += outputTmp[kkk];
+	// TODO : set here the mixer selection ...
+	if (true) {
+		const int32_t* outputTmp = nullptr;
+		std::vector<uint8_t> outputTmp2;
+		RIVER_VERBOSE("resize=" << sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
+		outputTmp2.resize(sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk, 0);
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (m_list[iii] == nullptr) {
+				continue;
+			}
+			if (m_list[iii]->getMode() != river::modeInterface_output) {
+				continue;
+			}
+			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
+			// clear datas ...
+			memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
+			RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
+			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
+			outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
+			RIVER_VERBOSE("        Mix it ...");
+			// Add data to the output tmp buffer :
+			for (size_t kkk=0; kkk<output.size(); ++kkk) {
+				output[kkk] += outputTmp[kkk];
+			}
 		}
 	}
 	RIVER_VERBOSE("    End stack process data ...");
-	m_process.processIn(&outputTmp2[0], _nbChunk, _outputBuffer, _nbChunk);
+	m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
 	RIVER_VERBOSE("    Feedback :");
 	for (size_t iii=0; iii< m_list.size(); ++iii) {
 		if (m_list[iii] == nullptr) {
@@ -278,7 +281,7 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 		_node << "			NODE_" << m_uid << "_HW_interface [ label=\"HW interface\\n interface=ALSA\\n stream=" << m_name << "\\n type=input\" ];\n";
 		std::string nameIn;
 		std::string nameOut;
-		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
+		m_process.generateDotProcess(_node, 3, m_uid, nameIn, nameOut, false);
 		_node << "		node [shape=square];\n";
 		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
@@ -292,7 +295,7 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 		std::string nameIn;
 		std::string nameOut;
 		if (nbOutput>0) {
-			m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, true);
+			m_process.generateDotProcess(_node, 3, m_uid, nameIn, nameOut, true);
 		}
 		_node << "		node [shape=square];\n";
 		if (nbOutput>0) {
