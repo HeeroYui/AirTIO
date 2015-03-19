@@ -52,7 +52,7 @@ namespace river {
 	do { \
 		static FILE *pointerOnFile = nullptr; \
 		static bool errorOpen = false; \
-		if (NULL==pointerOnFile) { \
+		if (pointerOnFile == nullptr) { \
 			RIVER_WARNING("open file '" << fileName << "' type=" << #type); \
 			pointerOnFile = fopen(fileName,"w"); \
 			if (    errorOpen == false \
