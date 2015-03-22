@@ -31,7 +31,6 @@ def create(target):
 	
 	myModule.add_module_depend(['river', 'gtest', 'etk'])
 	
-	# add the currrent module at the 
 	return myModule
 
 
