@@ -19,7 +19,7 @@ namespace river {
 	/**
 	 * @brief Audio interface manager : Single interface for every application that want to access on the Audio input/output
 	 */
-	class Manager {
+	class Manager  : public std11::enable_shared_from_this<Manager> {
 		private:
 			const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
 			std::vector<std11::weak_ptr<river::Interface> > m_listOpenInterface; //!< List of all open Stream.
@@ -29,6 +29,11 @@ namespace river {
 			 */
 			Manager(const std::string& _applicationUniqueId);
 		public:
+			/**
+			 * @brief factory of the manager. Every Application will have only one maager for all his flow. this permit to manage all of it
+			 * @param[in] _applicationUniqueId Unique name of the application
+			 * @return Pointer on the manager or nullptr if an error occured
+			 */
 			static std11::shared_ptr<river::Manager> create(const std::string& _applicationUniqueId);
 			/**
 			 * @brief Destructor

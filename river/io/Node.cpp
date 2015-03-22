@@ -189,11 +189,11 @@ void river::io::Node::volumeChange() {
 	}
 }
 
-int32_t river::io::Node::newInput(const void* _inputBuffer,
-                                  uint32_t _nbChunk,
-                                  const std11::chrono::system_clock::time_point& _time) {
+void river::io::Node::newInput(const void* _inputBuffer,
+                               uint32_t _nbChunk,
+                               const std11::chrono::system_clock::time_point& _time) {
 	if (_inputBuffer == nullptr) {
-		return -1;
+		return;
 	}
 	const int16_t* inputBuffer = static_cast<const int16_t *>(_inputBuffer);
 	for (size_t iii=0; iii< m_list.size(); ++iii) {
@@ -207,14 +207,14 @@ int32_t river::io::Node::newInput(const void* _inputBuffer,
 		m_list[iii]->systemNewInputData(_time, inputBuffer, _nbChunk);
 	}
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [ END ]");
-	return 0;
+	return;
 }
 
-int32_t river::io::Node::newOutput(void* _outputBuffer,
-                                   uint32_t _nbChunk,
-                                   const std11::chrono::system_clock::time_point& _time) {
+void river::io::Node::newOutput(void* _outputBuffer,
+                                uint32_t _nbChunk,
+                                const std11::chrono::system_clock::time_point& _time) {
 	if (_outputBuffer == nullptr) {
-		return -1;
+		return;
 	}
 	std::vector<int32_t> output;
 	RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
@@ -259,7 +259,7 @@ int32_t river::io::Node::newOutput(void* _outputBuffer,
 		m_list[iii]->systemNewInputData(_time, _outputBuffer, _nbChunk);
 	}
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [ END ]");
-	return 0;
+	return;
 }
 
 static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second) {

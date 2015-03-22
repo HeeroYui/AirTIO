@@ -25,9 +25,13 @@
 namespace river {
 	namespace io {
 		class Node;
-		class Manager {
+		/**
+		 * @brief Internal sigleton of all Flow hadware and virtuals.
+		 * @note this class will be initialize by the river::init() function at the start of the application.
+		 */
+		class Manager : public std11::enable_shared_from_this<Manager> {
 			private:
-				mutable std11::recursive_mutex m_mutex;
+				mutable std11::recursive_mutex m_mutex; //!< prevent multiple access
 			private:
 				/**
 				 * @brief Constructor
@@ -39,18 +43,39 @@ namespace river {
 				 * @brief Destructor
 				 */
 				~Manager();
+				/**
+				 * @brief Called by river::init() to set the hardware configuration file.
+				 * @param[in] _filename Name of the file to initialize.
+				 */
 				void init(const std::string& _filename);
+				/**
+				 * @brief Called by river::initString() to set the hardware configuration string.
+				 * @param[in] _data json configuration string.
+				 */
 				void initString(const std::string& _data);
+				/**
+				 * @brief Called by river::inInit() to uninitialize all the low level interface.
+				 */
 				void unInit();
 			private:
-				ejson::Document m_config; // harware configuration
-				std::vector<std11::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone time
+				ejson::Document m_config; //!< harware configuration
+				std::vector<std11::shared_ptr<river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone/all time
 				std::vector<std11::weak_ptr<river::io::Node> > m_list; //!< List of all IO node
 			public:
+				/**
+				 * @brief Get a node with his name (the name is set in the description file.
+				 * @param[in] _name Name of the node
+				 * @return Pointer on the noe or a nullptr if the node does not exist in the file or an error occured.
+				 */
 				std11::shared_ptr<river::io::Node> getNode(const std::string& _name);
 			private:
-				std::vector<std11::shared_ptr<drain::VolumeElement> > m_volumeGroup;
+				std::vector<std11::shared_ptr<drain::VolumeElement> > m_volumeGroup; //!< List of All global volume in the Low level interface.
 			public:
+				/**
+				 * @brief Get a volume in the global list of vilume
+				 * @param[in] _name Name of the volume.
+				 * @return pointer on the requested volume (create it if does not exist). nullptr if the name is empty.
+				 */
 				std11::shared_ptr<drain::VolumeElement> getVolumeGroup(const std::string& _name);
 				/**
 				 * @brief Get all input audio stream.
@@ -103,6 +128,11 @@ namespace river {
 				void generateDot(const std::string& _filename);
 			private:
 				std::map<std::string, std11::shared_ptr<river::io::Group> > m_listGroup; //!< List of all groups
+				/**
+				 * @brief get a low level interface group.
+				 * @param[in] _name Name of the group.
+				 * @return Pointer on the requested group or nullptr if the group does not existed.
+				 */
 				std11::shared_ptr<river::io::Group> getGroup(const std::string& _name);
 				
 		};

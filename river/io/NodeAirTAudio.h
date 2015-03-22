@@ -15,7 +15,10 @@ namespace river {
 	namespace io {
 		class Manager;
 		class Group;
-		class NodeAirTAudio : public Node {
+		/**
+		 * @brief Low level node that is manage on the interface with the extern lib airtaudio
+		 */
+		class NodeAirTAudio : public river::io::Node {
 			friend class river::io::Group;
 			protected:
 				/**
@@ -32,20 +35,30 @@ namespace river {
 					return true;
 				};
 			protected:
-				airtaudio::Interface m_adac; //!< Real audio interface
-				airtaudio::DeviceInfo m_info;
-				unsigned int m_rtaudioFrameSize;
+				airtaudio::Interface m_adac; //!< Real airtaudio interface
+				airtaudio::DeviceInfo m_info; //!< information on the stream.
+				unsigned int m_rtaudioFrameSize; // DEPRECATED soon...
 			public:
-				int32_t duplexCallback(const void* _inputBuffer,
-				                       const std11::chrono::system_clock::time_point& _timeInput,
-				                       void* _outputBuffer,
-				                       const std11::chrono::system_clock::time_point& _timeOutput,
-				                       uint32_t _nbChunk,
-				                       const std::vector<airtaudio::status>& _status);
+				/**
+				 * @brief Input Callback . Have recaive new data to process.
+				 * @param[in] _inputBuffer Pointer on the data buffer.
+				 * @param[in] _timeInput Time on the fist sample has been recorded.
+				 * @param[in] _nbChunk Number of chunk in the buffer
+				 * @param[in] _status DEPRECATED soon
+				 * @return DEPRECATED soon
+				 */
 				int32_t recordCallback(const void* _inputBuffer,
 				                       const std11::chrono::system_clock::time_point& _timeInput,
 				                       uint32_t _nbChunk,
 				                       const std::vector<airtaudio::status>& _status);
+				/**
+				 * @brief Playback callback. Request new data on output
+				 * @param[in,out] _outputBuffer Pointer on the buffer to fill data.
+				 * @param[in] _timeOutput Time on wich the data might be played.
+				 * @param[in] _nbChunk Number of chunk in the buffer
+				 * @param[in] _status DEPRECATED soon
+				 * @return DEPRECATED soon
+				 */
 				int32_t playbackCallback(void* _outputBuffer,
 				                         const std11::chrono::system_clock::time_point& _timeOutput,
 				                         uint32_t _nbChunk,

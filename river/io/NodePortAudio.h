@@ -16,6 +16,7 @@
 namespace river {
 	namespace io {
 		class Manager;
+		//! @not-in-doc
 		class NodePortAudio : public Node {
 			protected:
 				/**

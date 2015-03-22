@@ -197,10 +197,8 @@ void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 }
 
 void river::io::NodeAEC::process() {
-	if (m_bufferMicrophone.getSize() <= 256) {
-		return;
-	}
-	if (m_bufferFeedBack.getSize() <= 256) {
+	if (    m_bufferMicrophone.getSize() <= 256
+	     || m_bufferFeedBack.getSize() <= 256) {
 		return;
 	}
 	std11::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();

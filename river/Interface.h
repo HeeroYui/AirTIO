@@ -35,6 +35,10 @@ namespace river {
 		modeInterface_output,
 		modeInterface_feedback,
 	};
+	/**
+	 * @brief Interface is the basic handle to manage the input output stream
+	 * @note To create this class see @ref river::Manager class
+	 */
 	class Interface : public std11::enable_shared_from_this<Interface> {
 		friend class io::Node;
 		friend class io::NodeAirTAudio;
@@ -45,14 +49,34 @@ namespace river {
 			uint32_t m_uid; //!< unique ID for interface
 		protected:
 			/**
-			 * @brief Constructor
+			 * @brief Constructor (use factory)
 			 */
 			Interface();
+			/**
+			 * @brief Initilize the Class (do all that is not manage by constructor) Call by factory.
+			 * @param[in] _freq Frequency.
+			 * @param[in] _map Channel map organization.
+			 * @param[in] _format Sample format
+			 * @param[in] _node Low level interface to connect the flow.
+			 * @param[in] _config Special configuration of this interface.
+			 * @return true Configuration done corectly.
+			 * @return false the configuration has an error.
+			 */
 			bool init(float _freq,
 			          const std::vector<audio::channel>& _map,
 			          audio::format _format,
 			          const std11::shared_ptr<river::io::Node>& _node,
 			          const std11::shared_ptr<const ejson::Object>& _config);
+			/**
+			 * @brief Factory of this interface (called by class river::Manager)
+			 * @param[in] _freq Frequency.
+			 * @param[in] _map Channel map organization.
+			 * @param[in] _format Sample format
+			 * @param[in] _node Low level interface to connect the flow.
+			 * @param[in] _config Special configuration of this interface.
+			 * @return nullptr The configuration does not work.
+			 * @return pointer The interface has been corectly created.
+			 */
 			static std11::shared_ptr<Interface> create(float _freq,
 			                                           const std::vector<audio::channel>& _map,
 			                                           audio::format _format,
@@ -64,16 +88,25 @@ namespace river {
 			 */
 			virtual ~Interface();
 		protected:
-			mutable std11::recursive_mutex m_mutex;
-			std11::shared_ptr<const ejson::Object> m_config;
+			mutable std11::recursive_mutex m_mutex; //!< Local mutex to protect data
+			std11::shared_ptr<const ejson::Object> m_config; //!< configuration set by the user.
 		protected:
-			enum modeInterface m_mode;
+			enum modeInterface m_mode; //!< interface type (input/output/feedback)
 		public:
+			/**
+			 * @brief Get mode type of the current interface.
+			 * @return The mode requested.
+			 */
 			enum modeInterface getMode() {
 				return m_mode;
 			}
-			drain::Process m_process;
+		protected:
+			drain::Process m_process; //!< Algorithme processing engine
 		public:
+			/**
+			 * @brief Get the interface format configuration.
+			 * @return The current format.
+			 */
 			const drain::IOFormatInterface& getInterfaceFormat() {
 				if (    m_mode == modeInterface_input
 				     || m_mode == modeInterface_feedback) {
@@ -82,27 +115,47 @@ namespace river {
 					return m_process.getInputConfig();
 				}
 			}
-		
 		protected:
-			std11::shared_ptr<river::io::Node> m_node;
+			std11::shared_ptr<river::io::Node> m_node; //!< Hardware interface to/from stream audio flow.
 		protected:
-			std::string m_name;
+			std::string m_name; //!< Name of the interface.
 		public:
+			/**
+			 * @brief Get interface name.
+			 * @return The current name.
+			 */
 			virtual std::string getName() {
 				return m_name;
 			};
+			/**
+			 * @brief Set the interface name
+			 * @param[in] _name new name of the interface
+			 */
 			virtual void setName(const std::string& _name) {
 				m_name = _name;
 			};
 			/**
 			 * @brief set the read/write mode enable.
+			 * @note If you not set a output/input callback you must call this function.
 			 */
 			virtual void setReadwrite();
 			/**
 			 * @brief When we want to implement a Callback Mode:
 			 */
+			/**
+			 * @brief Set a callback on the write mode interface to know when data is needed in the buffer
+			 * @param[in] _function Function to call
+			 */
 			virtual void setWriteCallback(drain::playbackFunctionWrite _function);
+			/**
+			 * @brief Set Output callback mode with the specify callback.
+			 * @param[in] _function Function to call
+			 */
 			virtual void setOutputCallback(drain::playbackFunction _function);
+			/**
+			 * @brief Set Input callback mode with the specify callback.
+			 * @param[in] _function Function to call
+			 */
 			virtual void setInputCallback(drain::recordFunction _function);
 			/**
 			 * @brief Add a volume group of the current channel.
@@ -223,18 +276,52 @@ namespace river {
 			 */
 			virtual std11::chrono::system_clock::time_point getCurrentTime() const;
 		private:
+			/**
+			 * @brief Node Call interface : Input interface node has new data.
+			 * @param[in] _time Time where the first sample has been capture.
+			 * @param[in] _data Pointer on the new data.
+			 * @param[in] _nbChunk Number of chunk in the buffer.
+			 */
 			virtual void systemNewInputData(std11::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk);
+			/**
+			 * @brief Node Call interface: Output interface node need new data.
+			 * @param[in] _time Time where the data might be played
+			 * @param[in] _data Pointer on the data.
+			 * @param[in] _nbChunk Number of chunk that might be write
+			 * @param[in] _chunkSize Chunk size.
+			 */
 			virtual void systemNeedOutputData(std11::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
+			/**
+			 * @brief Node Call interface: A volume has change.
+			 */
 			virtual void systemVolumeChange();
 		public:
+			/**
+			 * @brief Create the dot in the FileNode stream.
+			 * @param[in,out] _node File node to write data.
+			 * @param[in] _nameIO Name to link the interface node
+			 * @param[in] _isLink True if the node is connected on the current interface.
+			 */
 			virtual void generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink=true);
+			/**
+			 * @brief Get the current 'dot' name of the interface
+			 * @return The anme requested.
+			 */
 			virtual std::string getDotNodeName() const;
-		private:
-			//statusFunction m_statusFunction;
-		public:
+		protected:
+			/**
+			 * @brief Interfanel generate of status
+			 * @param[in] _origin status source
+			 * @param[in] _status Event status
+			 */
 			void generateStatus(const std::string& _origin, const std::string& _status) {
 				m_process.generateStatus(_origin, _status);
 			}
+		public:
+			/**
+			 * @brief Set status callback
+			 * @param[in] _newFunction Function to call
+			 */
 			void setStatusFunction(drain::statusFunction _newFunction) {
 				m_process.setStatusFunction(_newFunction);
 			}

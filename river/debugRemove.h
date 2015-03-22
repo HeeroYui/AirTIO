@@ -16,5 +16,6 @@
 #undef RIVER_VERBOSE
 #undef RIVER_TODO
 #undef RIVER_ASSERT
+
 #endif
 

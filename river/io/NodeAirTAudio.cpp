@@ -23,25 +23,6 @@ static std::string asString(const std11::chrono::system_clock::time_point& tp) {
      return ts;
 }
 
-int32_t river::io::NodeAirTAudio::duplexCallback(const void* _inputBuffer,
-                                                 const std11::chrono::system_clock::time_point& _timeInput,
-                                                 void* _outputBuffer,
-                                                 const std11::chrono::system_clock::time_point& _timeOutput,
-                                                 uint32_t _nbChunk,
-                                                 const std::vector<airtaudio::status>& _status) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
-	// TODO : Manage status ...
-	if (_inputBuffer != nullptr) {
-		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
-		newInput(_inputBuffer, _nbChunk, _timeInput);
-	}
-	if (_outputBuffer != nullptr) {
-		RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
-		newOutput(_outputBuffer, _nbChunk, _timeOutput);
-	}
-	return 0;
-}
-
 int32_t river::io::NodeAirTAudio::recordCallback(const void* _inputBuffer,
                                                  const std11::chrono::system_clock::time_point& _timeInput,
                                                  uint32_t _nbChunk,

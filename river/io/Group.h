@@ -16,17 +16,57 @@ namespace river {
 	namespace io {
 		class Node;
 		class Manager;
+		/**
+		 * @brief Group is contituate to manage some input and output in the same start and stop.
+		 * It link N interface in a group. The start and the sopt is requested in Node inside the
+		 * group they will start and stop when the first start is requested and stop when the last
+		 * is stopped.
+		 * @note For the Alsa interface a low level link is availlable with AirTAudio for Alsa (One thread)
+		 */
 		class Group : public std11::enable_shared_from_this<Group> {
 			public:
+				/**
+				 * @brief Contructor. No special thing to do.
+				 */
 				Group() {}
-				~Group() {}
-			private:
-				std::vector< std11::shared_ptr<Node> > m_list;
+				/**
+				 * @brief Destructor
+				 */
+				~Group() {
+					// TODO : ...
+				}
+			private: 
+				std::vector< std11::shared_ptr<Node> > m_list; //!< List of all node in the group
 			public:
+				/**
+				 * @brief Create a group with all node needed to syncronize together
+				 * @param[in] _obj json document to create all the node in the group named _name
+				 * @param[in] _name Name of the group to create
+				 */
 				void createFrom(const ejson::Document& _obj, const std::string& _name);
+				/**
+				 * @brief Get a node in the group (if the node is not in the group nothing append).
+				 * @param[in] _name Name of the node requested.
+				 * @return nullptr The node named _name was not found.
+				 * @return pointer The node was find in this group.
+				 */
 				std11::shared_ptr<river::io::Node> getNode(const std::string& _name);
+				/**
+				 * @brief Start the group.
+				 * @note all sub-node will be started.
+				 */
 				void start();
+				/**
+				 * @brief Stop the group.
+				 * @note All sub-node will be stopped at the reserve order that they start.
+				 */
 				void stop();
+				/**
+				 * @brief Create the dot in the FileNode stream.
+				 * @param[in,out] _node File node to write data.
+				 * @param[in] _hardwareNode true if user want only display the hardware
+				 *                          node and not the software node. false The oposite.
+				 */
 				void generateDot(etk::FSNode& _node, bool _hardwareNode);
 		};
 	}
