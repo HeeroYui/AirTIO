@@ -19,7 +19,7 @@ static std11::mutex g_mutex;
 static std::vector<std11::weak_ptr<river::Manager> > g_listOfAllManager;
 
 std11::shared_ptr<river::Manager> river::Manager::create(const std::string& _applicationUniqueId) {
-	std11::unique_lock<std11:mutex> lock(g_mutex);
+	std11::unique_lock<std11::mutex> lock(g_mutex);
 	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
 		std11::shared_ptr<river::Manager> tmp = g_listOfAllManager[iii].lock();
 		if (tmp == nullptr) {

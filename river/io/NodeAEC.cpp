@@ -30,7 +30,7 @@ std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 	}
 	std::string streamName = tmppp->getStringValue("map-on", "error");
 	
-	
+	m_nbChunk = m_config->getNumberValue("nb-chunk", 1024);
 	// check if it is an Output:
 	std::string type = tmppp->getStringValue("io", "error");
 	if (    type != "input"
@@ -197,8 +197,8 @@ void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 }
 
 void river::io::NodeAEC::process() {
-	if (    m_bufferMicrophone.getSize() <= 256
-	     || m_bufferFeedBack.getSize() <= 256) {
+	if (    m_bufferMicrophone.getSize() <= m_nbChunk
+	     || m_bufferFeedBack.getSize() <= m_nbChunk) {
 		return;
 	}
 	std11::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
@@ -227,10 +227,8 @@ void river::io::NodeAEC::process() {
 		}
 	}
 	// check if enought time after synchronisation ...
-	if (m_bufferMicrophone.getSize() <= 256) {
-		return;
-	}
-	if (m_bufferFeedBack.getSize() <= 256) {
+	if (    m_bufferMicrophone.getSize() <= m_nbChunk
+	     || m_bufferFeedBack.getSize() <= m_nbChunk) {
 		return;
 	}
 	
@@ -243,22 +241,20 @@ void river::io::NodeAEC::process() {
 	}
 	std::vector<uint8_t> dataMic;
 	std::vector<uint8_t> dataFB;
-	dataMic.resize(256*sizeof(int16_t)*2, 0);
-	dataFB.resize(256*sizeof(int16_t), 0);
+	dataMic.resize(m_nbChunk*sizeof(int16_t)*2, 0);
+	dataFB.resize(m_nbChunk*sizeof(int16_t), 0);
 	while (true) {
 		MicTime = m_bufferMicrophone.getReadTimeStamp();
 		fbTime = m_bufferFeedBack.getReadTimeStamp();
 		RIVER_INFO(" process 256 samples ... micTime=" << MicTime << " fbTime=" << fbTime << " delta = " << (MicTime-fbTime).count());
-		m_bufferMicrophone.read(&dataMic[0], 256);
-		m_bufferFeedBack.read(&dataFB[0], 256);
-		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], 256*2);
-		RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack_sync.raw", &dataFB[0], 256);
+		m_bufferMicrophone.read(&dataMic[0], m_nbChunk);
+		m_bufferFeedBack.read(&dataFB[0], m_nbChunk);
+		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], m_nbChunk*2);
+		RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack_sync.raw", &dataFB[0], m_nbChunk);
 		// if threaded : send event / otherwise, process ...
-		//processAEC(&dataMic[0], &dataFB[0], 256, _time);
-		if (m_bufferMicrophone.getSize() <= 256) {
-			return;
-		}
-		if (m_bufferFeedBack.getSize() <= 256) {
+		processAEC(&dataMic[0], &dataFB[0], m_nbChunk, MicTime);
+		if (    m_bufferMicrophone.getSize() <= m_nbChunk
+		     || m_bufferFeedBack.getSize() <= m_nbChunk) {
 			return;
 		}
 	}
@@ -274,27 +270,15 @@ void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 	_node << "	subgraph clusterNode_" << m_uid << " {\n";
 	_node << "		color=blue;\n";
 	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
-
-		_node << "		node [shape=box];\n";
-		// TODO : Create a structure ...
-		_node << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\" ];\n";
-		_node << "			subgraph clusterNode_" << m_uid << "_process {\n";
-		_node << "				label=\"Drain::Process\";\n";
-		_node << "				node [shape=ellipse];\n";
-		_node << "				node_ALGO_" << m_uid << "_in [ label=\"format=" << etk::to_string(m_process.getInputConfig().getFormat())
-		                                                         << "\\n freq=" << m_process.getInputConfig().getFrequency()
-		                                                   << "\\n channelMap=" << etk::to_string(m_process.getInputConfig().getMap()) << "\" ];\n";
-		_node << "				node_ALGO_" << m_uid << "_out [ label=\"format=" << etk::to_string(m_process.getOutputConfig().getFormat())
-		                                                          << "\\n freq=" << m_process.getOutputConfig().getFrequency()
-		                                                    << "\\n channelMap=" << etk::to_string(m_process.getOutputConfig().getMap()) << "\" ];\n";
-		
-		_node << "			}\n";
+		_node << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\\n channelMap=" << etk::to_string(getInterfaceFormat().getMap()) << "\" ];\n";
+		std::string nameIn;
+		std::string nameOut;
+		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
 		_node << "		node [shape=square];\n";
 		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "			NODE_" << m_uid << "_HW_AEC -> node_ALGO_" << m_uid << "_in;\n";
-		_node << "			node_ALGO_" << m_uid << "_in -> node_ALGO_" << m_uid << "_out;\n";
-		_node << "			node_ALGO_" << m_uid << "_out -> NODE_" << m_uid << "_demuxer;\n";
+		_node << "			NODE_" << m_uid << "_HW_AEC -> " << nameIn << ";\n";
+		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
 	_node << "	}\n";
 	if (m_interfaceMicrophone != nullptr) {
 		_node << "	" << m_interfaceMicrophone->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
@@ -302,15 +286,29 @@ void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 	if (m_interfaceFeedBack != nullptr) {
 		_node << "	" << m_interfaceFeedBack->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
 	}
+	_node << "	\n";
 	
-	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
-			if (m_list[iii]->getMode() == modeInterface_input) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
-			} else if (m_list[iii]->getMode() == modeInterface_output) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer");
-			} else if (m_list[iii]->getMode() == modeInterface_feedback) {
-				m_list[iii]->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer");
+	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
+		if (m_listAvaillable[iii].expired() == true) {
+			continue;
+		}
+		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		if (element == nullptr) {
+			continue;
+		}
+		bool isLink = false;
+		for (size_t jjj=0; jjj<m_list.size(); ++jjj) {
+			if (element == m_list[jjj]) {
+				isLink = true;
+			}
+		}
+		if (element != nullptr) {
+			if (element->getMode() == modeInterface_input) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+			} else if (element->getMode() == modeInterface_output) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer", isLink);
+			} else if (element->getMode() == modeInterface_feedback) {
+				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
 			} else {
 				
 			}

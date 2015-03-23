@@ -89,6 +89,8 @@ namespace river {
 				void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time);
 			public:
 				virtual void generateDot(etk::FSNode& _node);
+			private:
+				int32_t m_nbChunk;
 		};
 	}
 }

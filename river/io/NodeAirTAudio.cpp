@@ -190,13 +190,15 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 	airtaudio::StreamParameters params;
 	params.deviceId = deviceId;
 	params.deviceName = streamName;
-	// TODO : Remove limit of 2 channels ...
+	params.nChannels = hardwareFormat.getMap().size();
 	if (m_isInput == true) {
-		m_info.inputChannels = 2;
-		params.nChannels = 2;
+		if (m_info.inputChannels < params.nChannels) {
+			RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.inputChannels << ").");
+		}
 	} else {
-		m_info.outputChannels = 2;
-		params.nChannels = 2;
+		if (m_info.outputChannels < params.nChannels) {
+			RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.inputChannels << ").");
+		}
 	}
 	airtaudio::StreamOptions option;
 	etk::from_string(option.mode, tmpObject->getStringValue("timestamp-mode", "soft"));
