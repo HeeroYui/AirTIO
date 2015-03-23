@@ -15,9 +15,31 @@
 
 #undef __class__
 #define __class__ "Manager"
+static std11::mutex g_mutex;
+static std::vector<std11::weak_ptr<river::Manager> > g_listOfAllManager;
 
 std11::shared_ptr<river::Manager> river::Manager::create(const std::string& _applicationUniqueId) {
-	return std11::shared_ptr<river::Manager>(new river::Manager(_applicationUniqueId));
+	std11::unique_lock<std11:mutex> lock(g_mutex);
+	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
+		std11::shared_ptr<river::Manager> tmp = g_listOfAllManager[iii].lock();
+		if (tmp == nullptr) {
+			continue;
+		}
+		if (tmp->m_applicationUniqueId == _applicationUniqueId) {
+			return tmp;
+		}
+	}
+	// create a new one:
+	std11::shared_ptr<river::Manager> out = std11::shared_ptr<river::Manager>(new river::Manager(_applicationUniqueId));
+	// add it at the list:
+	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
+		if (g_listOfAllManager[iii].expired() == true) {
+			g_listOfAllManager[iii] = out;
+			return out;
+		}
+	}
+	g_listOfAllManager.push_back(out);
+	return out;
 }
 
 river::Manager::Manager(const std::string& _applicationUniqueId) :

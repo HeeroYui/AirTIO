@@ -1,6 +1,4 @@
 =?=River extract and build examples an example=?=
-__________________________________________________
-[left][doc[001_bases | Previous: Doc]][/left] [right][tutorial[001_Read | Next: Create an input interface]][/right]
 
 All developpement software will start by getting the dependency and the sources.
 
