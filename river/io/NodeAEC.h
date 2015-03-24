@@ -91,6 +91,15 @@ namespace river {
 				virtual void generateDot(etk::FSNode& _node);
 			private:
 				int32_t m_nbChunk;
+				int32_t m_gainValue;
+				int32_t m_sampleCount;
+				
+				int32_t m_P_attaqueTime; //ms
+				int32_t m_P_releaseTime; //ms
+				int32_t m_P_minimumGain; // %
+				int32_t m_P_threshold; // %
+				int32_t m_P_latencyTime; // ms
+				
 		};
 	}
 }

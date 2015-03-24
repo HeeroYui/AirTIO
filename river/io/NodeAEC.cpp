@@ -53,7 +53,12 @@ std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 
 
 river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
-  Node(_name, _config) {
+  Node(_name, _config),
+  m_P_attaqueTime(1),
+  m_P_releaseTime(100),
+  m_P_minimumGain(10),
+  m_P_threshold(2),
+  m_P_latencyTime(100) {
 	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	m_sampleTime = std11::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
@@ -249,7 +254,7 @@ void river::io::NodeAEC::process() {
 		RIVER_INFO(" process 256 samples ... micTime=" << MicTime << " fbTime=" << fbTime << " delta = " << (MicTime-fbTime).count());
 		m_bufferMicrophone.read(&dataMic[0], m_nbChunk);
 		m_bufferFeedBack.read(&dataFB[0], m_nbChunk);
-		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], m_nbChunk*2);
+		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], m_nbChunk*getHarwareFormat().getMap().size());
 		RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack_sync.raw", &dataFB[0], m_nbChunk);
 		// if threaded : send event / otherwise, process ...
 		processAEC(&dataMic[0], &dataFB[0], m_nbChunk, MicTime);
@@ -262,6 +267,55 @@ void river::io::NodeAEC::process() {
 
 
 void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
+	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+	// TODO : Set all these parameter in the parameter configuration section ...
+	int32_t attaqueTime = std::min(std::max(0,m_P_attaqueTime),1000);
+	int32_t releaseTime = std::min(std::max(0,m_P_releaseTime),1000);
+	int32_t min_gain = 32767 * std::min(std::max(0,m_P_minimumGain),1000) / 1000;
+	int32_t threshold = 32767 * std::min(std::max(0,m_P_threshold),1000) / 1000;
+	
+	int32_t latencyTime = std::min(std::max(0,m_P_latencyTime),1000);
+	int32_t nb_sample_latency = (hardwareFormat.getFrequency()/1000)*latencyTime;
+	
+	int32_t increaseSample = 32767;
+	if (attaqueTime != 0) {
+		increaseSample = 32767/(hardwareFormat.getFrequency() * attaqueTime / 1000);
+	}
+	int32_t decreaseSample = 32767;
+	if (attaqueTime != 0) {
+		decreaseSample = 32767/(hardwareFormat.getFrequency() * releaseTime / 1000);
+	}
+	// Process section:
+	int16_t* dataMic = static_cast<int16_t*>(_dataMic);
+	int16_t* dataFB = static_cast<int16_t*>(_dataFB);
+	for (size_t iii=0; iii<_nbChunk; ++iii) {
+		if (abs(*dataFB++) > threshold) {
+			m_sampleCount = 0;
+		} else {
+			m_sampleCount++;
+		}
+		if (m_sampleCount > nb_sample_latency) {
+			m_gainValue += decreaseSample;
+			if (m_gainValue >= 32767) {
+				m_gainValue = 32767;
+			}
+		} else {
+			if (m_gainValue <= increaseSample) {
+				m_gainValue = 0;
+			} else {
+				m_gainValue -= increaseSample;
+			}
+			if (m_gainValue < min_gain) {
+				m_gainValue = min_gain;
+			}
+		}
+		for (size_t jjj=0; jjj<hardwareFormat.getMap().size(); ++jjj) {
+			*dataMic = static_cast<int16_t>((*dataMic * m_gainValue) >> 15);
+			dataMic++;
+		}
+	}
+		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_clean.raw", _dataMic, _nbChunk*getHarwareFormat().getMap().size());
+	// simply send to upper requester...
 	newInput(_dataMic, _nbChunk, _time);
 }
 
