@@ -13,16 +13,7 @@
 namespace river {
 	int32_t getLogId();
 };
-// TODO : Review this problem of multiple intanciation of "std::stringbuf sb"
-#define RIVER_BASE(info,data) \
-	do { \
-		if (info <= etk::log::getLevel(river::getLogId())) { \
-			std::stringbuf sb; \
-			std::ostream tmpStream(&sb); \
-			tmpStream << data; \
-			etk::log::logStream(river::getLogId(), info, __LINE__, __class__, __func__, tmpStream); \
-		} \
-	} while(0)
+#define RIVER_BASE(info,data)  TK_LOG_BASE(river::getLogId(),info,data)
 
 #define RIVER_CRITICAL(data)      RIVER_BASE(1, data)
 #define RIVER_ERROR(data)         RIVER_BASE(2, data)
