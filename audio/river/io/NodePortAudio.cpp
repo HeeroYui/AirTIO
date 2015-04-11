@@ -79,14 +79,12 @@ audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const s
 		},
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
-	enum audio::orchestra::type typeInterface = audio::orchestra::type_undefined;
 	std::string streamName = "default";
 	const std11::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
 		std::string value = tmpObject->getStringValue("interface", "default");
-		typeInterface = audio::orchestra::getTypeFromString(value);
 		streamName = tmpObject->getStringValue("name", "default");
 	}
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
