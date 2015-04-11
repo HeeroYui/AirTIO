@@ -15,7 +15,7 @@ namespace audio {
 		 * @brief Initialize the River Library
 		 * @param[in] _filename Name of the configuration file (if "" ==> default config file)
 		 */
-		void init(const std::string& _filename);
+		void init(const std::string& _filename = "");
 		/**
 		 * @brief Initialize the River Library with a json data string
 		 * @param[in] _config json sting data

@@ -20,7 +20,7 @@
 #undef __class__
 #define __class__ "io::Manager"
 
-#ifdef __PORTAUDIO_INFERFACE__
+#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 	#include <portaudio.h>
 #endif
 
@@ -58,7 +58,7 @@ static std::string basicAutoConfig =
 
 
 audio::river::io::Manager::Manager() {
-	#ifdef __PORTAUDIO_INFERFACE__
+	#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 	PaError err = Pa_Initialize();
 	if(err != paNoError) {
 		RIVER_WARNING("Can not initialize portaudio : " << Pa_GetErrorText(err));
@@ -87,7 +87,7 @@ void audio::river::io::Manager::unInit() {
 }
 
 audio::river::io::Manager::~Manager() {
-	#ifdef __PORTAUDIO_INFERFACE__
+	#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 	PaError err = Pa_Terminate();
 	if(err != paNoError) {
 		RIVER_WARNING("Can not initialize portaudio : " << Pa_GetErrorText(err));
@@ -200,7 +200,7 @@ std11::shared_ptr<audio::river::io::Node> audio::river::io::Manager::getNode(con
 			}
 		}
 	}
-	RIVER_WARNING("Create a new one : " << _name);
+	RIVER_WARNING("Try create a new one : " << _name);
 	// check if the node can be open :
 	const std11::shared_ptr<const ejson::Object> tmpObject = m_config.getObject(_name);
 	if (tmpObject != nullptr) {
@@ -224,22 +224,27 @@ std11::shared_ptr<audio::river::io::Node> audio::river::io::Manager::getNode(con
 				RIVER_WARNING("Group is only availlable for Hardware interface ... '" << _name << "'");
 			}
 			// TODO : Create a standalone group for every single element ==> simplify understanding ... but not for virtual interface ...
-			#ifdef __AIRTAUDIO_INFERFACE__
+			
 			if (    ioType == "input"
 			     || ioType == "output") {
-				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeOrchestra::create(_name, tmpObject);
-				m_list.push_back(tmp);
-				return tmp;
+				#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
+					std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeOrchestra::create(_name, tmpObject);
+					m_list.push_back(tmp);
+					return tmp;
+				#else
+					RIVER_WARNING("not present interface");
+				#endif
 			}
-			#endif
-			#ifdef __PORTAUDIO_INFERFACE__
 			if (    ioType == "PAinput"
 			     || ioType == "PAoutput") {
-				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodePortAudio::create(_name, tmpObject);
-				m_list.push_back(tmp);
-				return tmp;
+				#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
+					std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodePortAudio::create(_name, tmpObject);
+					m_list.push_back(tmp);
+					return tmp;
+				#else
+					RIVER_WARNING("not present interface");
+				#endif
 			}
-			#endif
 			if (ioType == "aec") {
 				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeAEC::create(_name, tmpObject);
 				m_list.push_back(tmp);

@@ -27,7 +27,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 			RIVER_INFO("Add element in Group[" << _name << "]: " << _obj.getKey(iii));
 			// get type : io
 			std::string ioType = tmpObject->getStringValue("io", "error");
-			#ifdef __AIRTAUDIO_INFERFACE__
+			#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 				if (    ioType == "input"
 				     || ioType == "output") {
 					std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeOrchestra::create(_obj.getKey(iii), tmpObject);
@@ -35,7 +35,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 					m_list.push_back(tmp);
 				}
 			#endif
-			#ifdef __PORTAUDIO_INFERFACE__
+			#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 				if (    ioType == "PAinput"
 				     || ioType == "PAoutput") {
 					std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodePortAudio::create(_obj.getKey(iii), tmpObject);
@@ -48,7 +48,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 	// Link all the IO together : (not needed if one device ...
 	// Note : The interlink work only for alsa (NOW) and with AirTAudio...
 	if(m_list.size() > 1) {
-		#ifdef __AIRTAUDIO_INFERFACE__
+		#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 			std11::shared_ptr<audio::river::io::NodeOrchestra> linkRef = std11::dynamic_pointer_cast<audio::river::io::NodeOrchestra>(m_list[0]);
 			for (size_t iii=1; iii<m_list.size(); ++iii) {
 				if (m_list[iii] != nullptr) {
