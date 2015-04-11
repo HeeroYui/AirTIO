@@ -4,10 +4,10 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/debug.h>
+#include <audio/river/debug.h>
 
 
-int32_t river::getLogId() {
+int32_t audio::river::getLogId() {
 	static int32_t g_val = etk::log::registerInstance("river");
 	return g_val;
 }

@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/io/NodeAEC.h>
-#include <river/debug.h>
+#include <audio/river/io/NodeAEC.h>
+#include <audio/river/debug.h>
 #include <etk/types.h>
 #include <etk/memory.h>
 #include <etk/functional.h>
@@ -13,11 +13,11 @@
 #undef __class__
 #define __class__ "io::NodeAEC"
 
-std11::shared_ptr<river::io::NodeAEC> river::io::NodeAEC::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<river::io::NodeAEC>(new river::io::NodeAEC(_name, _config));
+std11::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
+	return std11::shared_ptr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
 }
 
-std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
+std11::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,
                                                                     const std::vector<audio::channel>& _map,
                                                                     audio::format _format,
                                                                     const std::string& _objectName,
@@ -26,7 +26,7 @@ std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 	const std11::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
-		return std11::shared_ptr<river::Interface>();
+		return std11::shared_ptr<audio::river::Interface>();
 	}
 	std::string streamName = tmppp->getStringValue("map-on", "error");
 	
@@ -36,15 +36,15 @@ std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
-		return std11::shared_ptr<river::Interface>();
+		return std11::shared_ptr<audio::river::Interface>();
 	}
 	// get global hardware interface:
-	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	// get the output or input channel :
-	std11::shared_ptr<river::io::Node> node = manager->getNode(streamName);
+	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
-	std11::shared_ptr<river::Interface> interface;
-	interface = river::Interface::create(_freq, _map, _format, node, tmppp);
+	std11::shared_ptr<audio::river::Interface> interface;
+	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
 	if (interface != nullptr) {
 		interface->setName(_name);
 	}
@@ -52,15 +52,15 @@ std11::shared_ptr<river::Interface> river::io::NodeAEC::createInput(float _freq,
 }
 
 
-river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config),
   m_P_attaqueTime(1),
   m_P_releaseTime(100),
   m_P_minimumGain(10),
   m_P_threshold(2),
   m_P_latencyTime(100) {
-	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
-	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
+	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	m_sampleTime = std11::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
@@ -106,7 +106,7 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<co
 	}
 	
 	// set callback mode ...
-	m_interfaceFeedBack->setInputCallback(std11::bind(&river::io::NodeAEC::onDataReceivedFeedBack,
+	m_interfaceFeedBack->setInputCallback(std11::bind(&audio::river::io::NodeAEC::onDataReceivedFeedBack,
 	                                                  this,
 	                                                  std11::placeholders::_1,
 	                                                  std11::placeholders::_2,
@@ -115,7 +115,7 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<co
 	                                                  std11::placeholders::_5,
 	                                                  std11::placeholders::_6));
 	// set callback mode ...
-	m_interfaceMicrophone->setInputCallback(std11::bind(&river::io::NodeAEC::onDataReceivedMicrophone,
+	m_interfaceMicrophone->setInputCallback(std11::bind(&audio::river::io::NodeAEC::onDataReceivedMicrophone,
 	                                                    this,
 	                                                    std11::placeholders::_1,
 	                                                    std11::placeholders::_2,
@@ -134,14 +134,14 @@ river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<co
 	m_process.updateInterAlgo();
 }
 
-river::io::NodeAEC::~NodeAEC() {
+audio::river::io::NodeAEC::~NodeAEC() {
 	RIVER_INFO("close input stream");
 	stop();
 	m_interfaceFeedBack.reset();
 	m_interfaceMicrophone.reset();
 };
 
-void river::io::NodeAEC::start() {
+void audio::river::io::NodeAEC::start() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceFeedBack != nullptr) {
@@ -154,7 +154,7 @@ void river::io::NodeAEC::start() {
 	}
 }
 
-void river::io::NodeAEC::stop() {
+void audio::river::io::NodeAEC::stop() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	if (m_interfaceFeedBack != nullptr) {
 		m_interfaceFeedBack->stop();
@@ -165,7 +165,7 @@ void river::io::NodeAEC::stop() {
 }
 
 
-void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
+void audio::river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
                                                   const std11::chrono::system_clock::time_point& _time,
                                                   size_t _nbChunk,
                                                   enum audio::format _format,
@@ -183,7 +183,7 @@ void river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
 	process();
 }
 
-void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
+void audio::river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
                                                 const std11::chrono::system_clock::time_point& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
@@ -201,7 +201,7 @@ void river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 	process();
 }
 
-void river::io::NodeAEC::process() {
+void audio::river::io::NodeAEC::process() {
 	if (    m_bufferMicrophone.getSize() <= m_nbChunk
 	     || m_bufferFeedBack.getSize() <= m_nbChunk) {
 		return;
@@ -266,8 +266,8 @@ void river::io::NodeAEC::process() {
 }
 
 
-void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
-	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+void audio::river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
+	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	// TODO : Set all these parameter in the parameter configuration section ...
 	int32_t attaqueTime = std::min(std::max(0,m_P_attaqueTime),1000);
 	int32_t releaseTime = std::min(std::max(0,m_P_releaseTime),1000);
@@ -320,7 +320,7 @@ void river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbC
 }
 
 
-void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
+void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 	_node << "	subgraph clusterNode_" << m_uid << " {\n";
 	_node << "		color=blue;\n";
 	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
@@ -346,7 +346,7 @@ void river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}

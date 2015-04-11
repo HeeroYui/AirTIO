@@ -4,10 +4,10 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifdef __PORTAUDIO_INFERFACE__
+#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 
-#include <river/io/NodePortAudio.h>
-#include <river/debug.h>
+#include <audio/river/io/NodePortAudio.h>
+#include <audio/river/debug.h>
 #include <etk/memory.h>
 
 #undef __class__
@@ -29,7 +29,7 @@ static int portAudioStreamCallback(const void *_input,
                                    const PaStreamCallbackTimeInfo* _timeInfo,
                                    PaStreamCallbackFlags _statusFlags,
                                    void *_userData) {
-	river::io::NodePortAudio* myClass = reinterpret_cast<river::io::NodePortAudio*>(_userData);
+	audio::river::io::NodePortAudio* myClass = reinterpret_cast<audio::river::io::NodePortAudio*>(_userData);
 	int64_t sec = int64_t(_timeInfo->inputBufferAdcTime);
 	int64_t nsec = (_timeInfo->inputBufferAdcTime-double(sec))*1000000000LL;
 	std11::chrono::system_clock::time_point timeInput = std11::chrono::system_clock::from_time_t(sec) + std11::chrono::nanoseconds(nsec);
@@ -44,7 +44,7 @@ static int portAudioStreamCallback(const void *_input,
 	                               _statusFlags);
 }
 
-int32_t river::io::NodePortAudio::duplexCallback(const void* _inputBuffer,
+int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer,
                                                  const std11::chrono::system_clock::time_point& _timeInput,
                                                  void* _outputBuffer,
                                                  const std11::chrono::system_clock::time_point& _timeOutput,
@@ -64,14 +64,14 @@ int32_t river::io::NodePortAudio::duplexCallback(const void* _inputBuffer,
 }
 
 
-std11::shared_ptr<river::io::NodePortAudio> river::io::NodePortAudio::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<river::io::NodePortAudio>(new river::io::NodePortAudio(_name, _config));
+std11::shared_ptr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
+	return std11::shared_ptr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
 }
 
-river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
-	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
-	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
+	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	/**
 		map-on:{ # select hardware interface and name
 			interface:"alsa", # interface : "alsa", "pulse", "core", ...
@@ -79,14 +79,14 @@ river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std11::s
 		},
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
-	enum airtaudio::type typeInterface = airtaudio::type_undefined;
+	enum audio::orchestra::type typeInterface = audio::orchestra::type_undefined;
 	std::string streamName = "default";
 	const std11::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
 		std::string value = tmpObject->getStringValue("interface", "default");
-		typeInterface = airtaudio::getTypeFromString(value);
+		typeInterface = audio::orchestra::getTypeFromString(value);
 		streamName = tmpObject->getStringValue("name", "default");
 	}
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
@@ -117,7 +117,7 @@ river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std11::s
 	m_process.updateInterAlgo();
 }
 
-river::io::NodePortAudio::~NodePortAudio() {
+audio::river::io::NodePortAudio::~NodePortAudio() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
 	PaError err = Pa_CloseStream( m_stream );
@@ -126,7 +126,7 @@ river::io::NodePortAudio::~NodePortAudio() {
 	}
 };
 
-void river::io::NodePortAudio::start() {
+void audio::river::io::NodePortAudio::start() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	PaError err = Pa_StartStream(m_stream);
@@ -135,7 +135,7 @@ void river::io::NodePortAudio::start() {
 	}
 }
 
-void river::io::NodePortAudio::stop() {
+void audio::river::io::NodePortAudio::stop() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	PaError err = Pa_StopStream(m_stream);

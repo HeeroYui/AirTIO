@@ -28,15 +28,15 @@ namespace river_test_format {
 		"}\n";
 	class testOutCallbackType {
 		private:
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interface;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interface;
 			double m_phase;
 			float m_freq;
 			int32_t m_nbChannels;
 			float m_generateFreq;
 			
 		public:
-			testOutCallbackType(const std11::shared_ptr<river::Manager>& _manager,
+			testOutCallbackType(const std11::shared_ptr<audio::river::Manager>& _manager,
 			                    float _freq=48000.0f,
 			                    int32_t _nbChannels=2,
 			                    audio::format _format=audio::format_int16) :
@@ -150,14 +150,14 @@ namespace river_test_format {
 	
 	class testResampling : public ::testing::TestWithParam<float> {};
 	TEST_P(testResampling, base) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 	
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
@@ -167,14 +167,14 @@ namespace river_test_format {
 	
 	class testFormat : public ::testing::TestWithParam<audio::format> {};
 	TEST_P(testFormat, base) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, 48000, 2, GetParam());
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
 	                        testFormat,
@@ -183,14 +183,14 @@ namespace river_test_format {
 	
 	class testChannels : public ::testing::TestWithParam<int32_t> {};
 	TEST_P(testChannels, base) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
 	                        testChannels,
@@ -198,9 +198,9 @@ namespace river_test_format {
 	
 	
 	TEST(TestALL, testChannelsFormatResampling) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		APPL_INFO("test convert flaot to output (callback mode)");
 		std::vector<float> listFreq;
 		listFreq.push_back(4000);
@@ -235,7 +235,7 @@ namespace river_test_format {
 				}
 			}
 		}
-		river::unInit();
+		audio::river::unInit();
 	}
 
 

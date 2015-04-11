@@ -7,7 +7,7 @@
 #ifndef __RIVER_TEST_MUXER_H__
 #define __RIVER_TEST_MUXER_H__
 
-#include <river/debug.h>
+#include <audio/river/debug.h>
 
 #undef __class__
 #define __class__ "test_muxer"
@@ -15,12 +15,12 @@
 namespace river_test_muxer {
 	class TestClass {
 		private:
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interfaceIn;
-			std11::shared_ptr<river::Interface> m_interfaceOut;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interfaceIn;
+			std11::shared_ptr<audio::river::Interface> m_interfaceOut;
 			double m_phase;
 		public:
-			TestClass(std11::shared_ptr<river::Manager> _manager) :
+			TestClass(std11::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				std::vector<audio::channel> channelMap;
@@ -167,14 +167,14 @@ namespace river_test_muxer {
 		"}\n";
 	
 	TEST(TestMuxer, testMuxing) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		std11::shared_ptr<TestClass> process = std11::make_shared<TestClass>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 };
 

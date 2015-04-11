@@ -4,14 +4,14 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifdef __AIRTAUDIO_INFERFACE__
+#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 
-#include <river/io/NodeAirTAudio.h>
-#include <river/debug.h>
+#include <audio/river/io/NodeOrchestra.h>
+#include <audio/river/debug.h>
 #include <etk/memory.h>
 
 #undef __class__
-#define __class__ "io::NodeAirTAudio"
+#define __class__ "io::NodeOrchestra"
 
 static std::string asString(const std11::chrono::system_clock::time_point& tp) {
      // convert to system time:
@@ -23,10 +23,10 @@ static std::string asString(const std11::chrono::system_clock::time_point& tp) {
      return ts;
 }
 
-int32_t river::io::NodeAirTAudio::recordCallback(const void* _inputBuffer,
-                                                 const std11::chrono::system_clock::time_point& _timeInput,
-                                                 uint32_t _nbChunk,
-                                                 const std::vector<airtaudio::status>& _status) {
+int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer,
+                                                        const std11::chrono::system_clock::time_point& _timeInput,
+                                                        uint32_t _nbChunk,
+                                                        const std::vector<audio::orchestra::status>& _status) {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
@@ -34,10 +34,10 @@ int32_t river::io::NodeAirTAudio::recordCallback(const void* _inputBuffer,
 	return 0;
 }
 
-int32_t river::io::NodeAirTAudio::playbackCallback(void* _outputBuffer,
-                                                   const std11::chrono::system_clock::time_point& _timeOutput,
-                                                   uint32_t _nbChunk,
-                                                   const std::vector<airtaudio::status>& _status) {
+int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
+                                                          const std11::chrono::system_clock::time_point& _timeOutput,
+                                                          uint32_t _nbChunk,
+                                                          const std::vector<audio::orchestra::status>& _status) {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
@@ -47,14 +47,14 @@ int32_t river::io::NodeAirTAudio::playbackCallback(void* _outputBuffer,
 
 
 
-std11::shared_ptr<river::io::NodeAirTAudio> river::io::NodeAirTAudio::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<river::io::NodeAirTAudio>(new river::io::NodeAirTAudio(_name, _config));
+std11::shared_ptr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
+	return std11::shared_ptr<audio::river::io::NodeOrchestra>(new audio::river::io::NodeOrchestra(_name, _config));
 }
 
-river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
-	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
-	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
+	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	/**
 		map-on:{ # select hardware interface and name
 			interface:"alsa", # interface : "alsa", "pulse", "core", ...
@@ -62,14 +62,14 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		},
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
-	enum airtaudio::type typeInterface = airtaudio::type_undefined;
+	enum audio::orchestra::type typeInterface = audio::orchestra::type_undefined;
 	std::string streamName = "default";
 	const std11::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
 		std::string value = tmpObject->getStringValue("interface", "default");
-		typeInterface = airtaudio::getTypeFromString(value);
+		typeInterface = audio::orchestra::getTypeFromString(value);
 		streamName = tmpObject->getStringValue("name", "default");
 	}
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
@@ -187,7 +187,7 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 	}
 	
 	// open Audio device:
-	airtaudio::StreamParameters params;
+	audio::orchestra::StreamParameters params;
 	params.deviceId = deviceId;
 	params.deviceName = streamName;
 	params.nChannels = hardwareFormat.getMap().size();
@@ -200,7 +200,7 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 			RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.inputChannels << ").");
 		}
 	}
-	airtaudio::StreamOptions option;
+	audio::orchestra::StreamOptions option;
 	etk::from_string(option.mode, tmpObject->getStringValue("timestamp-mode", "soft"));
 	
 	RIVER_DEBUG("interfaceFormat=" << interfaceFormat);
@@ -208,13 +208,13 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 	
 	m_rtaudioFrameSize = nbChunk;
 	RIVER_INFO("Open output stream nbChannels=" << params.nChannels);
-	enum airtaudio::error err = airtaudio::error_none;
+	enum audio::orchestra::error err = audio::orchestra::error_none;
 	if (m_isInput == true) {
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
 		err = m_adac.openStream(nullptr, &params,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std11::bind(&river::io::NodeAirTAudio::recordCallback,
+		                        std11::bind(&audio::river::io::NodeOrchestra::recordCallback,
 		                                    this,
 		                                    std11::placeholders::_1,
 		                                    std11::placeholders::_2,
@@ -227,7 +227,7 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		m_process.setOutputConfig(hardwareFormat);
 		err = m_adac.openStream(&params, nullptr,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std11::bind(&river::io::NodeAirTAudio::playbackCallback,
+		                        std11::bind(&audio::river::io::NodeOrchestra::playbackCallback,
 		                                    this,
 		                                    std11::placeholders::_3,
 		                                    std11::placeholders::_4,
@@ -236,13 +236,13 @@ river::io::NodeAirTAudio::NodeAirTAudio(const std::string& _name, const std11::s
 		                        option
 		                        );
 	}
-	if (err != airtaudio::error_none) {
+	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);
 	}
 	m_process.updateInterAlgo();
 }
 
-river::io::NodeAirTAudio::~NodeAirTAudio() {
+audio::river::io::NodeOrchestra::~NodeOrchestra() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
 	if (m_adac.isStreamOpen() ) {
@@ -250,20 +250,20 @@ river::io::NodeAirTAudio::~NodeAirTAudio() {
 	}
 };
 
-void river::io::NodeAirTAudio::start() {
+void audio::river::io::NodeOrchestra::start() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	enum airtaudio::error err = m_adac.startStream();
-	if (err != airtaudio::error_none) {
+	enum audio::orchestra::error err = m_adac.startStream();
+	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
 	}
 }
 
-void river::io::NodeAirTAudio::stop() {
+void audio::river::io::NodeOrchestra::stop() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	enum airtaudio::error err = m_adac.stopStream();
-	if (err != airtaudio::error_none) {
+	enum audio::orchestra::error err = m_adac.stopStream();
+	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
 	}
 }

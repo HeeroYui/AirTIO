@@ -4,14 +4,14 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/io/Manager.h>
-#include <river/debug.h>
-#include <river/river.h>
-#include <river/io/Node.h>
-#include <river/io/NodeAEC.h>
-#include <river/io/NodeMuxer.h>
-#include <river/io/NodeAirTAudio.h>
-#include <river/io/NodePortAudio.h>
+#include <audio/river/io/Manager.h>
+#include <audio/river/debug.h>
+#include <audio/river/river.h>
+#include <audio/river/io/Node.h>
+#include <audio/river/io/NodeAEC.h>
+#include <audio/river/io/NodeMuxer.h>
+#include <audio/river/io/NodeOrchestra.h>
+#include <audio/river/io/NodePortAudio.h>
 #include <etk/os/FSNode.h>
 #include <etk/memory.h>
 #include <etk/types.h>
@@ -57,7 +57,7 @@ static std::string basicAutoConfig =
 
 
 
-river::io::Manager::Manager() {
+audio::river::io::Manager::Manager() {
 	#ifdef __PORTAUDIO_INFERFACE__
 	PaError err = Pa_Initialize();
 	if(err != paNoError) {
@@ -66,7 +66,7 @@ river::io::Manager::Manager() {
 	#endif
 }
 
-void river::io::Manager::init(const std::string& _filename) {
+void audio::river::io::Manager::init(const std::string& _filename) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	if (_filename == "") {
 		RIVER_INFO("Load default config");
@@ -76,17 +76,17 @@ void river::io::Manager::init(const std::string& _filename) {
 	}
 }
 
-void river::io::Manager::initString(const std::string& _data) {
+void audio::river::io::Manager::initString(const std::string& _data) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	m_config.parse(_data);
 }
 
-void river::io::Manager::unInit() {
+void audio::river::io::Manager::unInit() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	// TODO : ...
 }
 
-river::io::Manager::~Manager() {
+audio::river::io::Manager::~Manager() {
 	#ifdef __PORTAUDIO_INFERFACE__
 	PaError err = Pa_Terminate();
 	if(err != paNoError) {
@@ -95,16 +95,16 @@ river::io::Manager::~Manager() {
 	#endif
 };
 
-std11::shared_ptr<river::io::Manager> river::io::Manager::getInstance() {
-	if (river::isInit() == false) {
-		return std11::shared_ptr<river::io::Manager>();
+std11::shared_ptr<audio::river::io::Manager> audio::river::io::Manager::getInstance() {
+	if (audio::river::isInit() == false) {
+		return std11::shared_ptr<audio::river::io::Manager>();
 	}
-	static std11::shared_ptr<river::io::Manager> manager(new Manager());
+	static std11::shared_ptr<audio::river::io::Manager> manager(new Manager());
 	return manager;
 }
 
 
-std::vector<std::string> river::io::Manager::getListStreamInput() {
+std::vector<std::string> audio::river::io::Manager::getListStreamInput() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
@@ -121,7 +121,7 @@ std::vector<std::string> river::io::Manager::getListStreamInput() {
 	return output;
 }
 
-std::vector<std::string> river::io::Manager::getListStreamOutput() {
+std::vector<std::string> audio::river::io::Manager::getListStreamOutput() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
@@ -138,7 +138,7 @@ std::vector<std::string> river::io::Manager::getListStreamOutput() {
 	return output;
 }
 
-std::vector<std::string> river::io::Manager::getListStreamVirtual() {
+std::vector<std::string> audio::river::io::Manager::getListStreamVirtual() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
@@ -158,7 +158,7 @@ std::vector<std::string> river::io::Manager::getListStreamVirtual() {
 	return output;
 }
 
-std::vector<std::string> river::io::Manager::getListStream() {
+std::vector<std::string> audio::river::io::Manager::getListStream() {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
@@ -174,12 +174,12 @@ std::vector<std::string> river::io::Manager::getListStream() {
 	return output;
 }
 
-std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string& _name) {
+std11::shared_ptr<audio::river::io::Node> audio::river::io::Manager::getNode(const std::string& _name) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	RIVER_WARNING("Get node : " << _name);
 	// search in the standalone list :
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		std11::shared_ptr<river::io::Node> tmppp = m_list[iii].lock();
+		std11::shared_ptr<audio::river::io::Node> tmppp = m_list[iii].lock();
 		if (    tmppp != nullptr
 		     && _name == tmppp->getName()) {
 			RIVER_WARNING(" find it ... in standalone");
@@ -188,11 +188,11 @@ std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string
 	}
 	// search in the group list:
 	{
-		for (std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it(m_listGroup.begin());
+		for (std::map<std::string, std11::shared_ptr<audio::river::io::Group> >::iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != nullptr) {
-				std11::shared_ptr<river::io::Node> node = it->second->getNode(_name);
+				std11::shared_ptr<audio::river::io::Node> node = it->second->getNode(_name);
 				if (node != nullptr) {
 					RIVER_WARNING(" find it ... in group: " << it->first);
 					return node;
@@ -213,10 +213,10 @@ std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string
 		          || ioType == "output"
 		          || ioType == "PAinput"
 		          || ioType == "PAoutput") ) {
-			std11::shared_ptr<river::io::Group> tmpGroup = getGroup(groupName);
+			std11::shared_ptr<audio::river::io::Group> tmpGroup = getGroup(groupName);
 			if (tmpGroup == nullptr) {
 				RIVER_WARNING("Can not get group ... '" << groupName << "'");
-				return std11::shared_ptr<river::io::Node>();
+				return std11::shared_ptr<audio::river::io::Node>();
 			}
 			return tmpGroup->getNode(_name);
 		} else {
@@ -227,7 +227,7 @@ std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string
 			#ifdef __AIRTAUDIO_INFERFACE__
 			if (    ioType == "input"
 			     || ioType == "output") {
-				std11::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_name, tmpObject);
+				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeOrchestra::create(_name, tmpObject);
 				m_list.push_back(tmp);
 				return tmp;
 			}
@@ -235,32 +235,32 @@ std11::shared_ptr<river::io::Node> river::io::Manager::getNode(const std::string
 			#ifdef __PORTAUDIO_INFERFACE__
 			if (    ioType == "PAinput"
 			     || ioType == "PAoutput") {
-				std11::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_name, tmpObject);
+				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodePortAudio::create(_name, tmpObject);
 				m_list.push_back(tmp);
 				return tmp;
 			}
 			#endif
 			if (ioType == "aec") {
-				std11::shared_ptr<river::io::Node> tmp = river::io::NodeAEC::create(_name, tmpObject);
+				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeAEC::create(_name, tmpObject);
 				m_list.push_back(tmp);
 				return tmp;
 			}
 			if (ioType == "muxer") {
-				std11::shared_ptr<river::io::Node> tmp = river::io::NodeMuxer::create(_name, tmpObject);
+				std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeMuxer::create(_name, tmpObject);
 				m_list.push_back(tmp);
 				return tmp;
 			}
 		}
 	}
 	RIVER_ERROR("Can not create the interface : '" << _name << "' the node is not DEFINED in the configuration file availlable : " << m_config.getKeys());
-	return std11::shared_ptr<river::io::Node>();
+	return std11::shared_ptr<audio::river::io::Node>();
 }
 
-std11::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const std::string& _name) {
+std11::shared_ptr<audio::drain::VolumeElement> audio::river::io::Manager::getVolumeGroup(const std::string& _name) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	if (_name == "") {
 		RIVER_ERROR("Try to create an audio group with no name ...");
-		return std11::shared_ptr<drain::VolumeElement>();
+		return std11::shared_ptr<audio::drain::VolumeElement>();
 	}
 	for (size_t iii=0; iii<m_volumeGroup.size(); ++iii) {
 		if (m_volumeGroup[iii] == nullptr) {
@@ -271,14 +271,14 @@ std11::shared_ptr<drain::VolumeElement> river::io::Manager::getVolumeGroup(const
 		}
 	}
 	RIVER_DEBUG("Add a new volume group : '" << _name << "'");
-	std11::shared_ptr<drain::VolumeElement> tmpVolume = std11::make_shared<drain::VolumeElement>(_name);
+	std11::shared_ptr<audio::drain::VolumeElement> tmpVolume = std11::make_shared<audio::drain::VolumeElement>(_name);
 	m_volumeGroup.push_back(tmpVolume);
 	return tmpVolume;
 }
 
-bool river::io::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
+bool audio::river::io::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
-	std11::shared_ptr<drain::VolumeElement> volume = getVolumeGroup(_volumeName);
+	std11::shared_ptr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
 		return false;
@@ -290,7 +290,7 @@ bool river::io::Manager::setVolume(const std::string& _volumeName, float _valued
 	}
 	volume->setVolume(_valuedB);
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		std11::shared_ptr<river::io::Node> val = m_list[iii].lock();
+		std11::shared_ptr<audio::river::io::Node> val = m_list[iii].lock();
 		if (val != nullptr) {
 			val->volumeChange();
 		}
@@ -298,9 +298,9 @@ bool river::io::Manager::setVolume(const std::string& _volumeName, float _valued
 	return true;
 }
 
-float river::io::Manager::getVolume(const std::string& _volumeName) {
+float audio::river::io::Manager::getVolume(const std::string& _volumeName) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
-	std11::shared_ptr<drain::VolumeElement> volume = getVolumeGroup(_volumeName);
+	std11::shared_ptr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
 		return 0.0f;
@@ -308,11 +308,11 @@ float river::io::Manager::getVolume(const std::string& _volumeName) {
 	return volume->getVolume();
 }
 
-std::pair<float,float> river::io::Manager::getVolumeRange(const std::string& _volumeName) const {
+std::pair<float,float> audio::river::io::Manager::getVolumeRange(const std::string& _volumeName) const {
 	return std::make_pair<float,float>(-300, 300);
 }
 
-void river::io::Manager::generateDot(const std::string& _filename) {
+void audio::river::io::Manager::generateDot(const std::string& _filename) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	etk::FSNode node(_filename);
 	RIVER_INFO("Generate the DOT files: " << node);
@@ -326,14 +326,14 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 	{
 		// standalone
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
-			std11::shared_ptr<river::io::Node> val = m_list[iii].lock();
+			std11::shared_ptr<audio::river::io::Node> val = m_list[iii].lock();
 			if (val != nullptr) {
 				if (val->isHarwareNode() == true) {
 					val->generateDot(node);
 				}
 			}
 		}
-		for (std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it(m_listGroup.begin());
+		for (std::map<std::string, std11::shared_ptr<audio::river::io::Group> >::iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != nullptr) {
@@ -345,14 +345,14 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 	{
 		// standalone
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
-			std11::shared_ptr<river::io::Node> val = m_list[iii].lock();
+			std11::shared_ptr<audio::river::io::Node> val = m_list[iii].lock();
 			if (val != nullptr) {
 				if (val->isHarwareNode() == false) {
 					val->generateDot(node);
 				}
 			}
 		}
-		for (std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it(m_listGroup.begin());
+		for (std::map<std::string, std11::shared_ptr<audio::river::io::Group> >::iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != nullptr) {
@@ -366,16 +366,16 @@ void river::io::Manager::generateDot(const std::string& _filename) {
 	RIVER_INFO("Generate the DOT files: " << node << " (DONE)");
 }
 
-std11::shared_ptr<river::io::Group> river::io::Manager::getGroup(const std::string& _name) {
+std11::shared_ptr<audio::river::io::Group> audio::river::io::Manager::getGroup(const std::string& _name) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
-	std11::shared_ptr<river::io::Group> out;
-	std::map<std::string, std11::shared_ptr<river::io::Group> >::iterator it = m_listGroup.find(_name);
+	std11::shared_ptr<audio::river::io::Group> out;
+	std::map<std::string, std11::shared_ptr<audio::river::io::Group> >::iterator it = m_listGroup.find(_name);
 	if (it == m_listGroup.end()) {
 		RIVER_INFO("Create a new group: " << _name << " (START)");
-		out = std11::make_shared<river::io::Group>();
+		out = std11::make_shared<audio::river::io::Group>();
 		if (out != nullptr) {
 			out->createFrom(m_config, _name);
-			std::pair<std::string, std11::shared_ptr<river::io::Group> > plop(std::string(_name), out);
+			std::pair<std::string, std11::shared_ptr<audio::river::io::Group> > plop(std::string(_name), out);
 			m_listGroup.insert(plop);
 			RIVER_INFO("Create a new group: " << _name << " ( END )");
 		} else {

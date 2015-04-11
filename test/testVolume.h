@@ -29,11 +29,11 @@ namespace river_test_volume {
 	
 	class testCallbackVolume {
 		private:
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interface;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testCallbackVolume(std11::shared_ptr<river::Manager> _manager) :
+			testCallbackVolume(std11::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				//Set stereo output:
@@ -123,14 +123,14 @@ namespace river_test_volume {
 	};
 	
 	TEST(TestALL, testVolume) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 
 };

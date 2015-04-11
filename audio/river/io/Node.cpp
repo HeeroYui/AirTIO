@@ -5,13 +5,13 @@
  */
 
 #include "Node.h"
-#include <river/debug.h>
+#include <audio/river/debug.h>
 
 #undef __class__
 #define __class__ "io::Node"
 
 
-river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
@@ -20,8 +20,8 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 	RIVER_INFO("-----------------------------------------------------------------");
 	RIVER_INFO("--                       CREATE NODE                           --");
 	RIVER_INFO("-----------------------------------------------------------------");
-	drain::IOFormatInterface interfaceFormat;
-	drain::IOFormatInterface hardwareFormat;
+	audio::drain::IOFormatInterface interfaceFormat;
+	audio::drain::IOFormatInterface hardwareFormat;
 	/**
 		io:"input", # input, output or aec
 		frequency:48000, # frequency to open device
@@ -54,7 +54,7 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 	if (volumeName != "") {
 		RIVER_INFO("add node volume stage : '" << volumeName << "'");
 		// use global manager for volume ...
-		m_volume = river::io::Manager::getInstance()->getVolumeGroup(volumeName);
+		m_volume = audio::river::io::Manager::getInstance()->getVolumeGroup(volumeName);
 	}
 	// Get map type :
 	std::vector<audio::channel> map;
@@ -102,13 +102,13 @@ river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ej
 	//m_process.updateInterAlgo();
 }
 
-river::io::Node::~Node() {
+audio::river::io::Node::~Node() {
 	RIVER_INFO("-----------------------------------------------------------------");
 	RIVER_INFO("--                      DESTROY NODE                           --");
 	RIVER_INFO("-----------------------------------------------------------------");
 };
 
-size_t river::io::Node::getNumberOfInterface(enum river::modeInterface _interfaceType) {
+size_t audio::river::io::Node::getNumberOfInterface(enum audio::river::modeInterface _interfaceType) {
 	size_t out = 0;
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] == nullptr) {
@@ -120,10 +120,10 @@ size_t river::io::Node::getNumberOfInterface(enum river::modeInterface _interfac
 	}
 	return out;
 }
-size_t river::io::Node::getNumberOfInterfaceAvaillable(enum river::modeInterface _interfaceType) {
+size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river::modeInterface _interfaceType) {
 	size_t out = 0;
 	for (size_t iii=0; iii<m_listAvaillable.size(); ++iii) {
-		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -134,8 +134,8 @@ size_t river::io::Node::getNumberOfInterfaceAvaillable(enum river::modeInterface
 	return out;
 }
 
-void river::io::Node::registerAsRemote(const std11::shared_ptr<river::Interface>& _interface) {
-	std::vector<std11::weak_ptr<river::Interface> >::iterator it = m_listAvaillable.begin();
+void audio::river::io::Node::registerAsRemote(const std11::shared_ptr<audio::river::Interface>& _interface) {
+	std::vector<std11::weak_ptr<audio::river::Interface> >::iterator it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
 			it = m_listAvaillable.erase(it);
@@ -146,7 +146,7 @@ void river::io::Node::registerAsRemote(const std11::shared_ptr<river::Interface>
 	m_listAvaillable.push_back(_interface);
 }
 
-void river::io::Node::interfaceAdd(const std11::shared_ptr<river::Interface>& _interface) {
+void audio::river::io::Node::interfaceAdd(const std11::shared_ptr<audio::river::Interface>& _interface) {
 	{
 		std11::unique_lock<std11::mutex> lock(m_mutex);
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
@@ -162,7 +162,7 @@ void river::io::Node::interfaceAdd(const std11::shared_ptr<river::Interface>& _i
 	}
 }
 
-void river::io::Node::interfaceRemove(const std11::shared_ptr<river::Interface>& _interface) {
+void audio::river::io::Node::interfaceRemove(const std11::shared_ptr<audio::river::Interface>& _interface) {
 	{
 		std11::unique_lock<std11::mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
@@ -180,16 +180,16 @@ void river::io::Node::interfaceRemove(const std11::shared_ptr<river::Interface>&
 }
 
 
-void river::io::Node::volumeChange() {
+void audio::river::io::Node::volumeChange() {
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
-		std11::shared_ptr<river::Interface> node = m_listAvaillable[iii].lock();
+		std11::shared_ptr<audio::river::Interface> node = m_listAvaillable[iii].lock();
 		if (node != nullptr) {
 			node->systemVolumeChange();
 		}
 	}
 }
 
-void river::io::Node::newInput(const void* _inputBuffer,
+void audio::river::io::Node::newInput(const void* _inputBuffer,
                                uint32_t _nbChunk,
                                const std11::chrono::system_clock::time_point& _time) {
 	if (_inputBuffer == nullptr) {
@@ -200,7 +200,7 @@ void river::io::Node::newInput(const void* _inputBuffer,
 		if (m_list[iii] == nullptr) {
 			continue;
 		}
-		if (m_list[iii]->getMode() != river::modeInterface_input) {
+		if (m_list[iii]->getMode() != audio::river::modeInterface_input) {
 			continue;
 		}
 		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName());
@@ -210,7 +210,7 @@ void river::io::Node::newInput(const void* _inputBuffer,
 	return;
 }
 
-void river::io::Node::newOutput(void* _outputBuffer,
+void audio::river::io::Node::newOutput(void* _outputBuffer,
                                 uint32_t _nbChunk,
                                 const std11::chrono::system_clock::time_point& _time) {
 	if (_outputBuffer == nullptr) {
@@ -229,7 +229,7 @@ void river::io::Node::newOutput(void* _outputBuffer,
 			if (m_list[iii] == nullptr) {
 				continue;
 			}
-			if (m_list[iii]->getMode() != river::modeInterface_output) {
+			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
 				continue;
 			}
 			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
@@ -252,7 +252,7 @@ void river::io::Node::newOutput(void* _outputBuffer,
 		if (m_list[iii] == nullptr) {
 			continue;
 		}
-		if (m_list[iii]->getMode() != river::modeInterface_feedback) {
+		if (m_list[iii]->getMode() != audio::river::modeInterface_feedback) {
 			continue;
 		}
 		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " (feedback) time=" << _time);
@@ -272,7 +272,7 @@ static void link(etk::FSNode& _node, const std::string& _first, const std::strin
 }
 
 
-void river::io::Node::generateDot(etk::FSNode& _node) {
+void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 	_node << "	subgraph clusterNode_" << m_uid << " {\n";
 	_node << "		color=blue;\n";
 	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
@@ -288,8 +288,8 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 		_node << "			NODE_" << m_uid << "_HW_interface -> " << nameIn << " [arrowhead=\"open\"];\n";
 		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer [arrowhead=\"open\"];\n";
 	} else {
-		size_t nbOutput = getNumberOfInterfaceAvaillable(river::modeInterface_output);
-		size_t nbfeedback = getNumberOfInterfaceAvaillable(river::modeInterface_feedback);
+		size_t nbOutput = getNumberOfInterfaceAvaillable(audio::river::modeInterface_output);
+		size_t nbfeedback = getNumberOfInterfaceAvaillable(audio::river::modeInterface_feedback);
 		_node << "		node [shape=larrow];\n";
 		_node << "			NODE_" << m_uid << "_HW_interface [ label=\"HW interface\\n interface=ALSA\\n stream=" << m_name << "\\n type=output\" ];\n";
 		std::string nameIn;
@@ -324,7 +324,7 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -349,8 +349,8 @@ void river::io::Node::generateDot(etk::FSNode& _node) {
 }
 
 
-void river::io::Node::startInGroup() {
-	std11::shared_ptr<river::io::Group> group = m_group.lock();
+void audio::river::io::Node::startInGroup() {
+	std11::shared_ptr<audio::river::io::Group> group = m_group.lock();
 	if (group != nullptr) {
 		group->start();
 	} else {
@@ -358,8 +358,8 @@ void river::io::Node::startInGroup() {
 	}
 }
 
-void river::io::Node::stopInGroup() {
-	std11::shared_ptr<river::io::Group> group = m_group.lock();
+void audio::river::io::Node::stopInGroup() {
+	std11::shared_ptr<audio::river::io::Group> group = m_group.lock();
 	if (group != nullptr) {
 		group->stop();
 	} else {

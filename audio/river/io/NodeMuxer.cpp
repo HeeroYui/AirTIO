@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/io/NodeMuxer.h>
-#include <river/debug.h>
+#include <audio/river/io/NodeMuxer.h>
+#include <audio/river/debug.h>
 #include <etk/types.h>
 #include <etk/memory.h>
 #include <etk/functional.h>
@@ -13,11 +13,11 @@
 #undef __class__
 #define __class__ "io::NodeMuxer"
 
-std11::shared_ptr<river::io::NodeMuxer> river::io::NodeMuxer::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<river::io::NodeMuxer>(new river::io::NodeMuxer(_name, _config));
+std11::shared_ptr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
+	return std11::shared_ptr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
 }
 
-std11::shared_ptr<river::Interface> river::io::NodeMuxer::createInput(float _freq,
+std11::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createInput(float _freq,
                                                                       const std::vector<audio::channel>& _map,
                                                                       audio::format _format,
                                                                       const std::string& _objectName,
@@ -26,7 +26,7 @@ std11::shared_ptr<river::Interface> river::io::NodeMuxer::createInput(float _fre
 	const std11::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
-		return std11::shared_ptr<river::Interface>();
+		return std11::shared_ptr<audio::river::Interface>();
 	}
 	std::string streamName = tmppp->getStringValue("map-on", "error");
 	
@@ -36,15 +36,15 @@ std11::shared_ptr<river::Interface> river::io::NodeMuxer::createInput(float _fre
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
-		return std11::shared_ptr<river::Interface>();
+		return std11::shared_ptr<audio::river::Interface>();
 	}
 	// get global hardware interface:
-	std11::shared_ptr<river::io::Manager> manager = river::io::Manager::getInstance();
+	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	// get the output or input channel :
-	std11::shared_ptr<river::io::Node> node = manager->getNode(streamName);
+	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
-	std11::shared_ptr<river::Interface> interface;
-	interface = river::Interface::create(_freq, _map, _format, node, tmppp);
+	std11::shared_ptr<audio::river::Interface> interface;
+	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
 	if (interface != nullptr) {
 		interface->setName(_name);
 	}
@@ -52,10 +52,10 @@ std11::shared_ptr<river::Interface> river::io::NodeMuxer::createInput(float _fre
 }
 
 
-river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
-	drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
-	drain::IOFormatInterface hardwareFormat = getHarwareFormat();
+	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
+	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	m_sampleTime = std11::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
@@ -131,7 +131,7 @@ river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_pt
 	}
 	
 	// set callback mode ...
-	m_interfaceInput1->setInputCallback(std11::bind(&river::io::NodeMuxer::onDataReceivedInput1,
+	m_interfaceInput1->setInputCallback(std11::bind(&audio::river::io::NodeMuxer::onDataReceivedInput1,
 	                                                this,
 	                                                std11::placeholders::_1,
 	                                                std11::placeholders::_2,
@@ -140,7 +140,7 @@ river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_pt
 	                                                std11::placeholders::_5,
 	                                                std11::placeholders::_6));
 	// set callback mode ...
-	m_interfaceInput2->setInputCallback(std11::bind(&river::io::NodeMuxer::onDataReceivedInput2,
+	m_interfaceInput2->setInputCallback(std11::bind(&audio::river::io::NodeMuxer::onDataReceivedInput2,
 	                                                this,
 	                                                std11::placeholders::_1,
 	                                                std11::placeholders::_2,
@@ -159,14 +159,14 @@ river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_pt
 	m_process.updateInterAlgo();
 }
 
-river::io::NodeMuxer::~NodeMuxer() {
+audio::river::io::NodeMuxer::~NodeMuxer() {
 	RIVER_INFO("close input stream");
 	stop();
 	m_interfaceInput1.reset();
 	m_interfaceInput2.reset();
 };
 
-void river::io::NodeMuxer::start() {
+void audio::river::io::NodeMuxer::start() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceInput1 != nullptr) {
@@ -179,7 +179,7 @@ void river::io::NodeMuxer::start() {
 	}
 }
 
-void river::io::NodeMuxer::stop() {
+void audio::river::io::NodeMuxer::stop() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	if (m_interfaceInput1 != nullptr) {
 		m_interfaceInput1->stop();
@@ -190,7 +190,7 @@ void river::io::NodeMuxer::stop() {
 }
 
 
-void river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
+void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
                                                 const std11::chrono::system_clock::time_point& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
@@ -208,7 +208,7 @@ void river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
 	process();
 }
 
-void river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
+void audio::river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
                                                 const std11::chrono::system_clock::time_point& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
@@ -226,7 +226,7 @@ void river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
 	process();
 }
 
-void river::io::NodeMuxer::process() {
+void audio::river::io::NodeMuxer::process() {
 	if (m_bufferInput1.getSize() <= 256) {
 		return;
 	}
@@ -296,12 +296,12 @@ void river::io::NodeMuxer::process() {
 }
 
 
-void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _input, const std::vector<audio::channel>& _mapInput) {
+void audio::river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _input, const std::vector<audio::channel>& _mapInput) {
 	// real process: (only depend of data size):
 	switch (getInterfaceFormat().getFormat()) {
 		case audio::format_int8:
 			{
-				DRAIN_VERBOSE("convert " << _mapInput << " ==> " << getInterfaceFormat().getMap());
+				RIVER_VERBOSE("convert " << _mapInput << " ==> " << getInterfaceFormat().getMap());
 				int8_t* in = static_cast<int8_t*>(_input);
 				int8_t* out = static_cast<int8_t*>(_output);
 				for (size_t kkk=0; kkk<getInterfaceFormat().getMap().size(); ++kkk) {
@@ -317,7 +317,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 							}
 						}
 					}
-					DRAIN_VERBOSE("    " << convertId << " ==> " << kkk);
+					RIVER_VERBOSE("    " << convertId << " ==> " << kkk);
 					if (convertId != -1) {
 						for (size_t iii=0; iii<_nbChunk; ++iii) {
 							out[iii*getInterfaceFormat().getMap().size()+kkk] = in[iii*_mapInput.size()+convertId];
@@ -329,7 +329,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 		default:
 		case audio::format_int16:
 			if (getInterfaceFormat().getMap().size() == 1) {
-				DRAIN_VERBOSE("convert " << _mapInput << " ==> " << getInterfaceFormat().getMap());
+				RIVER_VERBOSE("convert " << _mapInput << " ==> " << getInterfaceFormat().getMap());
 				int16_t* in = static_cast<int16_t*>(_input);
 				int16_t* out = static_cast<int16_t*>(_output);
 				for (size_t iii=0; iii<_nbChunk; ++iii) {
@@ -340,7 +340,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 					out[iii] = val/_mapInput.size();
 				}
 			} else {
-				DRAIN_VERBOSE("convert " << _mapInput << " ==> " << getInterfaceFormat().getMap());
+				RIVER_VERBOSE("convert " << _mapInput << " ==> " << getInterfaceFormat().getMap());
 				int16_t* in = static_cast<int16_t*>(_input);
 				int16_t* out = static_cast<int16_t*>(_output);
 				for (size_t kkk=0; kkk<getInterfaceFormat().getMap().size(); ++kkk) {
@@ -356,7 +356,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 							}
 						}
 					}
-					DRAIN_VERBOSE("    " << convertId << " ==> " << kkk);
+					RIVER_VERBOSE("    " << convertId << " ==> " << kkk);
 					if (convertId != -1) {
 						for (size_t iii=0; iii<_nbChunk; ++iii) {
 							out[iii*getInterfaceFormat().getMap().size()+kkk] = in[iii*_mapInput.size()+convertId];
@@ -370,7 +370,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 		case audio::format_int32:
 		case audio::format_float:
 			{
-				DRAIN_VERBOSE("convert (2) " << _mapInput << " ==> " << getInterfaceFormat().getMap());
+				RIVER_VERBOSE("convert (2) " << _mapInput << " ==> " << getInterfaceFormat().getMap());
 				uint32_t* in = static_cast<uint32_t*>(_input);
 				uint32_t* out = static_cast<uint32_t*>(_output);
 				for (size_t kkk=0; kkk<getInterfaceFormat().getMap().size(); ++kkk) {
@@ -396,7 +396,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 			break;
 		case audio::format_double:
 			{
-				DRAIN_VERBOSE("convert (2) " << _mapInput << " ==> " << getInterfaceFormat().getMap());
+				RIVER_VERBOSE("convert (2) " << _mapInput << " ==> " << getInterfaceFormat().getMap());
 				uint64_t* in = static_cast<uint64_t*>(_input);
 				uint64_t* out = static_cast<uint64_t*>(_output);
 				for (size_t kkk=0; kkk<getInterfaceFormat().getMap().size(); ++kkk) {
@@ -423,7 +423,7 @@ void river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _inpu
 	}
 }
 
-void river::io::NodeMuxer::processMuxer(void* _dataIn1, void* _dataIn2, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
+void audio::river::io::NodeMuxer::processMuxer(void* _dataIn1, void* _dataIn2, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
 	//RIVER_INFO("must Mux data : " << m_mapInput1 << " + " << m_mapInput2 << " ==> " << getInterfaceFormat().getMap());
 	memset(&m_data[0], 0, m_data.size());
 	reorder(&m_data[0], _nbChunk, _dataIn1, m_mapInput1);
@@ -432,7 +432,7 @@ void river::io::NodeMuxer::processMuxer(void* _dataIn1, void* _dataIn2, uint32_t
 }
 
 
-void river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
+void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 	_node << "	subgraph clusterNode_" << m_uid << " {\n";
 	_node << "		color=blue;\n";
 	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
@@ -460,7 +460,7 @@ void river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std11::shared_ptr<river::Interface> element = m_listAvaillable[iii].lock();
+		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}

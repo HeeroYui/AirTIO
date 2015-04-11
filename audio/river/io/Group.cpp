@@ -4,18 +4,18 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/io/Group.h>
-#include <river/debug.h>
+#include <audio/river/io/Group.h>
+#include <audio/river/debug.h>
 #include "Node.h"
 #include "NodeAEC.h"
-#include "NodeAirTAudio.h"
+#include "NodeOrchestra.h"
 #include "NodePortAudio.h"
 #include "Node.h"
 
 #undef __class__
 #define __class__ "io::Group"
 
-void river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
+void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
 	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");
 	for (size_t iii=0; iii<_obj.size(); ++iii) {
 		const std11::shared_ptr<const ejson::Object> tmpObject = _obj.getObject(_obj.getKey(iii));
@@ -30,7 +30,7 @@ void river::io::Group::createFrom(const ejson::Document& _obj, const std::string
 			#ifdef __AIRTAUDIO_INFERFACE__
 				if (    ioType == "input"
 				     || ioType == "output") {
-					std11::shared_ptr<river::io::Node> tmp = river::io::NodeAirTAudio::create(_obj.getKey(iii), tmpObject);
+					std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodeOrchestra::create(_obj.getKey(iii), tmpObject);
 					tmp->setGroup(shared_from_this());
 					m_list.push_back(tmp);
 				}
@@ -38,7 +38,7 @@ void river::io::Group::createFrom(const ejson::Document& _obj, const std::string
 			#ifdef __PORTAUDIO_INFERFACE__
 				if (    ioType == "PAinput"
 				     || ioType == "PAoutput") {
-					std11::shared_ptr<river::io::Node> tmp = river::io::NodePortAudio::create(_obj.getKey(iii), tmpObject);
+					std11::shared_ptr<audio::river::io::Node> tmp = audio::river::io::NodePortAudio::create(_obj.getKey(iii), tmpObject);
 					tmp->setGroup(shared_from_this());
 					m_list.push_back(tmp);
 				}
@@ -49,10 +49,10 @@ void river::io::Group::createFrom(const ejson::Document& _obj, const std::string
 	// Note : The interlink work only for alsa (NOW) and with AirTAudio...
 	if(m_list.size() > 1) {
 		#ifdef __AIRTAUDIO_INFERFACE__
-			std11::shared_ptr<river::io::NodeAirTAudio> linkRef = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_list[0]);
+			std11::shared_ptr<audio::river::io::NodeOrchestra> linkRef = std11::dynamic_pointer_cast<audio::river::io::NodeOrchestra>(m_list[0]);
 			for (size_t iii=1; iii<m_list.size(); ++iii) {
 				if (m_list[iii] != nullptr) {
-					std11::shared_ptr<river::io::NodeAirTAudio> link = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_list[iii]);
+					std11::shared_ptr<audio::river::io::NodeOrchestra> link = std11::dynamic_pointer_cast<audio::river::io::NodeOrchestra>(m_list[iii]);
 					linkRef->m_adac.isMasterOf(link->m_adac);
 				}
 			}
@@ -62,7 +62,7 @@ void river::io::Group::createFrom(const ejson::Document& _obj, const std::string
 	// manage Link Between Nodes :
 	if (m_link != nullptr) {
 		RIVER_INFO("********   START LINK   ************");
-		std11::shared_ptr<river::io::NodeAirTAudio> link = std11::dynamic_pointer_cast<river::io::NodeAirTAudio>(m_link);
+		std11::shared_ptr<audio::river::io::NodeOrchestra> link = std11::dynamic_pointer_cast<audio::river::io::NodeOrchestra>(m_link);
 		if (link == nullptr) {
 			RIVER_ERROR("Can not link 2 Interface with not the same type (reserved for HW interface)");
 			return;
@@ -82,7 +82,7 @@ void river::io::Group::createFrom(const ejson::Document& _obj, const std::string
 }
 
 
-std11::shared_ptr<river::io::Node> river::io::Group::getNode(const std::string& _name) {
+std11::shared_ptr<audio::river::io::Node> audio::river::io::Group::getNode(const std::string& _name) {
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] != nullptr) {
 			if (m_list[iii]->getName() == _name) {
@@ -90,10 +90,10 @@ std11::shared_ptr<river::io::Node> river::io::Group::getNode(const std::string& 
 			}
 		}
 	}
-	return std11::shared_ptr<river::io::Node>();
+	return std11::shared_ptr<audio::river::io::Node>();
 }
 
-void river::io::Group::start() {
+void audio::river::io::Group::start() {
 	RIVER_ERROR("request start ");
 	int32_t count = 0;
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
@@ -113,7 +113,7 @@ void river::io::Group::start() {
 	}
 }
 
-void river::io::Group::stop() {
+void audio::river::io::Group::stop() {
 	RIVER_ERROR("request stop ");
 	int32_t count = 0;
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
@@ -133,7 +133,7 @@ void river::io::Group::stop() {
 	}
 }
 
-void river::io::Group::generateDot(etk::FSNode& _node, bool _hardwareNode) {
+void audio::river::io::Group::generateDot(etk::FSNode& _node, bool _hardwareNode) {
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] != nullptr) {
 			if (m_list[iii]->isHarwareNode() == _hardwareNode) {

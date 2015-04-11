@@ -30,10 +30,10 @@ namespace river_test_playback_write {
 	class testOutWrite {
 		public:
 			std::vector<audio::channel> m_channelMap;
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interface;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interface;
 		public:
-			testOutWrite(std11::shared_ptr<river::Manager> _manager) :
+			testOutWrite(std11::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager) {
 				//Set stereo output:
 				m_channelMap.push_back(audio::channel_frontLeft);
@@ -90,25 +90,25 @@ namespace river_test_playback_write {
 	};
 	
 	TEST(TestALL, testOutputWrite) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		
 		APPL_INFO("test output (write mode)");
 		std11::shared_ptr<testOutWrite> process = std11::make_shared<testOutWrite>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 	
 	class testOutWriteCallback {
 		public:
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interface;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testOutWriteCallback(std11::shared_ptr<river::Manager> _manager) :
+			testOutWriteCallback(std11::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				std::vector<audio::channel> channelMap;
@@ -167,16 +167,16 @@ namespace river_test_playback_write {
 	};
 	
 	TEST(TestALL, testOutputWriteWithCallback) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		
 		APPL_INFO("test output (write with callback event mode)");
 		std11::shared_ptr<testOutWriteCallback> process = std11::make_shared<testOutWriteCallback>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 
 };

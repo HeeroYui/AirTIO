@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifdef __RIVER_DEBUG_H__
-#undef __RIVER_DEBUG_H__
+#ifdef __AUDIO_RIVER_DEBUG_H__
+#undef __AUDIO_RIVER_DEBUG_H__
 
 #undef RIVER_BASE
 #undef RIVER_CRITICAL

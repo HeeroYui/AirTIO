@@ -5,9 +5,9 @@
  */
 
 #include "debug.h"
-#include <river/river.h>
-#include <river/Manager.h>
-#include <river/Interface.h>
+#include <audio/river/river.h>
+#include <audio/river/Manager.h>
+#include <audio/river/Interface.h>
 #include <gtest/gtest.h>
 #include <etk/etk.h>
 #include <etk/os/FSNode.h>
@@ -29,7 +29,7 @@
 #undef __class__
 #define __class__ "test"
 
-int main(int _argc, char** _argv) {
+int main(int _argc, const char** _argv) {
 	// init Google test :
 	::testing::InitGoogleTest(&_argc, const_cast<char **>(_argv));
 	// the only one init for etk:

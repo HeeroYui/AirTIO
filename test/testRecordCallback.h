@@ -7,7 +7,7 @@
 #ifndef __RIVER_TEST_RECORD_CALLBACK_H__
 #define __RIVER_TEST_RECORD_CALLBACK_H__
 
-#include <river/debug.h>
+#include <audio/river/debug.h>
 
 #undef __class__
 #define __class__ "test_record_callback"
@@ -30,10 +30,10 @@ namespace river_test_record_callback {
 	
 	class testInCallback {
 		public:
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interface;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interface;
 		public:
-			testInCallback(std11::shared_ptr<river::Manager> _manager, const std::string& _input="microphone") :
+			testInCallback(std11::shared_ptr<audio::river::Manager> _manager, const std::string& _input="microphone") :
 			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
@@ -86,15 +86,15 @@ namespace river_test_record_callback {
 	};
 	
 	TEST(TestALL, testInputCallBack) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		APPL_INFO("test input (callback mode)");
 		std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 
 };

@@ -4,21 +4,21 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/river.h>
-#include <river/debug.h>
-#include <river/io/Manager.h>
+#include <audio/river/river.h>
+#include <audio/river/debug.h>
+#include <audio/river/io/Manager.h>
 
 static bool river_isInit = false;
 static std::string river_configFile = "";
 
 
 
-void river::init(const std::string& _filename) {
+void audio::river::init(const std::string& _filename) {
 	if (river_isInit == false) {
 		river_isInit = true;
 		river_configFile = _filename;
 		RIVER_DEBUG("init RIVER :" << river_configFile);
-		std11::shared_ptr<river::io::Manager> mng = river::io::Manager::getInstance();
+		std11::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		if (mng != nullptr) {
 			mng->init(river_configFile);
 		}
@@ -27,12 +27,12 @@ void river::init(const std::string& _filename) {
 	}
 }
 
-void river::initString(const std::string& _config) {
+void audio::river::initString(const std::string& _config) {
 	if (river_isInit == false) {
 		river_isInit = true;
 		river_configFile = _config;
 		RIVER_DEBUG("init RIVER with config.");
-		std11::shared_ptr<river::io::Manager> mng = river::io::Manager::getInstance();
+		std11::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		if (mng != nullptr) {
 			mng->initString(river_configFile);
 		}
@@ -41,11 +41,11 @@ void river::initString(const std::string& _config) {
 	}
 }
 
-void river::unInit() {
+void audio::river::unInit() {
 	if (river_isInit == true) {
 		river_isInit = false;
 		RIVER_DEBUG("un-init RIVER.");
-		std11::shared_ptr<river::io::Manager> mng = river::io::Manager::getInstance();
+		std11::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		if (mng != nullptr) {
 			RIVER_ERROR("Can not get on the RIVER hardware manager !!!");
 			mng->unInit();
@@ -53,7 +53,7 @@ void river::unInit() {
 	}
 }
 
-bool river::isInit() {
+bool audio::river::isInit() {
 	return river_isInit;
 }
 

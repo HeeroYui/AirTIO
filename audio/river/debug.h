@@ -5,15 +5,17 @@
  */
 
 
-#ifndef __RIVER_DEBUG_H__
-#define __RIVER_DEBUG_H__
+#ifndef __AUDIO_RIVER_DEBUG_H__
+#define __AUDIO_RIVER_DEBUG_H__
 
 #include <etk/log.h>
 
-namespace river {
-	int32_t getLogId();
-};
-#define RIVER_BASE(info,data)  TK_LOG_BASE(river::getLogId(),info,data)
+namespace audio {
+	namespace river {
+		int32_t getLogId();
+	}
+}
+#define RIVER_BASE(info,data)  TK_LOG_BASE(audio::river::getLogId(),info,data)
 
 #define RIVER_CRITICAL(data)      RIVER_BASE(1, data)
 #define RIVER_ERROR(data)         RIVER_BASE(2, data)

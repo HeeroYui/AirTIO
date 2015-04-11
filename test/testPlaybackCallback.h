@@ -14,11 +14,11 @@ namespace river_test_playback_callback {
 	
 	class testOutCallback {
 		public:
-			std11::shared_ptr<river::Manager> m_manager;
-			std11::shared_ptr<river::Interface> m_interface;
+			std11::shared_ptr<audio::river::Manager> m_manager;
+			std11::shared_ptr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testOutCallback(std11::shared_ptr<river::Manager> _manager, const std::string& _io="speaker") :
+			testOutCallback(std11::shared_ptr<audio::river::Manager> _manager, const std::string& _io="speaker") :
 			  m_manager(_manager),
 			  m_phase(0) {
 				//Set stereo output:
@@ -93,9 +93,9 @@ namespace river_test_playback_callback {
 		"}\n";
 	
 	TEST(TestALL, testOutputCallBack) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		
 		APPL_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker");
@@ -103,33 +103,33 @@ namespace river_test_playback_callback {
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 	
 	TEST(TestALL, testOutputCallBackPulse) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		
 		APPL_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker-pulse");
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 	
 	TEST(TestALL, testOutputCallBackJack) {
-		river::initString(configurationRiver);
-		std11::shared_ptr<river::Manager> manager;
-		manager = river::Manager::create("testApplication");
+		audio::river::initString(configurationRiver);
+		std11::shared_ptr<audio::river::Manager> manager;
+		manager = audio::river::Manager::create("testApplication");
 		
 		APPL_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker-jack");
 		process->run();
 		process.reset();
 		usleep(500000);
-		river::unInit();
+		audio::river::unInit();
 	}
 
 
