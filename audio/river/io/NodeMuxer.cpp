@@ -56,7 +56,7 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::sh
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
-	m_sampleTime = std11::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
+	m_sampleTime = audio::Duration(1000000000/int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
 		map-on-input-1:{
@@ -191,13 +191,13 @@ void audio::river::io::NodeMuxer::stop() {
 
 
 void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
-                                                const std11::chrono::system_clock::time_point& _time,
+                                                const audio::Time& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
                                                 uint32_t _frequency,
                                                 const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
-	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
+	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
@@ -209,13 +209,13 @@ void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
 }
 
 void audio::river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
-                                                const std11::chrono::system_clock::time_point& _time,
+                                                const audio::Time& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
                                                 uint32_t _frequency,
                                                 const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
-	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
+	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
@@ -233,9 +233,9 @@ void audio::river::io::NodeMuxer::process() {
 	if (m_bufferInput2.getSize() <= 256) {
 		return;
 	}
-	std11::chrono::system_clock::time_point in1Time = m_bufferInput1.getReadTimeStamp();
-	std11::chrono::system_clock::time_point in2Time = m_bufferInput2.getReadTimeStamp();
-	std11::chrono::nanoseconds delta;
+	audio::Time in1Time = m_bufferInput1.getReadTimeStamp();
+	audio::Time in2Time = m_bufferInput2.getReadTimeStamp();
+	audio::Duration delta;
 	if (in1Time < in2Time) {
 		delta = in2Time - in1Time;
 	} else {
@@ -423,7 +423,7 @@ void audio::river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void
 	}
 }
 
-void audio::river::io::NodeMuxer::processMuxer(void* _dataIn1, void* _dataIn2, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
+void audio::river::io::NodeMuxer::processMuxer(void* _dataIn1, void* _dataIn2, uint32_t _nbChunk, const audio::Time& _time) {
 	//RIVER_INFO("must Mux data : " << m_mapInput1 << " + " << m_mapInput2 << " ==> " << getInterfaceFormat().getMap());
 	memset(&m_data[0], 0, m_data.size());
 	reorder(&m_data[0], _nbChunk, _dataIn1, m_mapInput1);

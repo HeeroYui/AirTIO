@@ -50,7 +50,7 @@ namespace audio {
 					 * @return DEPRECATED soon
 					 */
 					int32_t recordCallback(const void* _inputBuffer,
-					                       const std11::chrono::system_clock::time_point& _timeInput,
+					                       const audio::Time& _timeInput,
 					                       uint32_t _nbChunk,
 					                       const std::vector<audio::orchestra::status>& _status);
 					/**
@@ -62,7 +62,7 @@ namespace audio {
 					 * @return DEPRECATED soon
 					 */
 					int32_t playbackCallback(void* _outputBuffer,
-					                         const std11::chrono::system_clock::time_point& _timeOutput,
+					                         const audio::Time& _timeOutput,
 					                         uint32_t _nbChunk,
 					                         const std::vector<audio::orchestra::status>& _status);
 				protected:

@@ -171,7 +171,7 @@ void audio::river::Interface::setWriteCallback(audio::drain::playbackFunctionWri
 	algo->setCallback(_function);
 }
 
-void audio::river::Interface::start(const std11::chrono::system_clock::time_point& _time) {
+void audio::river::Interface::start(const audio::Time& _time) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("start [BEGIN]");
 	m_process.updateInterAlgo();
@@ -407,11 +407,11 @@ void audio::river::Interface::clearInternalBuffer() {
 	
 }
 
-std11::chrono::system_clock::time_point audio::river::Interface::getCurrentTime() const {
+audio::Time audio::river::Interface::getCurrentTime() const {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	// TODO :...
-	return std11::chrono::system_clock::time_point();
-	return std11::chrono::system_clock::now();
+	return audio::Time();
+	return audio::Time::now();
 }
 
 void audio::river::Interface::addVolumeGroup(const std::string& _name) {
@@ -439,13 +439,13 @@ void audio::river::Interface::addVolumeGroup(const std::string& _name) {
 	}
 }
 
-void audio::river::Interface::systemNewInputData(std11::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk) {
+void audio::river::Interface::systemNewInputData(audio::Time _time, const void* _data, size_t _nbChunk) {
 	std11::unique_lock<std11::recursive_mutex> lockProcess(m_mutex);
 	void * tmpData = const_cast<void*>(_data);
 	m_process.push(_time, tmpData, _nbChunk);
 }
 
-void audio::river::Interface::systemNeedOutputData(std11::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize) {
+void audio::river::Interface::systemNeedOutputData(audio::Time _time, void* _data, size_t _nbChunk, size_t _chunkSize) {
 	std11::unique_lock<std11::recursive_mutex> lockProcess(m_mutex);
 	//RIVER_INFO("time :                           " << _time);
 	m_process.pull(_time, _data, _nbChunk, _chunkSize);

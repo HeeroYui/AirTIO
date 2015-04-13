@@ -37,9 +37,9 @@ namespace audio {
 					PaStream* m_stream;
 				public:
 					int32_t duplexCallback(const void* _inputBuffer,
-					                       const std11::chrono::system_clock::time_point& _timeInput,
+					                       const audio::Time& _timeInput,
 					                       void* _outputBuffer,
-					                       const std11::chrono::system_clock::time_point& _timeOutput,
+					                       const audio::Time& _timeOutput,
 					                       uint32_t _nbChunk,
 					                       PaStreamCallbackFlags _status);
 				protected:

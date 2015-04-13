@@ -132,7 +132,7 @@ namespace river_test_playback_write {
 				                                          std11::placeholders::_4,
 				                                          std11::placeholders::_5));
 			}
-			void onDataNeeded(const std11::chrono::system_clock::time_point& _time,
+			void onDataNeeded(const audio::Time& _time,
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,

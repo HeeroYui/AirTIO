@@ -21,6 +21,7 @@
 #include <audio/drain/EndPointWrite.h>
 #include <ejson/ejson.h>
 #include <etk/os/FSNode.h>
+#include <audio/Time.h>
 
 namespace audio {
 	namespace river {
@@ -178,7 +179,7 @@ namespace audio {
 				 * @note _time to play buffer when output interface (if possible)
 				 * @note _time to read buffer when inut interface (if possible)
 				 */
-				virtual void start(const std11::chrono::system_clock::time_point& _time = std11::chrono::system_clock::time_point());
+				virtual void start(const audio::Time& _time = audio::Time());
 				/**
 				 * @brief Stop the current flow.
 				 * @param[in] _fast The stream stop as fast as possible (not write all the buffer in speaker) but apply cross fade out.
@@ -275,7 +276,7 @@ namespace audio {
 				 * @brief Write : Get the time of the next sample time to write in the local buffer
 				 * @brief Read : Get the time of the next sample time to read in the local buffer
 				 */
-				virtual std11::chrono::system_clock::time_point getCurrentTime() const;
+				virtual audio::Time getCurrentTime() const;
 			private:
 				/**
 				 * @brief Node Call interface : Input interface node has new data.
@@ -283,7 +284,7 @@ namespace audio {
 				 * @param[in] _data Pointer on the new data.
 				 * @param[in] _nbChunk Number of chunk in the buffer.
 				 */
-				virtual void systemNewInputData(std11::chrono::system_clock::time_point _time, const void* _data, size_t _nbChunk);
+				virtual void systemNewInputData(audio::Time _time, const void* _data, size_t _nbChunk);
 				/**
 				 * @brief Node Call interface: Output interface node need new data.
 				 * @param[in] _time Time where the data might be played
@@ -291,7 +292,7 @@ namespace audio {
 				 * @param[in] _nbChunk Number of chunk that might be write
 				 * @param[in] _chunkSize Chunk size.
 				 */
-				virtual void systemNeedOutputData(std11::chrono::system_clock::time_point _time, void* _data, size_t _nbChunk, size_t _chunkSize);
+				virtual void systemNeedOutputData(audio::Time _time, void* _data, size_t _nbChunk, size_t _chunkSize);
 				/**
 				 * @brief Node Call interface: A volume has change.
 				 */

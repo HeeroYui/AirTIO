@@ -201,7 +201,7 @@ namespace audio {
 					 */
 					void newInput(const void* _inputBuffer,
 					              uint32_t _nbChunk,
-					              const std11::chrono::system_clock::time_point& _time);
+					              const audio::Time& _time);
 					/**
 					 * @brief Call by child classes to process data in all interface linked on the current Node. Have new output to get. this call the feedback too.
 					 * @param[in,out] _outputBuffer Pointer on the buffer to write the data.
@@ -210,7 +210,7 @@ namespace audio {
 					 */
 					void newOutput(void* _outputBuffer,
 					               uint32_t _nbChunk,
-					               const std11::chrono::system_clock::time_point& _time);
+					               const audio::Time& _time);
 				public:
 					/**
 					 * @brief Generate the node dot file section

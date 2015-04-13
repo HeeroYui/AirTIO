@@ -23,8 +23,8 @@ namespace river_test_echo_delay {
 			double m_freq;
 			int32_t m_nextSampleCount;
 			std11::chrono::milliseconds m_delayBetweenEvent;
-			std11::chrono::system_clock::time_point m_nextTick;
-			std11::chrono::system_clock::time_point m_currentTick;
+			audio::Time m_nextTick;
+			audio::Time m_currentTick;
 			int32_t m_stateFB;
 			int32_t m_stateMic;
 			std::vector<uint64_t> m_delayListMic;
@@ -104,7 +104,7 @@ namespace river_test_echo_delay {
 				m_manager->generateDotAll("activeProcess.dot");
 			}
 			void onDataNeeded(void* _data,
-			                  const std11::chrono::system_clock::time_point& _time,
+			                  const audio::Time& _time,
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
@@ -122,7 +122,7 @@ namespace river_test_echo_delay {
 						}
 					}
 				} else {
-					if (_time == std11::chrono::system_clock::time_point()) {
+					if (_time == audio::Time()) {
 						for (int32_t iii=0; iii<_nbChunk; iii++) {
 							for (int32_t jjj=0; jjj<_map.size(); jjj++) {
 								data[_map.size()*iii+jjj] = 0;
@@ -130,7 +130,7 @@ namespace river_test_echo_delay {
 						}
 						return;
 					}
-					if (m_nextTick == std11::chrono::system_clock::time_point()) {
+					if (m_nextTick == audio::Time()) {
 						m_nextTick = _time + m_delayBetweenEvent;
 						m_nextSampleCount = m_delayBetweenEvent.count()*int64_t(_frequency)/1000;
 						m_phase = -1;
@@ -175,19 +175,19 @@ namespace river_test_echo_delay {
 					}
 				}
 			}
-			std11::chrono::system_clock::time_point getInterpolateTime(std11::chrono::system_clock::time_point _time, int32_t _pos, int16_t _val1, int16_t _val2, uint32_t _frequency) {
+			audio::Time getInterpolateTime(audio::Time _time, int32_t _pos, int16_t _val1, int16_t _val2, uint32_t _frequency) {
 				if (_val1 == 0) {
-					return _time + std11::chrono::nanoseconds(int64_t(_pos)*1000000000LL/int64_t(_frequency));
+					return _time + audio::Duration(0, int64_t(_pos)*1000000000LL/int64_t(_frequency));
 				} else if (_val2 == 0) {
-					return _time + std11::chrono::nanoseconds(int64_t(_pos+1)*1000000000LL/int64_t(_frequency));
+					return _time + audio::Duration(0, int64_t(_pos+1)*1000000000LL/int64_t(_frequency));
 				}
 				double xxx = double(-_val1) / double(_val2 - _val1);
 				APPL_VERBOSE("deltaPos:" << xxx);
-				return _time + std11::chrono::nanoseconds(int64_t((double(_pos)+xxx)*1000000000.0)/int64_t(_frequency));
+				return _time + audio::Duration(0, int64_t((double(_pos)+xxx)*1000000000.0)/int64_t(_frequency));
 			}
 			
 			void onDataReceivedFeedBack(const void* _data,
-			                            const std11::chrono::system_clock::time_point& _time,
+			                            const audio::Time& _time,
 			                            size_t _nbChunk,
 			                            enum audio::format _format,
 			                            uint32_t _frequency,
@@ -217,7 +217,7 @@ namespace river_test_echo_delay {
 								if (data[iii*_map.size() + jjj] <= 0) {
 									// detect inversion of signe ...
 									m_stateFB = 3;
-									std11::chrono::system_clock::time_point time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
+									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
 									APPL_VERBOSE("FB:  1 position -1:  " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									APPL_VERBOSE("FB:  1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									
@@ -228,7 +228,7 @@ namespace river_test_echo_delay {
 								if (data[iii*_map.size() + jjj] >= 0) {
 									// detect inversion of signe ...
 									m_stateFB = 3;
-									std11::chrono::system_clock::time_point time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
+									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
 									APPL_VERBOSE("FB:  2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									APPL_VERBOSE("FB:  2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									APPL_WARNING("FB:  2 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
@@ -242,7 +242,7 @@ namespace river_test_echo_delay {
 				}
 			}
 			void onDataReceived(const void* _data,
-			                    const std11::chrono::system_clock::time_point& _time,
+			                    const audio::Time& _time,
 			                    size_t _nbChunk,
 			                    enum audio::format _format,
 			                    uint32_t _frequency,
@@ -319,10 +319,10 @@ namespace river_test_echo_delay {
 								if (data[iii*_map.size() + jjj] <= 0) {
 									// detect inversion of signe ...
 									m_stateMic = 3;
-									std11::chrono::system_clock::time_point time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
+									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
 									APPL_VERBOSE("MIC: 1 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									APPL_VERBOSE("MIC: 1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
-									std11::chrono::nanoseconds delay = time-m_currentTick;
+									audio::Duration delay = time-m_currentTick;
 									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
 									APPL_WARNING("MIC: 1 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
 									m_delayListMic.push_back(delay.count());
@@ -332,10 +332,10 @@ namespace river_test_echo_delay {
 								if (data[iii*_map.size() + jjj] >= 0) {
 									// detect inversion of signe ...
 									m_stateMic = 3;
-									std11::chrono::system_clock::time_point time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
+									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
 									APPL_VERBOSE("MIC: 2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									APPL_VERBOSE("MIC: 2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
-									std11::chrono::nanoseconds delay = time-m_currentTick;
+									audio::Duration delay = time-m_currentTick;
 									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
 									APPL_WARNING("MIC: 2 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
 									m_delayListMic.push_back(delay.count());

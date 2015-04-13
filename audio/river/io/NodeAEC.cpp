@@ -61,7 +61,7 @@ audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared
   m_P_latencyTime(100) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
-	m_sampleTime = std11::chrono::nanoseconds(1000000000/int64_t(hardwareFormat.getFrequency()));
+	m_sampleTime = audio::Duration(1000000000/int64_t(hardwareFormat.getFrequency()));
 	/**
 		# connect in input mode
 		map-on-microphone:{
@@ -166,13 +166,13 @@ void audio::river::io::NodeAEC::stop() {
 
 
 void audio::river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
-                                                  const std11::chrono::system_clock::time_point& _time,
+                                                  const audio::Time& _time,
                                                   size_t _nbChunk,
                                                   enum audio::format _format,
                                                   uint32_t _frequency,
                                                   const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
-	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
+	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
@@ -184,13 +184,13 @@ void audio::river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
 }
 
 void audio::river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
-                                                const std11::chrono::system_clock::time_point& _time,
+                                                const audio::Time& _time,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
                                                 uint32_t _frequency,
                                                 const std::vector<audio::channel>& _map) {
 	RIVER_DEBUG("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
-	RIVER_DEBUG("           next=" << _time + std11::chrono::nanoseconds(_nbChunk*1000000000LL/int64_t(_frequency)) );
+	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
@@ -206,9 +206,9 @@ void audio::river::io::NodeAEC::process() {
 	     || m_bufferFeedBack.getSize() <= m_nbChunk) {
 		return;
 	}
-	std11::chrono::system_clock::time_point MicTime = m_bufferMicrophone.getReadTimeStamp();
-	std11::chrono::system_clock::time_point fbTime = m_bufferFeedBack.getReadTimeStamp();
-	std11::chrono::nanoseconds delta;
+	audio::Time MicTime = m_bufferMicrophone.getReadTimeStamp();
+	audio::Time fbTime = m_bufferFeedBack.getReadTimeStamp();
+	audio::Duration delta;
 	if (MicTime < fbTime) {
 		delta = fbTime - MicTime;
 	} else {
@@ -266,7 +266,7 @@ void audio::river::io::NodeAEC::process() {
 }
 
 
-void audio::river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time) {
+void audio::river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time) {
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	// TODO : Set all these parameter in the parameter configuration section ...
 	int32_t attaqueTime = std::min(std::max(0,m_P_attaqueTime),1000);

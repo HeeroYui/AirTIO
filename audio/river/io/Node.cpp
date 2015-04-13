@@ -191,7 +191,7 @@ void audio::river::io::Node::volumeChange() {
 
 void audio::river::io::Node::newInput(const void* _inputBuffer,
                                uint32_t _nbChunk,
-                               const std11::chrono::system_clock::time_point& _time) {
+                               const audio::Time& _time) {
 	if (_inputBuffer == nullptr) {
 		return;
 	}
@@ -212,7 +212,7 @@ void audio::river::io::Node::newInput(const void* _inputBuffer,
 
 void audio::river::io::Node::newOutput(void* _outputBuffer,
                                 uint32_t _nbChunk,
-                                const std11::chrono::system_clock::time_point& _time) {
+                                const audio::Time& _time) {
 	if (_outputBuffer == nullptr) {
 		return;
 	}

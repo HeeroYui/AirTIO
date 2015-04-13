@@ -73,7 +73,7 @@ namespace river_test_aec {
 				
 			}
 			void onDataNeeded(void* _data,
-			                  const std11::chrono::system_clock::time_point& _time,
+			                  const audio::Time& _time,
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
@@ -84,7 +84,7 @@ namespace river_test_aec {
 				m_buffer.read(_data, _nbChunk);
 			}
 			void onDataReceived(const void* _data,
-			                    const std11::chrono::system_clock::time_point& _time,
+			                    const audio::Time& _time,
 			                    size_t _nbChunk,
 			                    enum audio::format _format,
 			                    uint32_t _frequency,

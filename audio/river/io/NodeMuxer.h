@@ -38,13 +38,13 @@ namespace audio {
 					                                              const std::string& _streamName,
 					                                              const std::string& _name);
 					void onDataReceivedInput1(const void* _data,
-					                          const std11::chrono::system_clock::time_point& _time,
+					                          const audio::Time& _time,
 					                          size_t _nbChunk,
 					                          enum audio::format _format,
 					                          uint32_t _frequency,
 					                          const std::vector<audio::channel>& _map);
 					void onDataReceivedInput2(const void* _data,
-					                          const std11::chrono::system_clock::time_point& _time,
+					                          const audio::Time& _time,
 					                          size_t _nbChunk,
 					                          enum audio::format _format,
 					                          uint32_t _frequency,
@@ -53,9 +53,9 @@ namespace audio {
 					std::vector<audio::channel> m_mapInput2;
 					audio::drain::CircularBuffer m_bufferInput1;
 					audio::drain::CircularBuffer m_bufferInput2;
-					std11::chrono::nanoseconds m_sampleTime; //!< represent the sample time at the specify frequency.
+					audio::Duration m_sampleTime; //!< represent the sample time at the specify frequency.
 					void process();
-					void processMuxer(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time);
+					void processMuxer(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time);
 					std::vector<uint8_t> m_data;
 				public:
 					virtual void generateDot(etk::FSNode& _node);

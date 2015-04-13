@@ -13,18 +13,8 @@
 #undef __class__
 #define __class__ "io::NodeOrchestra"
 
-static std::string asString(const std11::chrono::system_clock::time_point& tp) {
-     // convert to system time:
-     std::time_t t = std11::chrono::system_clock::to_time_t(tp);
-     // convert in human string
-     std::string ts = std::ctime(&t);
-     // remove \n
-     ts.resize(ts.size()-1);
-     return ts;
-}
-
 int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer,
-                                                        const std11::chrono::system_clock::time_point& _timeInput,
+                                                        const audio::Time& _timeInput,
                                                         uint32_t _nbChunk,
                                                         const std::vector<audio::orchestra::status>& _status) {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
@@ -35,7 +25,7 @@ int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer
 }
 
 int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
-                                                          const std11::chrono::system_clock::time_point& _timeOutput,
+                                                          const audio::Time& _timeOutput,
                                                           uint32_t _nbChunk,
                                                           const std::vector<audio::orchestra::status>& _status) {
 	std11::unique_lock<std11::mutex> lock(m_mutex);

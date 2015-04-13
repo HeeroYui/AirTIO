@@ -61,7 +61,7 @@ namespace river_test_volume {
 				m_interface->addVolumeGroup("FLOW");
 			}
 			void onDataNeeded(void* _data,
-			                  const std11::chrono::system_clock::time_point& _time,
+			                  const audio::Time& _time,
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,

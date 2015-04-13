@@ -13,7 +13,7 @@
 #undef __class__
 #define __class__ "io::NodePortAudio"
 
-static std::string asString(const std11::chrono::system_clock::time_point& tp) {
+static std::string asString(const audio::Time& tp) {
      // convert to system time:
      std::time_t t = std11::chrono::system_clock::to_time_t(tp);
      // convert in human string
@@ -32,10 +32,10 @@ static int portAudioStreamCallback(const void *_input,
 	audio::river::io::NodePortAudio* myClass = reinterpret_cast<audio::river::io::NodePortAudio*>(_userData);
 	int64_t sec = int64_t(_timeInfo->inputBufferAdcTime);
 	int64_t nsec = (_timeInfo->inputBufferAdcTime-double(sec))*1000000000LL;
-	std11::chrono::system_clock::time_point timeInput = std11::chrono::system_clock::from_time_t(sec) + std11::chrono::nanoseconds(nsec);
+	audio::Time timeInput = std11::chrono::system_clock::from_time_t(sec) + audio::Duration(nsec);
 	sec = int64_t(_timeInfo->outputBufferDacTime);
 	nsec = (_timeInfo->outputBufferDacTime-double(sec))*1000000000LL;
-	std11::chrono::system_clock::time_point timeOutput = std11::chrono::system_clock::from_time_t(sec) + std11::chrono::nanoseconds(nsec);
+	audio::Time timeOutput = std11::chrono::system_clock::from_time_t(sec) + audio::Duration(nsec);
 	return myClass->duplexCallback(_input,
 	                               timeInput,
 	                               _output,
@@ -45,9 +45,9 @@ static int portAudioStreamCallback(const void *_input,
 }
 
 int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer,
-                                                 const std11::chrono::system_clock::time_point& _timeInput,
+                                                 const audio::Time& _timeInput,
                                                  void* _outputBuffer,
-                                                 const std11::chrono::system_clock::time_point& _timeOutput,
+                                                 const audio::Time& _timeOutput,
                                                  uint32_t _nbChunk,
                                                  PaStreamCallbackFlags _status) {
 	std11::unique_lock<std11::mutex> lock(m_mutex);

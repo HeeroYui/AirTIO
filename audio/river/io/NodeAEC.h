@@ -56,7 +56,7 @@ namespace audio {
 					 * @todo : copy doc ..
 					 */
 					void onDataReceivedMicrophone(const void* _data,
-					                              const std11::chrono::system_clock::time_point& _time,
+					                              const audio::Time& _time,
 					                              size_t _nbChunk,
 					                              enum audio::format _format,
 					                              uint32_t _frequency,
@@ -66,7 +66,7 @@ namespace audio {
 					 * @todo : copy doc ..
 					 */
 					void onDataReceivedFeedBack(const void* _data,
-					                            const std11::chrono::system_clock::time_point& _time,
+					                            const audio::Time& _time,
 					                            size_t _nbChunk,
 					                            enum audio::format _format,
 					                            uint32_t _frequency,
@@ -74,7 +74,7 @@ namespace audio {
 				protected:
 					audio::drain::CircularBuffer m_bufferMicrophone; //!< temporary buffer to synchronize data.
 					audio::drain::CircularBuffer m_bufferFeedBack; //!< temporary buffer to synchronize data.
-					std11::chrono::nanoseconds m_sampleTime; //!< represent the sample time at the specify frequency.
+					audio::Duration m_sampleTime; //!< represent the sample time at the specify frequency.
 					/**
 					 * @brief Process synchronization on the 2 flow.
 					 */
@@ -87,7 +87,7 @@ namespace audio {
 					 * @param[in] _time Time on the firsta sample that data has been captured.
 					 * @return 
 					 */
-					void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const std11::chrono::system_clock::time_point& _time);
+					void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time);
 				public:
 					virtual void generateDot(etk::FSNode& _node);
 				private:
