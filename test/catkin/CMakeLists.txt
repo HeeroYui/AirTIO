@@ -8,6 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   audio_river
+  rosconsole
   )
 
 ###################################

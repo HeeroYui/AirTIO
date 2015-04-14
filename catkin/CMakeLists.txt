@@ -7,7 +7,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  drain
+  audio_drain
   audio
   audio_orchestra
   ejson
