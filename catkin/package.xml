@@ -5,13 +5,13 @@
   <description>Ewol River Intrerface : Is to multiple acces on different format on Audio IO</description>
   <maintainer email="yui.heero@gmail.com">Edouard DUPIN</maintainer>
   <license>Apache-2.0</license>
-  <build_depend>drain</build_depend>
+  <build_depend>audio_drain</build_depend>
   <build_depend>audio</build_depend>
   <build_depend>ejson</build_depend>
-  <build_depend>airtaudio</build_depend>
+  <build_depend>audio_orchestra</build_depend>
   <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>drain</run_depend>
+  <run_depend>audio_drain</run_depend>
   <run_depend>audio</run_depend>
   <run_depend>ejson</run_depend>
-  <run_depend>airtaudio</run_depend>
+  <run_depend>audio_orchestra</run_depend>
 </package>

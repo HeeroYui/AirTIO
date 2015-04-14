@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(river)
+project(audio_river)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 find_package(catkin REQUIRED COMPONENTS
   drain
   audio
-  airtaudio
+  audio_orchestra
   ejson
   )
 
@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS ../
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS airtaudio audio drain ejson
+  CATKIN_DEPENDS audio_orchestra audio audio_drain ejson
   DEPENDS system_lib
 )
 
@@ -42,20 +42,20 @@ include_directories(
 
 ## Declare a cpp library
 add_library(${PROJECT_NAME}
-  ../${PROJECT_NAME}/debug.cpp
-  ../${PROJECT_NAME}/river.cpp
-  ../${PROJECT_NAME}/Manager.cpp
-  ../${PROJECT_NAME}/Interface.cpp
-  ../${PROJECT_NAME}/io/Group.cpp
-  ../${PROJECT_NAME}/io/Node.cpp
-  ../${PROJECT_NAME}/io/NodeAirTAudio.cpp
-  ../${PROJECT_NAME}/io/NodePortAudio.cpp
-  ../${PROJECT_NAME}/io/NodeAEC.cpp
-  ../${PROJECT_NAME}/io/NodeMuxer.cpp
-  ../${PROJECT_NAME}/io/Manager.cpp
+  ../audio/river/debug.cpp
+  ../audio/river/river.cpp
+  ../audio/river/Manager.cpp
+  ../audio/river/Interface.cpp
+  ../audio/river/io/Group.cpp
+  ../audio/river/io/Node.cpp
+  ../audio/river/io/NodeOrchestra.cpp
+  ../audio/river/io/NodePortAudio.cpp
+  ../audio/river/io/NodeAEC.cpp
+  ../audio/river/io/NodeMuxer.cpp
+  ../audio/river/io/Manager.cpp
 )
 
-add_definitions(-D__AIRTAUDIO_INFERFACE__)
+add_definitions(-DAUDIO_RIVER_BUILD_ORCHESTRA)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
@@ -73,7 +73,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 ## Mark cpp header files for installation
-install(DIRECTORY ../${PROJECT_NAME}/
+install(DIRECTORY ../audio/river/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
 )

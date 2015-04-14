@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(river_test)
+project(audio_river_test)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -7,7 +7,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  river
+  audio_river
   )
 
 ###################################

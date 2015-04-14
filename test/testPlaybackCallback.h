@@ -82,7 +82,7 @@ namespace river_test_playback_callback {
 		"		io:'output',\n"
 		"		map-on:{\n"
 		"			interface:'auto',\n"
-		"			name:'hw:2,0',\n"
+		"			name:'default',\n"
 		"		},\n"
 		"		frequency:0,\n"
 		"		channel-map:['front-left', 'front-right'],\n"
