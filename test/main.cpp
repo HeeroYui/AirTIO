@@ -38,8 +38,8 @@ int main(int _argc, const char** _argv) {
 		std::string data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
-			APPL_INFO("Help : ");
-			APPL_INFO("    ./xxx ---");
+			APPL_PRINT("Help : ");
+			APPL_PRINT("    ./xxx ---");
 			exit(0);
 		}
 	}
