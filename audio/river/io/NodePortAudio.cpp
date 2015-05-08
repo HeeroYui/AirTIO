@@ -9,19 +9,11 @@
 #include <audio/river/io/NodePortAudio.h>
 #include <audio/river/debug.h>
 #include <etk/memory.h>
+#include <audio/Time.h>
+#include <audio/Duration.h>
 
 #undef __class__
 #define __class__ "io::NodePortAudio"
-
-static std::string asString(const audio::Time& tp) {
-     // convert to system time:
-     std::time_t t = std11::chrono::system_clock::to_time_t(tp);
-     // convert in human string
-     std::string ts = std::ctime(&t);
-     // remove \n
-     ts.resize(ts.size()-1);
-     return ts;
-}
 
 static int portAudioStreamCallback(const void *_input,
                                    void *_output,
@@ -32,10 +24,10 @@ static int portAudioStreamCallback(const void *_input,
 	audio::river::io::NodePortAudio* myClass = reinterpret_cast<audio::river::io::NodePortAudio*>(_userData);
 	int64_t sec = int64_t(_timeInfo->inputBufferAdcTime);
 	int64_t nsec = (_timeInfo->inputBufferAdcTime-double(sec))*1000000000LL;
-	audio::Time timeInput = std11::chrono::system_clock::from_time_t(sec) + audio::Duration(nsec);
+	audio::Time timeInput(sec, nsec);
 	sec = int64_t(_timeInfo->outputBufferDacTime);
 	nsec = (_timeInfo->outputBufferDacTime-double(sec))*1000000000LL;
-	audio::Time timeOutput = std11::chrono::system_clock::from_time_t(sec) + audio::Duration(nsec);
+	audio::Time timeOutput(sec, nsec);
 	return myClass->duplexCallback(_input,
 	                               timeInput,
 	                               _output,

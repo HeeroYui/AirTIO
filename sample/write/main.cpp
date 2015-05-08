@@ -4,9 +4,9 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <river/river.h>
-#include <river/Manager.h>
-#include <river/Interface.h>
+#include <audio/river/river.h>
+#include <audio/river/Manager.h>
+#include <audio/river/Interface.h>
 #include <etk/etk.h>
 #include <unistd.h>
 
@@ -28,7 +28,7 @@ static const std::string configurationRiver =
 		"}\n";
 
 void onDataNeeded(void* _data,
-                  const std11::chrono::system_clock::time_point& _time,
+                  const audio::Time& _time,
                   size_t _nbChunk,
                   enum audio::format _format,
                   uint32_t _frequency,
@@ -50,7 +50,7 @@ void onDataNeeded(void* _data,
 	}
 }
 
-int main(int _argc, char **_argv) {
+int main(int _argc, const char **_argv) {
 	// the only one init for etk:
 	etk::init(_argc, _argv);
 	for (int32_t iii=0; iii<_argc ; ++iii) {
@@ -63,11 +63,11 @@ int main(int _argc, char **_argv) {
 		}
 	}
 	// initialize river interface
-	river::initString(configurationRiver);
+	audio::river::initString(configurationRiver);
 	// Create the River manager for tha application or part of the application.
-	std11::shared_ptr<river::Manager> manager = river::Manager::create("river_sample_read");
+	std11::shared_ptr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
 	// create interface:
-	std11::shared_ptr<river::Interface> interface;
+	std11::shared_ptr<audio::river::Interface> interface;
 	//Get the generic input:
 	interface = manager->createOutput(48000,
 	                                  std::vector<audio::channel>(),

@@ -1,7 +1,6 @@
 #!/usr/bin/python
-import lutinModule as module
-import lutinTools as tools
-import lutinDebug as debug
+import lutin.module as module
+import lutin.tools as tools
 
 def get_desc():
 	return "audio_river : Multi-nodal audio interface"
@@ -23,8 +22,8 @@ def create(target):
 		'audio/river/io/NodeMuxer.cpp',
 		'audio/river/io/Manager.cpp'
 		])
-	myModule.add_optionnal_module_depend('audio_orchestra', "AUDIO_RIVER_BUILD_ORCHESTRA")
-	myModule.add_optionnal_module_depend('portaudio', "AUDIO_RIVER_BUILD_PORTAUDIO")
+	myModule.add_optionnal_module_depend('audio_orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
+	myModule.add_optionnal_module_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])
 	myModule.add_module_depend(['audio', 'audio_drain', 'ejson'])
 	myModule.add_export_path(tools.get_current_path(__file__))
 	
