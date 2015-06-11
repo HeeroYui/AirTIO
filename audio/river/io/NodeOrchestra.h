@@ -37,7 +37,7 @@ namespace audio {
 						return true;
 					};
 				protected:
-					audio::orchestra::Interface m_adac; //!< Real airtaudio interface
+					audio::orchestra::Interface m_interface; //!< Real airtaudio interface
 					audio::orchestra::DeviceInfo m_info; //!< information on the stream.
 					unsigned int m_rtaudioFrameSize; // DEPRECATED soon...
 				public:

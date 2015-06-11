@@ -65,8 +65,8 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
 	
 	// intanciate specific API ...
-	m_adac.instanciate(typeInterface);
-	m_adac.setName(_name);
+	m_interface.instanciate(typeInterface);
+	m_interface.setName(_name);
 	// TODO : Check return ...
 	std::string type = m_config->getStringValue("type", "int16");
 	if (streamName == "") {
@@ -81,23 +81,25 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	RIVER_INFO("    m_format=" << hardwareFormat.getFormat());
 	RIVER_INFO("    m_isInput=" << m_isInput);
 	int32_t deviceId = -1;
+	/*
 	// TODO : Remove this from here (create an extern interface ...)
 	RIVER_INFO("Device list:");
-	for (int32_t iii=0; iii<m_adac.getDeviceCount(); ++iii) {
-		m_info = m_adac.getDeviceInfo(iii);
+	for (int32_t iii=0; iii<m_interface.getDeviceCount(); ++iii) {
+		m_info = m_interface.getDeviceInfo(iii);
 		RIVER_INFO("    " << iii << " name :" << m_info.name);
 		m_info.display(2);
 	}
+	*/
 	// special case for default IO:
 	if (streamName == "default") {
 		if (m_isInput == true) {
-			deviceId = m_adac.getDefaultInputDevice();
+			deviceId = m_interface.getDefaultInputDevice();
 		} else {
-			deviceId = m_adac.getDefaultOutputDevice();
+			deviceId = m_interface.getDefaultOutputDevice();
 		}
 	} else {
-		for (int32_t iii=0; iii<m_adac.getDeviceCount(); ++iii) {
-			m_info = m_adac.getDeviceInfo(iii);
+		for (int32_t iii=0; iii<m_interface.getDeviceCount(); ++iii) {
+			m_info = m_interface.getDeviceInfo(iii);
 			if (m_info.name == streamName) {
 				RIVER_INFO("    Select ... id =" << iii);
 				deviceId = iii;
@@ -114,9 +116,9 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	
 	// Open specific ID :
 	if (deviceId == -1) {
-		m_info = m_adac.getDeviceInfo(streamName);
+		m_info = m_interface.getDeviceInfo(streamName);
 	} else {
-		m_info = m_adac.getDeviceInfo(deviceId);
+		m_info = m_interface.getDeviceInfo(deviceId);
 	}
 	// display property :
 	{
@@ -202,7 +204,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	if (m_isInput == true) {
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
-		err = m_adac.openStream(nullptr, &params,
+		err = m_interface.openStream(nullptr, &params,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std11::bind(&audio::river::io::NodeOrchestra::recordCallback,
 		                                    this,
@@ -215,7 +217,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	} else {
 		m_process.setInputConfig(interfaceFormat);
 		m_process.setOutputConfig(hardwareFormat);
-		err = m_adac.openStream(&params, nullptr,
+		err = m_interface.openStream(&params, nullptr,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
 		                        std11::bind(&audio::river::io::NodeOrchestra::playbackCallback,
 		                                    this,
@@ -235,15 +237,15 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 audio::river::io::NodeOrchestra::~NodeOrchestra() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
-	if (m_adac.isStreamOpen() ) {
-		m_adac.closeStream();
+	if (m_interface.isStreamOpen() ) {
+		m_interface.closeStream();
 	}
 };
 
 void audio::river::io::NodeOrchestra::start() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	enum audio::orchestra::error err = m_adac.startStream();
+	enum audio::orchestra::error err = m_interface.startStream();
 	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not start stream ... " << err);
 	}
@@ -252,7 +254,7 @@ void audio::river::io::NodeOrchestra::start() {
 void audio::river::io::NodeOrchestra::stop() {
 	std11::unique_lock<std11::mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	enum audio::orchestra::error err = m_adac.stopStream();
+	enum audio::orchestra::error err = m_interface.stopStream();
 	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not stop stream ... " << err);
 	}

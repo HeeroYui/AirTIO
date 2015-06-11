@@ -3,23 +3,27 @@
 		io:"output",
 		map-on:{
 			interface:"alsa",
-			name:"AD1989A_outputs",
+			name:"hw:0,0",
+			#name:"default",
+			#name:"AD1989A_outputs",
 			timestamp-mode:"trigered",
 		},
+		#group:"baseIOSynchrone",
 		frequency:48000,
 		channel-map:[
 			"front-left", "front-right",
 		],
 		type:"int16",
 		nb-chunk:6000,
-		volume-name:"MASTER",
+		#volume-name:"MASTER",
 		mux-demux-type:"int16-on-int32",
 	},
-	microphone:{
+	microphone-virtual-alsa:{
 		io:"input",
 		map-on:{
 			interface:"alsa",
 			name:"AD1989A_inputs",
+			#name:"hw:0,0",
 			timestamp-mode:"trigered",
 		},
 		frequency:48000,
@@ -52,26 +56,28 @@
 		io:"input",
 		map-on:{
 			interface:"alsa",
-			name:"hw:0,0,0",
+			name:"hw:0,0,1",
+			#name:"AD1989A_inputs",
+			#name:"default",
 			timestamp-mode:"trigered",
 		},
-		group:"baseIOSynchrone",
+		#group:"baseIOSynchrone",
 		frequency:48000,
 		channel-map:[
 			"front-left", "front-right"
 		],
 		type:"int16",
-		nb-chunk:1024,
+		nb-chunk:128,
 		mux-demux-type:"int16",
 	},
 	microphone-rear:{
 		io:"input",
 		map-on:{
 			interface:"alsa",
-			name:"hw:0,0,1",
+			name:"hw:0,0,0",
 			timestamp-mode:"trigered",
 		},
-		group:"baseIOSynchrone",
+		#group:"baseIOSynchrone",
 		frequency:48000,
 		channel-map:[
 			"rear-left", "rear-right"
