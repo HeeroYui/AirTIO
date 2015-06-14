@@ -52,14 +52,16 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 		},
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
-	enum audio::orchestra::type typeInterface = audio::orchestra::type_undefined;
+	std::string typeInterface = audio::orchestra::type_undefined;
 	std::string streamName = "default";
 	const std11::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
-		std::string value = tmpObject->getStringValue("interface", "default");
-		typeInterface = audio::orchestra::getTypeFromString(value);
+		typeInterface = tmpObject->getStringValue("interface", audio::orchestra::type_undefined);
+		if (typeInterface == "auto") {
+			typeInterface = audio::orchestra::type_undefined;
+		}
 		streamName = tmpObject->getStringValue("name", "default");
 	}
 	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
@@ -183,14 +185,8 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	params.deviceId = deviceId;
 	params.deviceName = streamName;
 	params.nChannels = hardwareFormat.getMap().size();
-	if (m_isInput == true) {
-		if (m_info.inputChannels < params.nChannels) {
-			RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.inputChannels << ").");
-		}
-	} else {
-		if (m_info.outputChannels < params.nChannels) {
-			RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.inputChannels << ").");
-		}
+	if (m_info.channels.size() < params.nChannels) {
+		RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.channels.size() << ").");
 	}
 	audio::orchestra::StreamOptions option;
 	etk::from_string(option.mode, tmpObject->getStringValue("timestamp-mode", "soft"));

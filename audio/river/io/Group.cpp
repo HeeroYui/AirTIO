@@ -53,7 +53,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 			for (size_t iii=1; iii<m_list.size(); ++iii) {
 				if (m_list[iii] != nullptr) {
 					std11::shared_ptr<audio::river::io::NodeOrchestra> link = std11::dynamic_pointer_cast<audio::river::io::NodeOrchestra>(m_list[iii]);
-					linkRef->m_adac.isMasterOf(link->m_adac);
+					linkRef->m_interface.isMasterOf(link->m_interface);
 				}
 			}
 		#endif
