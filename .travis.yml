@@ -19,7 +19,7 @@ before_script:
   - git clone https://github.com/musicdsp/audio.git
   - git clone https://github.com/musicdsp/audio-algo-drain.git
   - git clone https://github.com/musicdsp/audio-drain.git
-  - git clone https://github.com/musicdsp/audio-orhestra.git
+  - git clone https://github.com/musicdsp/audio-orchestra.git
   - pwd
   - ls -l
   - if [ "$CXX" == "clang++" ]; then BUILDER=clang; else BUILDER=gcc; fi
