@@ -36,7 +36,7 @@ install:
 
 script: 
   - lutin -C -P -c$BUILDER -mdebug -p audio-river-test
-  - ./out/Linux_x86_64/debug/staging/$BUILDER/audio-river-test/usr/bin/audio-river-test -l6
+#  - ./out/Linux_x86_64/debug/staging/$BUILDER/audio-river-test/usr/bin/audio-river-test -l6
 
 notifications:
   email:
