@@ -211,8 +211,8 @@ void audio::river::io::Node::newInput(const void* _inputBuffer,
 }
 
 void audio::river::io::Node::newOutput(void* _outputBuffer,
-                                uint32_t _nbChunk,
-                                const audio::Time& _time) {
+                                       uint32_t _nbChunk,
+                                       const audio::Time& _time) {
 	if (_outputBuffer == nullptr) {
 		return;
 	}
