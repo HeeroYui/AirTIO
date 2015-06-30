@@ -1,0 +1,62 @@
+/** @file
+ * @author Edouard DUPIN 
+ * @copyright 2011, Edouard DUPIN, all right reserved
+ * @license APACHE v2.0 (see license file)
+ */
+
+#ifndef __ARW_TEMPORAL_VIEWER_H__
+#define __ARW_TEMPORAL_VIEWER_H__
+
+#include <audio/river/widget/debug.h>
+#include <ewol/widget/Widget.h>
+#include <ewol/compositing/Drawing.h>
+#include <audio/river/river.h>
+#include <audio/river/Manager.h>
+#include <audio/river/Interface.h>
+#include <mutex>
+
+namespace audio {
+	namespace river {
+		namespace widget {
+			class TemporalViewer : public ewol::Widget {
+				private:
+					mutable std11::mutex m_mutex;
+				private:
+					ewol::compositing::Drawing m_draw; //!< drawing instance
+				protected:
+					//! @brief constructor
+					TemporalViewer();
+					void init();
+				public:
+					DECLARE_WIDGET_FACTORY(TemporalViewer, "TemporalViewer");
+					//! @brief destructor
+					virtual ~TemporalViewer();
+					
+					void recordToggle();
+					void generateToggle() {
+						// ...
+					}
+				private:
+					std::vector<float> m_data;
+				private:
+					float m_minVal; //!< display minimum value
+					float m_maxVal; //!< display maximum value
+				public: // herited function
+					virtual void onDraw();
+					virtual void onRegenerateDisplay();
+					virtual void periodicCall(const ewol::event::Time& _event);
+				private:
+					std11::shared_ptr<audio::river::Manager> m_manager;
+					std11::shared_ptr<audio::river::Interface> m_interface;
+					void onDataReceived(const void* _data,
+					                    const audio::Time& _time,
+					                    size_t _nbChunk,
+					                    enum audio::format _format,
+					                    uint32_t _frequency,
+					                    const std::vector<audio::channel>& _map);
+			};
+		}
+	}
+}
+
+#endif
