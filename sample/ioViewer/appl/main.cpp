@@ -41,12 +41,11 @@ class MainApplication : public ewol::context::Application {
 			
 			audio::river::initString(configurationRiver);
 			
-			// TODO : Remove this : Move if in the windows properties
 			_context.setSize(vec2(800, 600));
 			
 			// select internal data for font ...
 			_context.getFontDefault().setUseExternal(true);
-			_context.getFontDefault().set("FreeSerif;DejaVuSansMono", 19);
+			_context.getFontDefault().setSize(19);
 			
 			audio::river::widget::TemporalViewer::createManagerWidget(_context.getWidgetManager());
 			

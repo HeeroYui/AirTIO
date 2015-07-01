@@ -11,19 +11,21 @@
 #undef __class__
 #define __class__ "TemporalViewer"
 
+static const int32_t nbSecond = 3;
 
 
 
 audio::river::widget::TemporalViewer::TemporalViewer() :
   m_minVal(-1.0f),
-  m_maxVal(1.0f) {
+  m_maxVal(1.0f),
+  m_sampleRate(48000) {
 	addObjectType("audio::river::widget::TemporalViewer");
 }
 
 void audio::river::widget::TemporalViewer::init() {
 	ewol::Widget::init();
 	m_manager = audio::river::Manager::create("audio::river::widget::TemporalViewer");
-	markToRedraw();
+	m_data.resize(m_sampleRate*3, 0.0);
 }
 
 
@@ -48,10 +50,11 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
 	for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
 		m_data.push_back(data[iii]);
 	}
-	const int32_t nbSecond = 3;
-	if (m_data.size()>_frequency*nbSecond) {
-		m_data.erase(m_data.begin(), m_data.begin()+(m_data.size()-_frequency*nbSecond));
+	/*
+	if (m_data.size()>m_sampleRate*nbSecond*10) {
+		m_data.erase(m_data.begin(), m_data.begin()+(m_data.size()-m_sampleRate*nbSecond));
 	}
+	*/
 	//markToRedraw();
 }
 
@@ -61,7 +64,7 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 		//Get the generic input:
 		std::vector<audio::channel> channel;
 		channel.push_back(audio::channel_frontLeft);
-		m_interface = m_manager->createInput(48000,
+		m_interface = m_manager->createInput(m_sampleRate,
 		                                     channel,
 		                                     audio::format_float,
 		                                     "microphone");
@@ -108,17 +111,34 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 	if (m_data.size() == 0) {
 		return;
 	}
+	// create n section for display:
+	int32_t nbSlot = m_size.x();
+	int32_t sizeSlot = m_size.x()/nbSlot;
+	std::vector<float> list;
+	//ARW_INFO("nbSlot : " << nbSlot << " sizeSlot=" << sizeSlot << " m_size=" << m_size);
+	list.resize(nbSlot,0.0f);
+	int32_t step = m_sampleRate*nbSecond/nbSlot;
+	for (size_t kkk=0; kkk<m_sampleRate*nbSecond; ++kkk) {
+		int32_t id = kkk/step;
+		if (id < list.size()) {
+			if (kkk < m_data.size()) {
+				list[id] = std::max(list[id],m_data[kkk]);
+			}
+		}
+	}
 	// set all the line:
 	m_draw.setColor(etk::color::white);
 	m_draw.setThickness(1);
 	float origin = m_size.y()*0.5f;
 	
 	float ratioY = m_size.y() / (m_maxVal - m_minVal);
-	float stepX = m_size.x() / float(m_data.size());
-	m_draw.setPos(vec2(0, origin + ratioY*m_data[0]));
 	float baseX = 0;
-	for (size_t iii=1; iii<m_data.size(); ++iii) {
-		m_draw.lineTo(vec2(float(iii)*stepX, origin + ratioY*m_data[iii]));
+	for (size_t iii=1; iii<list.size(); ++iii) {
+		m_draw.setPos(vec2(iii*sizeSlot, origin - ratioY*list[iii]));
+		m_draw.rectangle(vec2((iii+1)*sizeSlot, origin + ratioY*list[iii]));
+		if ((iii+1)*sizeSlot > m_size.x()) {
+			ARW_ERROR("wrong display position");
+		}
 	}
 }
 
@@ -126,5 +146,14 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 
 
 void audio::river::widget::TemporalViewer::periodicCall(const ewol::event::Time& _event) {
+	std11::unique_lock<std11::mutex> lock(m_mutex);
+	int32_t nbSampleDelta = _event.getDeltaCall() * float(m_sampleRate);
+	if (m_data.size()>m_sampleRate*nbSecond) {
+		if (nbSampleDelta < m_data.size()) {
+			m_data.erase(m_data.begin(), m_data.begin()+nbSampleDelta);
+		} else {
+			m_data.erase(m_data.begin(), m_data.begin()+(m_data.size()-m_sampleRate*nbSecond));
+		}
+	}
 	markToRedraw();
 }

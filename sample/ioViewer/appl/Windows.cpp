@@ -30,13 +30,13 @@ void appl::Windows::init() {
 	setTitle("example 001_HelloWord");
 	std::string composition = std::string("");
 	composition += "<sizer mode='vert'>\n";
-	composition += "	<sizer mode='hori'>\n";
-	composition += "		<button name='bt-record'>\n";
+	composition += "	<sizer mode='hori' lock='true' min-size='10,10%'>\n";
+	composition += "		<button name='bt-record' expend='true' fill='true'>\n";
 	composition += "			<label>\n";
 	composition += "				Start/Stop record\n";
 	composition += "			</label>\n";
 	composition += "		</button>\n";
-	composition += "		<button name='bt-generate'>\n";
+	composition += "		<button name='bt-generate' expend='true' fill='true'>\n";
 	composition += "			<label>\n";
 	composition += "				Start/Stop Generate\n";
 	composition += "			</label>\n";

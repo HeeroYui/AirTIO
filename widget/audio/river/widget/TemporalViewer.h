@@ -54,6 +54,7 @@ namespace audio {
 					                    enum audio::format _format,
 					                    uint32_t _frequency,
 					                    const std::vector<audio::channel>& _map);
+					int32_t m_sampleRate;
 			};
 		}
 	}

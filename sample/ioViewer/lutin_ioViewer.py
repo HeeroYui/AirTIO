@@ -24,7 +24,8 @@ def create(target):
 	myModule.pkg_set("SECTION", ["Development"])
 	myModule.pkg_set("PRIORITY", "optional")
 	myModule.pkg_set("DESCRIPTION", "Simple wiewer")
-	myModule.pkg_set("NAME", "audio-io-viewer")
+	myModule.pkg_set("NAME", "ioViewer")
 	
+	myModule.pkg_add("RIGHT", "RECORD_AUDIO")
 	return myModule
 
