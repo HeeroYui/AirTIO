@@ -124,11 +124,29 @@ std::pair<float,float> audio::river::Manager::getVolumeRange(const std::string& 
 	return manager->getVolumeRange(_volumeName);
 }
 
+void audio::river::Manager::setMute(const std::string& _volumeName, bool _mute) {
+	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	if (manager == nullptr) {
+		RIVER_ERROR("Unable to load harware IO manager ... ");
+		return;
+	}
+	manager->setMute(_volumeName, _mute);
+}
+
+bool audio::river::Manager::getMute(const std::string& _volumeName) const {
+	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	if (manager == nullptr) {
+		RIVER_ERROR("Unable to load harware IO manager ... ");
+		return false;
+	}
+	return manager->getMute(_volumeName);
+}
+
 std11::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(float _freq,
-                                                                 const std::vector<audio::channel>& _map,
-                                                                 audio::format _format,
-                                                                 const std::string& _streamName,
-                                                                 const std::string& _options) {
+                                                                               const std::vector<audio::channel>& _map,
+                                                                               audio::format _format,
+                                                                               const std::string& _streamName,
+                                                                               const std::string& _options) {
 	// get global hardware interface:
 	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
@@ -156,10 +174,10 @@ std11::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(f
 }
 
 std11::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(float _freq,
-                                                                const std::vector<audio::channel>& _map,
-                                                                audio::format _format,
-                                                                const std::string& _streamName,
-                                                                const std::string& _options) {
+                                                                              const std::vector<audio::channel>& _map,
+                                                                              audio::format _format,
+                                                                              const std::string& _streamName,
+                                                                              const std::string& _options) {
 	// get global hardware interface:
 	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
@@ -188,10 +206,10 @@ std11::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(fl
 
 
 std11::shared_ptr<audio::river::Interface> audio::river::Manager::createFeedback(float _freq,
-                                                                   const std::vector<audio::channel>& _map,
-                                                                   audio::format _format,
-                                                                   const std::string& _streamName,
-                                                                   const std::string& _options) {
+                                                                                 const std::vector<audio::channel>& _map,
+                                                                                 audio::format _format,
+                                                                                 const std::string& _streamName,
+                                                                                 const std::string& _options) {
 	// get global hardware interface:
 	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {

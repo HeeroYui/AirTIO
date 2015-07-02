@@ -78,6 +78,7 @@ namespace audio {
 				 * @example ret = getVolume("MASTER"); can return something like ret = -3.0f
 				 */
 				virtual float getVolume(const std::string& _volumeName) const;
+				
 				/**
 				 * @brief Get a parameter value
 				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
@@ -85,6 +86,18 @@ namespace audio {
 				 * @example ret = getVolumeRange("MASTER"); can return something like ret=(-120.0f,0.0f)
 				 */
 				virtual std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
+				/**
+				 * @brief Set a Mute for a specific volume group
+				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+				 * @param[in] _mute Mute enable or disable.
+				 */
+				virtual void setMute(const std::string& _volumeName, bool _mute);
+				/**
+				 * @brief Get a volume value
+				 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+				 * @return The Mute of the volume volume.
+				 */
+				virtual bool getMute(const std::string& _volumeName) const;
 				
 				/**
 				 * @brief Create output Interface

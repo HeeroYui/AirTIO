@@ -317,6 +317,32 @@ std::pair<float,float> audio::river::io::Manager::getVolumeRange(const std::stri
 	return std::make_pair<float,float>(-300, 300);
 }
 
+void audio::river::io::Manager::setMute(const std::string& _volumeName, bool _mute) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	std11::shared_ptr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
+	if (volume == nullptr) {
+		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
+		return;
+	}
+	volume->setMute(_mute);
+	for (size_t iii=0; iii<m_list.size(); ++iii) {
+		std11::shared_ptr<audio::river::io::Node> val = m_list[iii].lock();
+		if (val != nullptr) {
+			val->volumeChange();
+		}
+	}
+}
+
+bool audio::river::io::Manager::getMute(const std::string& _volumeName) {
+	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
+	std11::shared_ptr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
+	if (volume == nullptr) {
+		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
+		return false;
+	}
+	return volume->getMute();
+}
+
 void audio::river::io::Manager::generateDot(const std::string& _filename) {
 	std11::unique_lock<std11::recursive_mutex> lock(m_mutex);
 	etk::FSNode node(_filename);

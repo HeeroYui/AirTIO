@@ -123,6 +123,18 @@ namespace audio {
 					 */
 					std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
 					/**
+					 * @brief Set a Mute for a specific volume group
+					 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+					 * @param[in] _mute Mute enable or disable.
+					 */
+					void setMute(const std::string& _volumeName, bool _mute);
+					/**
+					 * @brief Get a volume value
+					 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
+					 * @return The Mute of the volume volume.
+					 */
+					bool getMute(const std::string& _volumeName);
+					/**
 					 * @brief Generate the dot file corresponding at the actif nodes.
 					 * @param[in] _filename Name of the file to write data.
 					 */
