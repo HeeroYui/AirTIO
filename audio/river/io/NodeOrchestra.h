@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifndef __AUDIO_RIVER_IO_NODE_AIRTAUDIO_H__
-#define __AUDIO_RIVER_IO_NODE_AIRTAUDIO_H__
+#ifndef __AUDIO_RIVER_IO_NODE_ORCHESTRA_H__
+#define __AUDIO_RIVER_IO_NODE_ORCHESTRA_H__
 
 #ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 
