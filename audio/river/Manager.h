@@ -9,7 +9,7 @@
 
 #include <string>
 #include <stdint.h>
-#include <etk/memory.h>
+#include <memory>
 #include <audio/river/Interface.h>
 #include <audio/format.h>
 #include <audio/channel.h>

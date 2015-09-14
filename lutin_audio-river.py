@@ -22,10 +22,18 @@ def create(target):
 		'audio/river/io/NodeMuxer.cpp',
 		'audio/river/io/Manager.cpp'
 		])
+	myModule.add_header_file([
+		'audio/river/river.h',
+		'audio/river/Manager.h',
+		'audio/river/Interface.h',
+		'audio/river/io/Group.h',
+		'audio/river/io/Node.h',
+		'audio/river/io/Manager.h'
+		])
 	myModule.add_optionnal_module_depend('audio-orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
 	myModule.add_optionnal_module_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])
 	myModule.add_module_depend(['audio', 'audio-drain', 'ejson'])
-	myModule.add_export_path(tools.get_current_path(__file__))
+	myModule.add_path(tools.get_current_path(__file__))
 	
 	# add the currrent module at the 
 	return myModule

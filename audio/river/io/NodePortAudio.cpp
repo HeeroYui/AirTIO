@@ -8,7 +8,7 @@
 
 #include <audio/river/io/NodePortAudio.h>
 #include <audio/river/debug.h>
-#include <etk/memory.h>
+#include <memory>
 #include <audio/Time.h>
 #include <audio/Duration.h>
 

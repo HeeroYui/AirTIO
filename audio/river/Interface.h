@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 #include <stdint.h>
-#include <etk/mutex.h>
-#include <etk/chrono.h>
-#include <etk/functional.h>
-#include <etk/memory.h>
+#include <mutex>
+#include <chrono>
+#include <functional>
+#include <memory>
 #include <audio/format.h>
 #include <audio/channel.h>
 #include <audio/drain/Process.h>

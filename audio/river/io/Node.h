@@ -11,9 +11,9 @@
 #include <vector>
 #include <list>
 #include <stdint.h>
-#include <etk/chrono.h>
-#include <etk/functional.h>
-#include <etk/memory.h>
+#include <chrono>
+#include <functional>
+#include <memory>
 #include <audio/format.h>
 #include <audio/channel.h>
 #include "Manager.h"

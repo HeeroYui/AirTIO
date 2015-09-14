@@ -7,8 +7,8 @@
 #include <audio/river/io/NodeMuxer.h>
 #include <audio/river/debug.h>
 #include <etk/types.h>
-#include <etk/memory.h>
-#include <etk/functional.h>
+#include <memory>
+#include <functional>
 
 #undef __class__
 #define __class__ "io::NodeMuxer"

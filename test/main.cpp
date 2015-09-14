@@ -14,7 +14,7 @@
 #include <math.h>
 #include <sstream>
 #include <unistd.h>
-#include <etk/thread.h>
+#include <thread>
 #include "testAEC.h"
 #include "testEchoDelay.h"
 #include "testFormat.h"

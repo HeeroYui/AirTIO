@@ -8,7 +8,7 @@
 
 #include <audio/river/io/NodeOrchestra.h>
 #include <audio/river/debug.h>
-#include <etk/memory.h>
+#include <memory>
 
 #undef __class__
 #define __class__ "io::NodeOrchestra"

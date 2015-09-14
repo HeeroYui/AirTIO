@@ -13,7 +13,7 @@
 #include <audio/river/io/NodeOrchestra.h>
 #include <audio/river/io/NodePortAudio.h>
 #include <etk/os/FSNode.h>
-#include <etk/memory.h>
+#include <memory>
 #include <etk/types.h>
 #include <utility>
 
