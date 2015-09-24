@@ -7,9 +7,9 @@ def get_desc():
 
 
 def create(target):
-	myModule = module.Module(__file__, 'audio-river', 'LIBRARY')
+	my_module = module.Module(__file__, 'audio-river', 'LIBRARY')
 	
-	myModule.add_src_file([
+	my_module.add_src_file([
 		'audio/river/debug.cpp',
 		'audio/river/river.cpp',
 		'audio/river/Manager.cpp',
@@ -22,7 +22,7 @@ def create(target):
 		'audio/river/io/NodeMuxer.cpp',
 		'audio/river/io/Manager.cpp'
 		])
-	myModule.add_header_file([
+	my_module.add_header_file([
 		'audio/river/river.h',
 		'audio/river/Manager.h',
 		'audio/river/Interface.h',
@@ -30,13 +30,13 @@ def create(target):
 		'audio/river/io/Node.h',
 		'audio/river/io/Manager.h'
 		])
-	myModule.add_optionnal_module_depend('audio-orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
-	myModule.add_optionnal_module_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])
-	myModule.add_module_depend(['audio', 'audio-drain', 'ejson'])
-	myModule.add_path(tools.get_current_path(__file__))
+	my_module.add_optionnal_module_depend('audio-orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
+	my_module.add_optionnal_module_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])
+	my_module.add_module_depend(['audio', 'audio-drain', 'ejson'])
+	my_module.add_path(tools.get_current_path(__file__))
 	
 	# add the currrent module at the 
-	return myModule
+	return my_module
 
 
 

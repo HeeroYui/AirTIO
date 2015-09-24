@@ -7,12 +7,12 @@ def get_desc():
 
 
 def create(target):
-	myModule = module.Module(__file__, 'river-sample-write', 'BINARY')
-	myModule.add_src_file([
+	my_module = module.Module(__file__, 'river-sample-write', 'BINARY')
+	my_module.add_src_file([
 		'main.cpp',
 		])
-	myModule.add_module_depend(['audio-river', 'etk'])
-	return myModule
+	my_module.add_module_depend(['audio-river', 'etk'])
+	return my_module
 
 
 

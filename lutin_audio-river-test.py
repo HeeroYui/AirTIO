@@ -7,12 +7,12 @@ def get_desc():
 
 
 def create(target):
-	myModule = module.Module(__file__, 'audio-river-test', 'BINARY')
-	myModule.add_src_file([
+	my_module = module.Module(__file__, 'audio-river-test', 'BINARY')
+	my_module.add_src_file([
 		'test/main.cpp',
 		'test/debug.cpp'
 		])
-	myModule.add_module_depend(['audio-river', 'gtest', 'etk'])
-	return myModule
+	my_module.add_module_depend(['audio-river', 'gtest', 'etk'])
+	return my_module
 
 
