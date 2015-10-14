@@ -58,7 +58,7 @@ namespace river_test_format {
 					channelMap.push_back(audio::channel_rearLeft);
 					channelMap.push_back(audio::channel_rearRight);
 				} else {
-					APPL_ERROR("Can not generate with channel != 1,2,4");
+					TEST_ERROR("Can not generate with channel != 1,2,4");
 					return;
 				}
 				m_interface = m_manager->createOutput(m_freq,
@@ -67,7 +67,7 @@ namespace river_test_format {
 				                                      "speaker",
 				                                      "WriteModeCallbackType");
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -86,7 +86,7 @@ namespace river_test_format {
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
 			                  const std::vector<audio::channel>& _map) {
-				//APPL_DEBUG("Get data ... " << _format << " map=" << _map << " chunk=" << _nbChunk);
+				//TEST_DEBUG("Get data ... " << _format << " map=" << _map << " chunk=" << _nbChunk);
 				double baseCycle = 2.0*M_PI/double(m_freq) * double(m_generateFreq);
 				if (_format == audio::format_int16) {
 					int16_t* data = static_cast<int16_t*>(_data);
@@ -136,7 +136,7 @@ namespace river_test_format {
 			}
 			void run() {
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->start();
@@ -201,7 +201,7 @@ namespace river_test_format {
 		audio::river::initString(configurationRiver);
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		APPL_INFO("test convert flaot to output (callback mode)");
+		TEST_INFO("test convert flaot to output (callback mode)");
 		std::vector<float> listFreq;
 		listFreq.push_back(4000);
 		listFreq.push_back(8000);
@@ -227,7 +227,7 @@ namespace river_test_format {
 		for (size_t fff=0; fff<listFreq.size(); ++fff) {
 			for (size_t ccc=0; ccc<listChannel.size(); ++ccc) {
 				for (size_t iii=0; iii<listFormat.size(); ++iii) {
-					APPL_INFO("freq=" << listFreq[fff] << " channel=" << listChannel[ccc] << " format=" << getFormatString(listFormat[iii]));
+					TEST_INFO("freq=" << listFreq[fff] << " channel=" << listChannel[ccc] << " format=" << getFormatString(listFormat[iii]));
 					std11::shared_ptr<testOutCallbackType> process = std11::make_shared<testOutCallbackType>(manager, listFreq[fff], listChannel[ccc], listFormat[iii]);
 					process->run();
 					process.reset();

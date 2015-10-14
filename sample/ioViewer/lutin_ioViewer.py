@@ -2,12 +2,29 @@
 import lutin.module as module
 import lutin.tools as tools
 import datetime
+import os
+
+
+def get_type():
+	return "BINARY"
 
 def get_desc():
 	return "Simpleaudio IO viewer and test ..."
 
-def create(target):
-	my_module = module.Module(__file__, 'ioViewer', 'PACKAGE')
+def get_licence():
+	return "APACHE-2"
+
+def get_compagny_type():
+	return "com"
+
+def get_compagny_name():
+	return "atria-soft"
+
+def get_maintainer():
+	return ["Mr DUPIN Edouard <yui.heero@gmail.com>"]
+
+def create(target, module_name):
+	my_module = module.Module(__file__, module_name, get_type())
 	my_module.add_extra_compile_flags()
 	my_module.add_src_file([
 		'appl/debug.cpp',

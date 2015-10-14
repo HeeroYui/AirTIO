@@ -4,7 +4,29 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include "debug.h"
+#include <test-debug/debug.h>
+
+#define TEST_SAVE_FILE_MACRO(type,fileName,dataPointer,nbElement) \
+	do { \
+		static FILE *pointerOnFile = nullptr; \
+		static bool errorOpen = false; \
+		if (pointerOnFile == nullptr) { \
+			TEST_WARNING("open file '" << fileName << "' type=" << #type); \
+			pointerOnFile = fopen(fileName,"w"); \
+			if (    errorOpen == false \
+			     && pointerOnFile == nullptr) { \
+				TEST_ERROR("ERROR OPEN file ... '" << fileName << "' type=" << #type); \
+				errorOpen=true; \
+			} \
+		} \
+		if (pointerOnFile != nullptr) { \
+			fwrite((dataPointer), sizeof(type), (nbElement), pointerOnFile); \
+			/* fflush(pointerOnFile);*/ \
+		} \
+	}while(0)
+
+
+
 #include <audio/river/river.h>
 #include <audio/river/Manager.h>
 #include <audio/river/Interface.h>
@@ -38,8 +60,8 @@ int main(int _argc, const char** _argv) {
 		std::string data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
-			APPL_PRINT("Help : ");
-			APPL_PRINT("    ./xxx ---");
+			TEST_PRINT("Help : ");
+			TEST_PRINT("    ./xxx ---");
 			exit(0);
 		}
 	}

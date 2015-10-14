@@ -7,7 +7,6 @@
 #ifndef __ARW_TEMPORAL_VIEWER_H__
 #define __ARW_TEMPORAL_VIEWER_H__
 
-#include <audio/river/widget/debug.h>
 #include <ewol/widget/Widget.h>
 #include <ewol/compositing/Drawing.h>
 #include <audio/river/river.h>

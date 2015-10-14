@@ -7,7 +7,7 @@
 #ifndef __RIVER_TEST_RECORD_CALLBACK_H__
 #define __RIVER_TEST_RECORD_CALLBACK_H__
 
-#include <audio/river/debug.h>
+#include <test-debug/debug.h>
 
 #undef __class__
 #define __class__ "test_record_callback"
@@ -42,7 +42,7 @@ namespace river_test_record_callback {
 				                                     audio::format_int16,
 				                                     _input);
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -62,20 +62,20 @@ namespace river_test_record_callback {
 			                    uint32_t _frequency,
 			                    const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT.raw", _data, _nbChunk * _map.size());
+				TEST_SAVE_FILE_MACRO(int16_t, "REC_INPUT.raw", _data, _nbChunk * _map.size());
 				const int16_t* data = static_cast<const int16_t*>(_data);
 				int64_t value = 0;
 				for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
 					value += std::abs(data[iii]);
 				}
 				value /= (_nbChunk*_map.size());
-				APPL_INFO("Get data ... average=" << int32_t(value));
+				TEST_INFO("Get data ... average=" << int32_t(value));
 			}
 			void run() {
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->start();
@@ -89,7 +89,7 @@ namespace river_test_record_callback {
 		audio::river::initString(configurationRiver);
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		APPL_INFO("test input (callback mode)");
+		TEST_INFO("test input (callback mode)");
 		std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager);
 		process->run();
 		process.reset();

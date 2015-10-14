@@ -43,14 +43,14 @@ namespace river_test_playback_write {
 				                                      audio::format_int16,
 				                                      "speaker");
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->setReadwrite();
 			}
 			void run() {
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				double phase=0;
@@ -94,7 +94,7 @@ namespace river_test_playback_write {
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
-		APPL_INFO("test output (write mode)");
+		TEST_INFO("test output (write mode)");
 		std11::shared_ptr<testOutWrite> process = std11::make_shared<testOutWrite>(manager);
 		process->run();
 		process.reset();
@@ -120,7 +120,7 @@ namespace river_test_playback_write {
 				                                      audio::format_int16,
 				                                      "speaker");
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->setReadwrite();
@@ -138,7 +138,7 @@ namespace river_test_playback_write {
 			                  uint32_t _frequency,
 			                  const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
 				std::vector<int16_t> data;
 				data.resize(1024*_map.size());
@@ -157,7 +157,7 @@ namespace river_test_playback_write {
 			}
 			void run() {
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->start();
@@ -171,7 +171,7 @@ namespace river_test_playback_write {
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
-		APPL_INFO("test output (write with callback event mode)");
+		TEST_INFO("test output (write with callback event mode)");
 		std11::shared_ptr<testOutWriteCallback> process = std11::make_shared<testOutWriteCallback>(manager);
 		process->run();
 		process.reset();

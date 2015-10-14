@@ -7,7 +7,7 @@
 #ifndef __RIVER_TEST_MUXER_H__
 #define __RIVER_TEST_MUXER_H__
 
-#include <audio/river/debug.h>
+#include <test-debug/debug.h>
 
 #undef __class__
 #define __class__ "test_muxer"
@@ -31,7 +31,7 @@ namespace river_test_muxer {
 				                                         audio::format_int16,
 				                                         "speaker");
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -52,7 +52,7 @@ namespace river_test_muxer {
 				                                       audio::format_int16,
 				                                       "microphone-muxed");
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -92,18 +92,18 @@ namespace river_test_muxer {
 			                    uint32_t _frequency,
 			                    const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				RIVER_SAVE_FILE_MACRO(int16_t, "REC_MicrophoneMuxed.raw", _data, _nbChunk*_map.size());
-				APPL_ERROR("Receive data ... " << _nbChunk << " map=" << _map);
+				TEST_SAVE_FILE_MACRO(int16_t, "REC_MicrophoneMuxed.raw", _data, _nbChunk*_map.size());
+				TEST_ERROR("Receive data ... " << _nbChunk << " map=" << _map);
 			}
 			void run() {
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interfaceOut->start();

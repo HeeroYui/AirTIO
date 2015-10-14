@@ -36,7 +36,7 @@ namespace river_test_aec {
 				                                         audio::format_int16,
 				                                         _output);
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -58,7 +58,7 @@ namespace river_test_aec {
 				                                       audio::format_int16,
 				                                       _input);
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -79,7 +79,7 @@ namespace river_test_aec {
 			                  uint32_t _frequency,
 			                  const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
 				m_buffer.read(_data, _nbChunk);
 			}
@@ -90,17 +90,17 @@ namespace river_test_aec {
 			                    uint32_t _frequency,
 			                    const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
 				m_buffer.write(_data, _nbChunk);
 			}
 			void start() {
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interfaceOut->start();
@@ -108,11 +108,11 @@ namespace river_test_aec {
 			}
 			void stop() {
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_manager->generateDotAll("activeProcess.dot");

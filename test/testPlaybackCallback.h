@@ -30,7 +30,7 @@ namespace river_test_playback_callback {
 				                                      audio::format_int16,
 				                                      _io);
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -50,7 +50,7 @@ namespace river_test_playback_callback {
 			                  uint32_t _frequency,
 			                  const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
 				int16_t* data = static_cast<int16_t*>(_data);
 				double baseCycle = 2.0*M_PI/(double)48000 * (double)550;
@@ -66,7 +66,7 @@ namespace river_test_playback_callback {
 			}
 			void run() {
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->start();
@@ -97,7 +97,7 @@ namespace river_test_playback_callback {
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
-		APPL_INFO("test output (callback mode)");
+		TEST_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker");
 		ASSERT_NE(process, nullptr);
 		process->run();
@@ -111,7 +111,7 @@ namespace river_test_playback_callback {
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
-		APPL_INFO("test output (callback mode)");
+		TEST_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker-pulse");
 		process->run();
 		process.reset();
@@ -124,7 +124,7 @@ namespace river_test_playback_callback {
 		std11::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
-		APPL_INFO("test output (callback mode)");
+		TEST_INFO("test output (callback mode)");
 		std11::shared_ptr<testOutCallback> process = std11::make_shared<testOutCallback>(manager, "speaker-jack");
 		process->run();
 		process.reset();

@@ -7,7 +7,7 @@
 #ifndef __RIVER_TEST_ECHO_DELAY_H__
 #define __RIVER_TEST_ECHO_DELAY_H__
 
-#include <audio/river/debug.h>
+#include <test-debug/debug.h>
 
 #undef __class__
 #define __class__ "test_echo_delay"
@@ -50,7 +50,7 @@ namespace river_test_echo_delay {
 				                                         audio::format_int16,
 				                                         "speaker");
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -70,7 +70,7 @@ namespace river_test_echo_delay {
 				                                       audio::format_int16,
 				                                       "microphone");
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -88,7 +88,7 @@ namespace river_test_echo_delay {
 				                                          audio::format_int16,
 				                                          "speaker");
 				if(m_interfaceFB == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -135,7 +135,7 @@ namespace river_test_echo_delay {
 						m_nextSampleCount = m_delayBetweenEvent.count()*int64_t(_frequency)/1000;
 						m_phase = -1;
 					}
-					//APPL_INFO("sample : " << m_nextSampleCount);
+					//TEST_INFO("sample : " << m_nextSampleCount);
 					for (int32_t iii=0; iii<_nbChunk; iii++) {
 						if (m_nextSampleCount > 0) {
 							m_nextSampleCount--;
@@ -157,7 +157,7 @@ namespace river_test_echo_delay {
 								// start detection ...
 								m_stateFB = 0;
 								m_stateMic = 0;
-								APPL_WARNING("Time Pulse zero crossing: " << m_currentTick << " id=" << iii);
+								TEST_WARNING("Time Pulse zero crossing: " << m_currentTick << " id=" << iii);
 							}
 							m_phase = newPhase;
 							if (m_phase >= 2*M_PI) {
@@ -182,7 +182,7 @@ namespace river_test_echo_delay {
 					return _time + audio::Duration(0, int64_t(_pos+1)*1000000000LL/int64_t(_frequency));
 				}
 				double xxx = double(-_val1) / double(_val2 - _val1);
-				APPL_VERBOSE("deltaPos:" << xxx);
+				TEST_VERBOSE("deltaPos:" << xxx);
 				return _time + audio::Duration(0, int64_t((double(_pos)+xxx)*1000000000.0)/int64_t(_frequency));
 			}
 			
@@ -193,9 +193,9 @@ namespace river_test_echo_delay {
 			                            uint32_t _frequency,
 			                            const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
+				TEST_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 				if (m_estimateVolumeInput == true) {
 					// nothing to do ...
 				} else {
@@ -207,10 +207,10 @@ namespace river_test_echo_delay {
 							if (m_stateFB == 0) {
 								if (data[iii*_map.size() + jjj] > INT16_MAX/5) {
 									m_stateFB = 1;
-									APPL_VERBOSE("FB: detect Normal " << iii);
+									TEST_VERBOSE("FB: detect Normal " << iii);
 								} else if (data[iii*_map.size() + jjj] < -INT16_MAX/5) {
 									m_stateFB = 2;
-									APPL_VERBOSE("FB: detect inverse " << iii);
+									TEST_VERBOSE("FB: detect inverse " << iii);
 								}
 							} else if (m_stateFB == 1) {
 								// normale phase
@@ -218,10 +218,10 @@ namespace river_test_echo_delay {
 									// detect inversion of signe ...
 									m_stateFB = 3;
 									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
-									APPL_VERBOSE("FB:  1 position -1:  " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
-									APPL_VERBOSE("FB:  1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
+									TEST_VERBOSE("FB:  1 position -1:  " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
+									TEST_VERBOSE("FB:  1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									
-									APPL_WARNING("FB:  1 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
+									TEST_WARNING("FB:  1 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
 								}
 							} else if (m_stateFB == 2) {
 								// inverse phase
@@ -229,9 +229,9 @@ namespace river_test_echo_delay {
 									// detect inversion of signe ...
 									m_stateFB = 3;
 									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
-									APPL_VERBOSE("FB:  2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
-									APPL_VERBOSE("FB:  2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
-									APPL_WARNING("FB:  2 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
+									TEST_VERBOSE("FB:  2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
+									TEST_VERBOSE("FB:  2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
+									TEST_WARNING("FB:  2 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
 								}
 							} else if (m_stateFB == 3) {
 								// TODO : Detect the pic ...
@@ -248,16 +248,16 @@ namespace river_test_echo_delay {
 			                    uint32_t _frequency,
 			                    const std::vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
-					APPL_ERROR("call wrong type ... (need int16_t)");
+					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
+				TEST_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 				const int16_t* data = static_cast<const int16_t*>(_data);
 				if (m_estimateVolumeInput == true) {
 					m_stateMic ++;
 					const int16_t* data = static_cast<const int16_t*>(_data);
 					if (m_stateMic <= 40) {
 						for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-							//APPL_INFO("value=" << data[iii]);
+							//TEST_INFO("value=" << data[iii]);
 							m_volumeInputMax = std::max(int16_t(data[iii]), m_volumeInputMax);
 							m_volumeInputMin = std::min(int16_t(data[iii]), m_volumeInputMin);
 						}
@@ -269,7 +269,7 @@ namespace river_test_echo_delay {
 						int16_t valueMax = 0;
 						int16_t valueMin = 0;
 						for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-							//APPL_INFO("value=" << data[iii]);
+							//TEST_INFO("value=" << data[iii]);
 							valueMax = std::max(int16_t(data[iii]), valueMax);
 							valueMin = std::min(int16_t(data[iii]), valueMin);
 						}
@@ -284,7 +284,7 @@ namespace river_test_echo_delay {
 							m_gain += 3.0f;
 							m_gain = std::min(m_gain, 0.0f);
 							m_interfaceOut->setParameter("volume", "FLOW", etk::to_string(m_gain) + "dB");
-							APPL_INFO("Set detection volume : " << m_gain << " m_stateMic=" << m_stateMic);
+							TEST_INFO("Set detection volume : " << m_gain << " m_stateMic=" << m_stateMic);
 							m_stateMic = 3;
 							m_phase = -1;
 							m_estimateVolumeInput = false;
@@ -292,7 +292,7 @@ namespace river_test_echo_delay {
 						} else {
 							if (m_stateMic%2 == 0) {
 								if (m_gain == 0.0f) {
-									APPL_CRITICAL("Can not find the basicVolume ...");
+									TEST_CRITICAL("Can not find the basicVolume ...");
 								}
 								// just update volume
 								m_gain += 1.0f;
@@ -309,10 +309,10 @@ namespace river_test_echo_delay {
 							if (m_stateMic == 0) {
 								if (data[iii*_map.size() + jjj] > m_volumeInputMax) {
 									m_stateMic = 1;
-									APPL_VERBOSE("Mic: detect Normal " << iii);
+									TEST_VERBOSE("Mic: detect Normal " << iii);
 								} else if (data[iii*_map.size() + jjj] < m_volumeInputMin) {
 									m_stateMic = 2;
-									APPL_VERBOSE("Mic: detect inverse " << iii);
+									TEST_VERBOSE("Mic: detect inverse " << iii);
 								}
 							} else if (m_stateMic == 1) {
 								// normale phase
@@ -320,11 +320,11 @@ namespace river_test_echo_delay {
 									// detect inversion of signe ...
 									m_stateMic = 3;
 									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
-									APPL_VERBOSE("MIC: 1 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
-									APPL_VERBOSE("MIC: 1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
+									TEST_VERBOSE("MIC: 1 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
+									TEST_VERBOSE("MIC: 1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									audio::Duration delay = time-m_currentTick;
 									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
-									APPL_WARNING("MIC: 1 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
+									TEST_WARNING("MIC: 1 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
 									m_delayListMic.push_back(delay.count());
 								}
 							} else if (m_stateMic == 2) {
@@ -333,11 +333,11 @@ namespace river_test_echo_delay {
 									// detect inversion of signe ...
 									m_stateMic = 3;
 									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
-									APPL_VERBOSE("MIC: 2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
-									APPL_VERBOSE("MIC: 2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
+									TEST_VERBOSE("MIC: 2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
+									TEST_VERBOSE("MIC: 2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									audio::Duration delay = time-m_currentTick;
 									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
-									APPL_WARNING("MIC: 2 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
+									TEST_WARNING("MIC: 2 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
 									m_delayListMic.push_back(delay.count());
 								}
 							} else if (m_stateMic == 3) {
@@ -350,15 +350,15 @@ namespace river_test_echo_delay {
 			}
 			void run() {
 				if(m_interfaceIn == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				if(m_interfaceOut == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				if(m_interfaceFB == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interfaceOut->start();
@@ -380,7 +380,7 @@ namespace river_test_echo_delay {
 					delayAverage /= m_delayListMic.size();
 				}
 				int32_t sampleDalay = (delayAverage*48000)/1000000000LL;
-				APPL_ERROR("Average delay in ns : " << delayAverage << " nbSample=" << sampleDalay);
+				TEST_ERROR("Average delay in ns : " << delayAverage << " nbSample=" << sampleDalay);
 			}
 	};
 	

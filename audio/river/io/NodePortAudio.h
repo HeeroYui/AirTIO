@@ -11,7 +11,7 @@
 
 #include <audio/river/Interface.h>
 #include <audio/river/io/Node.h>
-#include <portaudio.h>
+#include <portaudio/portaudio.h>
 
 namespace audio {
 	namespace river {

@@ -45,7 +45,7 @@ namespace river_test_volume {
 				                                      audio::format_int16,
 				                                      "speaker");
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				// set callback mode ...
@@ -80,43 +80,43 @@ namespace river_test_volume {
 			}
 			void run() {
 				if(m_interface == nullptr) {
-					APPL_ERROR("nullptr interface");
+					TEST_ERROR("nullptr interface");
 					return;
 				}
 				m_interface->start();
 				usleep(1000000);
 				m_interface->setParameter("volume", "FLOW", "-3dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "-6dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "-9dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "-12dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "-3dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "3dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "6dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "9dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_interface->setParameter("volume", "FLOW", "0dB");
-				APPL_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
+				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
 				usleep(500000);
 				m_manager->setVolume("MASTER", -3.0f);
-				APPL_INFO("get volume MASTER: " << m_manager->getVolume("MASTER") );
+				TEST_INFO("get volume MASTER: " << m_manager->getVolume("MASTER") );
 				usleep(500000);
 				m_manager->setVolume("MEDIA", -3.0f);
-				APPL_INFO("get volume MEDIA: " << m_manager->getVolume("MEDIA") );
+				TEST_INFO("get volume MEDIA: " << m_manager->getVolume("MEDIA") );
 				usleep(1000000);
 				m_interface->stop();
 			}

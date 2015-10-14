@@ -21,7 +21,7 @@
 #define __class__ "io::Manager"
 
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO
-	#include <portaudio.h>
+	#include <portaudio/portaudio.h>
 #endif
 
 static std::string basicAutoConfig =
