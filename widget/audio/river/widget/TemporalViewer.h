@@ -3,9 +3,7 @@
  * @copyright 2011, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __ARW_TEMPORAL_VIEWER_H__
-#define __ARW_TEMPORAL_VIEWER_H__
+#pragma once
 
 #include <ewol/widget/Widget.h>
 #include <ewol/compositing/Drawing.h>
@@ -59,4 +57,3 @@ namespace audio {
 	}
 }
 
-#endif

@@ -4,8 +4,7 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#ifndef __AUDIO_RIVER_IO_GROUP_H__
-#define __AUDIO_RIVER_IO_GROUP_H__
+#pragma once
 
 #include <string>
 #include <vector>
@@ -73,6 +72,4 @@ namespace audio {
 		}
 	}
 }
-
-#endif
 

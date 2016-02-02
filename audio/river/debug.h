@@ -3,10 +3,7 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-
-#ifndef __AUDIO_RIVER_DEBUG_H__
-#define __AUDIO_RIVER_DEBUG_H__
+#pragma once
 
 #include <etk/log.h>
 
@@ -59,7 +56,4 @@ namespace audio {
 			/* fflush(pointerOnFile);*/ \
 		} \
 	}while(0)
-
-
-#endif
 

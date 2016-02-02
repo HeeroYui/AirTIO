@@ -3,9 +3,7 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __AUDIO_RIVER_H__
-#define __AUDIO_RIVER_H__
+#pragma once
 
 #include <etk/types.h>
 
@@ -35,6 +33,4 @@ namespace audio {
 		bool isInit();
 	}
 }
-
-#endif
 

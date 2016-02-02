@@ -3,9 +3,7 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __AUDIO_RIVER_IO_NODE_AEC_H__
-#define __AUDIO_RIVER_IO_NODE_AEC_H__
+#pragma once
 
 #include <audio/river/io/Node.h>
 #include <audio/river/Interface.h>
@@ -105,6 +103,4 @@ namespace audio {
 		}
 	}
 }
-
-#endif
 

@@ -3,9 +3,7 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __RIVER_TEST_ECHO_DELAY_H__
-#define __RIVER_TEST_ECHO_DELAY_H__
+#pragma once
 
 #include <test-debug/debug.h>
 
@@ -431,4 +429,3 @@ namespace river_test_echo_delay {
 #undef __class__
 #define __class__ nullptr
 
-#endif

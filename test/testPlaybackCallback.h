@@ -3,9 +3,7 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __RIVER_TEST_PLAYBACK_CALLBACK_H__
-#define __RIVER_TEST_PLAYBACK_CALLBACK_H__
+#pragma once
 
 #undef __class__
 #define __class__ "test_playback_callback"
@@ -138,4 +136,3 @@ namespace river_test_playback_callback {
 #undef __class__
 #define __class__ nullptr
 
-#endif

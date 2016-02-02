@@ -3,9 +3,7 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __RIVER_TEST_RECORD_CALLBACK_H__
-#define __RIVER_TEST_RECORD_CALLBACK_H__
+#pragma once
 
 #include <test-debug/debug.h>
 
@@ -102,4 +100,3 @@ namespace river_test_record_callback {
 #undef __class__
 #define __class__ nullptr
 
-#endif

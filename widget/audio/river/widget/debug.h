@@ -3,9 +3,7 @@
  * @copyright 2011, Edouard DUPIN, all right reserved
  * @license APACHE v2.0 (see license file)
  */
-
-#ifndef __ARW_DEBUG_H__
-#define __ARW_DEBUG_H__
+#pragma once
 
 #include <etk/log.h>
 
@@ -42,6 +40,4 @@ namespace audio {
 			assert(!#cond); \
 		} \
 	} while (0)
-
-#endif
 
