@@ -12,12 +12,12 @@ namespace river_test_aec {
 	
 	class Linker {
 		private:
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interfaceOut;
-			std11::shared_ptr<audio::river::Interface> m_interfaceIn;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interfaceOut;
+			std::shared_ptr<audio::river::Interface> m_interfaceIn;
 			audio::drain::CircularBuffer m_buffer;
 		public:
-			Linker(std11::shared_ptr<audio::river::Manager> _manager, const std::string& _input, const std::string& _output) :
+			Linker(std::shared_ptr<audio::river::Manager> _manager, const std::string& _input, const std::string& _output) :
 			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
@@ -27,7 +27,7 @@ namespace river_test_aec {
 					channelMap.push_back(audio::channel_frontLeft);
 					channelMap.push_back(audio::channel_frontRight);
 				}
-				m_buffer.setCapacity(std11::chrono::milliseconds(2000), sizeof(int16_t)*channelMap.size(), 48000);
+				m_buffer.setCapacity(std::chrono::milliseconds(2000), sizeof(int16_t)*channelMap.size(), 48000);
 				
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
@@ -38,14 +38,14 @@ namespace river_test_aec {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceOut->setOutputCallback(std11::bind(&Linker::onDataNeeded,
+				m_interfaceOut->setOutputCallback(std::bind(&Linker::onDataNeeded,
 				                                              this,
-				                                              std11::placeholders::_1,
-				                                              std11::placeholders::_2,
-				                                              std11::placeholders::_3,
-				                                              std11::placeholders::_4,
-				                                              std11::placeholders::_5,
-				                                              std11::placeholders::_6));
+				                                              std::placeholders::_1,
+				                                              std::placeholders::_2,
+				                                              std::placeholders::_3,
+				                                              std::placeholders::_4,
+				                                              std::placeholders::_5,
+				                                              std::placeholders::_6));
 				m_interfaceOut->addVolumeGroup("FLOW");
 				if ("speaker" == _output) {
 					m_interfaceOut->setParameter("volume", "FLOW", "0dB");
@@ -60,14 +60,14 @@ namespace river_test_aec {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceIn->setInputCallback(std11::bind(&Linker::onDataReceived,
+				m_interfaceIn->setInputCallback(std::bind(&Linker::onDataReceived,
 				                                            this,
-				                                            std11::placeholders::_1,
-				                                            std11::placeholders::_2,
-				                                            std11::placeholders::_3,
-				                                            std11::placeholders::_4,
-				                                            std11::placeholders::_5,
-				                                            std11::placeholders::_6));
+				                                            std::placeholders::_1,
+				                                            std::placeholders::_2,
+				                                            std::placeholders::_3,
+				                                            std::placeholders::_4,
+				                                            std::placeholders::_5,
+				                                            std::placeholders::_6));
 				
 			}
 			void onDataNeeded(void* _data,
@@ -198,10 +198,10 @@ namespace river_test_aec {
 	
 	TEST(TestUser, testAECManually) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std11::shared_ptr<Linker> processLink1 = std11::make_shared<Linker>(manager, "microphone-clean", "speaker");
-		std11::shared_ptr<Linker> processLink2 = std11::make_shared<Linker>(manager, "microphone", "speaker-test");
+		std::shared_ptr<Linker> processLink1 = std::make_shared<Linker>(manager, "microphone-clean", "speaker");
+		std::shared_ptr<Linker> processLink2 = std::make_shared<Linker>(manager, "microphone", "speaker-test");
 		processLink1->start();
 		processLink2->start();
 		sleep(30);

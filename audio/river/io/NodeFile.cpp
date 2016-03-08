@@ -17,7 +17,7 @@ int32_t audio::river::io::NodeFile::recordCallback(const void* _inputBuffer,
                                                    const audio::Time& _timeInput,
                                                    uint32_t _nbChunk,
                                                    const std::vector<audio::orchestra::status>& _status) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 	newInput(_inputBuffer, _nbChunk, _timeInput);
@@ -28,7 +28,7 @@ int32_t audio::river::io::NodeFile::playbackCallback(void* _outputBuffer,
                                                      const audio::Time& _timeOutput,
                                                      uint32_t _nbChunk,
                                                      const std::vector<audio::orchestra::status>& _status) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 	newOutput(_outputBuffer, _nbChunk, _timeOutput);
@@ -37,11 +37,11 @@ int32_t audio::river::io::NodeFile::playbackCallback(void* _outputBuffer,
 
 
 
-std11::shared_ptr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<audio::river::io::NodeFile>(new audio::river::io::NodeFile(_name, _config));
+std::shared_ptr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+	return std::shared_ptr<audio::river::io::NodeFile>(new audio::river::io::NodeFile(_name, _config));
 }
 
-audio::river::io::NodeFile::NodeFile(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeFile::NodeFile(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -54,7 +54,7 @@ audio::river::io::NodeFile::NodeFile(const std::string& _name, const std11::shar
 	*/
 	std::string typeInterface = audio::orchestra::type_undefined;
 	std::string streamName = "default";
-	const std11::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
+	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
@@ -202,12 +202,12 @@ audio::river::io::NodeFile::NodeFile(const std::string& _name, const std11::shar
 		m_process.setOutputConfig(interfaceFormat);
 		err = m_interface.openStream(nullptr, &params,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std11::bind(&audio::river::io::NodeFile::recordCallback,
+		                        std::bind(&audio::river::io::NodeFile::recordCallback,
 		                                    this,
-		                                    std11::placeholders::_1,
-		                                    std11::placeholders::_2,
-		                                    std11::placeholders::_5,
-		                                    std11::placeholders::_6),
+		                                    std::placeholders::_1,
+		                                    std::placeholders::_2,
+		                                    std::placeholders::_5,
+		                                    std::placeholders::_6),
 		                        option
 		                        );
 	} else {
@@ -215,12 +215,12 @@ audio::river::io::NodeFile::NodeFile(const std::string& _name, const std11::shar
 		m_process.setOutputConfig(hardwareFormat);
 		err = m_interface.openStream(&params, nullptr,
 		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std11::bind(&audio::river::io::NodeFile::playbackCallback,
+		                        std::bind(&audio::river::io::NodeFile::playbackCallback,
 		                                    this,
-		                                    std11::placeholders::_3,
-		                                    std11::placeholders::_4,
-		                                    std11::placeholders::_5,
-		                                    std11::placeholders::_6),
+		                                    std::placeholders::_3,
+		                                    std::placeholders::_4,
+		                                    std::placeholders::_5,
+		                                    std::placeholders::_6),
 		                        option
 		                        );
 	}
@@ -231,7 +231,7 @@ audio::river::io::NodeFile::NodeFile(const std::string& _name, const std11::shar
 }
 
 audio::river::io::NodeFile::~NodeFile() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
 	if (m_interface.isStreamOpen() ) {
 		m_interface.closeStream();
@@ -249,7 +249,7 @@ void audio::river::io::NodeFile::threadCallback() {
 }
 
 void audio::river::io::NodeFile::start() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_thread != nullptr) {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"read":"write") << " ==> already started ..." );
 		return;
@@ -261,7 +261,7 @@ void audio::river::io::NodeFile::start() {
 }
 
 void audio::river::io::NodeFile::stop() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_alive = false;
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"read":"write") );
 	// TODO : Need join ...

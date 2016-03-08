@@ -27,11 +27,11 @@ namespace river_test_volume {
 	
 	class testCallbackVolume {
 		private:
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interface;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testCallbackVolume(std11::shared_ptr<audio::river::Manager> _manager) :
+			testCallbackVolume(std::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				//Set stereo output:
@@ -47,14 +47,14 @@ namespace river_test_volume {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setOutputCallback(std11::bind(&testCallbackVolume::onDataNeeded,
+				m_interface->setOutputCallback(std::bind(&testCallbackVolume::onDataNeeded,
 				                                           this,
-				                                           std11::placeholders::_1,
-				                                           std11::placeholders::_2,
-				                                           std11::placeholders::_3,
-				                                           std11::placeholders::_4,
-				                                           std11::placeholders::_5,
-				                                           std11::placeholders::_6));
+				                                           std::placeholders::_1,
+				                                           std::placeholders::_2,
+				                                           std::placeholders::_3,
+				                                           std::placeholders::_4,
+				                                           std::placeholders::_5,
+				                                           std::placeholders::_6));
 				m_interface->addVolumeGroup("MEDIA");
 				m_interface->addVolumeGroup("FLOW");
 			}
@@ -122,9 +122,9 @@ namespace river_test_volume {
 	
 	TEST(TestALL, testVolume) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std11::shared_ptr<testCallbackVolume> process = std11::make_shared<testCallbackVolume>(manager);
+		std::shared_ptr<testCallbackVolume> process = std::make_shared<testCallbackVolume>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

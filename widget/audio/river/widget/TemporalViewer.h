@@ -17,7 +17,7 @@ namespace audio {
 		namespace widget {
 			class TemporalViewer : public ewol::Widget {
 				private:
-					mutable std11::mutex m_mutex;
+					mutable std::mutex m_mutex;
 				private:
 					ewol::compositing::Drawing m_draw; //!< drawing instance
 				protected:
@@ -43,8 +43,8 @@ namespace audio {
 					virtual void onRegenerateDisplay();
 					virtual void periodicCall(const ewol::event::Time& _event);
 				private:
-					std11::shared_ptr<audio::river::Manager> m_manager;
-					std11::shared_ptr<audio::river::Interface> m_interface;
+					std::shared_ptr<audio::river::Manager> m_manager;
+					std::shared_ptr<audio::river::Interface> m_interface;
 					void onDataReceived(const void* _data,
 					                    const audio::Time& _time,
 					                    size_t _nbChunk,

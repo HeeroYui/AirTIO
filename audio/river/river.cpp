@@ -18,7 +18,7 @@ void audio::river::init(const std::string& _filename) {
 		river_isInit = true;
 		river_configFile = _filename;
 		RIVER_DEBUG("init RIVER :" << river_configFile);
-		std11::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
+		std::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		if (mng != nullptr) {
 			mng->init(river_configFile);
 		}
@@ -32,7 +32,7 @@ void audio::river::initString(const std::string& _config) {
 		river_isInit = true;
 		river_configFile = _config;
 		RIVER_DEBUG("init RIVER with config.");
-		std11::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
+		std::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		if (mng != nullptr) {
 			mng->initString(river_configFile);
 		}
@@ -45,7 +45,7 @@ void audio::river::unInit() {
 	if (river_isInit == true) {
 		river_isInit = false;
 		RIVER_DEBUG("un-init RIVER.");
-		std11::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
+		std::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		if (mng != nullptr) {
 			RIVER_ERROR("Can not get on the RIVER hardware manager !!!");
 			mng->unInit();

@@ -28,16 +28,16 @@ namespace audio {
 			 * @brief Internal sigleton of all Flow hadware and virtuals.
 			 * @note this class will be initialize by the audio::river::init() function at the start of the application.
 			 */
-			class Manager : public std11::enable_shared_from_this<Manager> {
+			class Manager : public std::enable_shared_from_this<Manager> {
 				private:
-					mutable std11::recursive_mutex m_mutex; //!< prevent multiple access
+					mutable std::recursive_mutex m_mutex; //!< prevent multiple access
 				private:
 					/**
 					 * @brief Constructor
 					 */
 					Manager();
 				public:
-					static std11::shared_ptr<Manager> getInstance();
+					static std::shared_ptr<Manager> getInstance();
 					/**
 					 * @brief Destructor
 					 */
@@ -58,24 +58,24 @@ namespace audio {
 					void unInit();
 				private:
 					ejson::Document m_config; //!< harware configuration
-					std::vector<std11::shared_ptr<audio::river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone/all time
-					std::vector<std11::weak_ptr<audio::river::io::Node> > m_list; //!< List of all IO node
+					std::vector<std::shared_ptr<audio::river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone/all time
+					std::vector<std::weak_ptr<audio::river::io::Node> > m_list; //!< List of all IO node
 				public:
 					/**
 					 * @brief Get a node with his name (the name is set in the description file.
 					 * @param[in] _name Name of the node
 					 * @return Pointer on the noe or a nullptr if the node does not exist in the file or an error occured.
 					 */
-					std11::shared_ptr<audio::river::io::Node> getNode(const std::string& _name);
+					std::shared_ptr<audio::river::io::Node> getNode(const std::string& _name);
 				private:
-					std::vector<std11::shared_ptr<audio::drain::VolumeElement> > m_volumeGroup; //!< List of All global volume in the Low level interface.
+					std::vector<std::shared_ptr<audio::drain::VolumeElement> > m_volumeGroup; //!< List of All global volume in the Low level interface.
 				public:
 					/**
 					 * @brief Get a volume in the global list of vilume
 					 * @param[in] _name Name of the volume.
 					 * @return pointer on the requested volume (create it if does not exist). nullptr if the name is empty.
 					 */
-					std11::shared_ptr<audio::drain::VolumeElement> getVolumeGroup(const std::string& _name);
+					std::shared_ptr<audio::drain::VolumeElement> getVolumeGroup(const std::string& _name);
 					/**
 					 * @brief Get all input audio stream.
 					 * @return a list of all availlables input stream name
@@ -138,13 +138,13 @@ namespace audio {
 					 */
 					void generateDot(const std::string& _filename);
 				private:
-					std::map<std::string, std11::shared_ptr<audio::river::io::Group> > m_listGroup; //!< List of all groups
+					std::map<std::string, std::shared_ptr<audio::river::io::Group> > m_listGroup; //!< List of all groups
 					/**
 					 * @brief get a low level interface group.
 					 * @param[in] _name Name of the group.
 					 * @return Pointer on the requested group or nullptr if the group does not existed.
 					 */
-					std11::shared_ptr<audio::river::io::Group> getGroup(const std::string& _name);
+					std::shared_ptr<audio::river::io::Group> getGroup(const std::string& _name);
 					
 			};
 		}

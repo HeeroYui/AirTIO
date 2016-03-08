@@ -18,14 +18,14 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeAEC(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					NodeAEC(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 				public:
 					/**
 					 * @brief Factory of this Virtual Node.
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					static std11::shared_ptr<NodeAEC> create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodeAEC> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -33,8 +33,8 @@ namespace audio {
 				protected:
 					virtual void start();
 					virtual void stop();
-					std11::shared_ptr<audio::river::Interface> m_interfaceMicrophone; //!< Interface on the Microphone.
-					std11::shared_ptr<audio::river::Interface> m_interfaceFeedBack; //!< Interface on the feedback of speaker.
+					std::shared_ptr<audio::river::Interface> m_interfaceMicrophone; //!< Interface on the Microphone.
+					std::shared_ptr<audio::river::Interface> m_interfaceFeedBack; //!< Interface on the feedback of speaker.
 					/**
 					 * @brief Internal: create an input with the specific parameter:
 					 * @param[in] _freq Frequency.
@@ -44,7 +44,7 @@ namespace audio {
 					 * @param[in] _name 
 					 * @return Interfae Pointer.
 					 */
-					std11::shared_ptr<audio::river::Interface> createInput(float _freq,
+					std::shared_ptr<audio::river::Interface> createInput(float _freq,
 					                                                const std::vector<audio::channel>& _map,
 					                                                audio::format _format,
 					                                                const std::string& _streamName,

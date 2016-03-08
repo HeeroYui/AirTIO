@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include <etk/log.h>
+#include <elog/log.h>
 
 namespace audio {
 	namespace river {
@@ -15,7 +15,7 @@ namespace audio {
 	}
 }
 
-#define ARW_BASE(info,data) TK_LOG_BASE(audio::river::widget::getLogId(),info,data)
+#define ARW_BASE(info,data) ELOG_BASE(audio::river::widget::getLogId(),info,data)
 
 #define ARW_PRINT(data)         ARW_BASE(-1, data)
 #define ARW_CRITICAL(data)      ARW_BASE(1, data)

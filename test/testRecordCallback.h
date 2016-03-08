@@ -28,10 +28,10 @@ namespace river_test_record_callback {
 	
 	class testInCallback {
 		public:
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interface;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interface;
 		public:
-			testInCallback(std11::shared_ptr<audio::river::Manager> _manager, const std::string& _input="microphone") :
+			testInCallback(std::shared_ptr<audio::river::Manager> _manager, const std::string& _input="microphone") :
 			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
@@ -44,14 +44,14 @@ namespace river_test_record_callback {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setInputCallback(std11::bind(&testInCallback::onDataReceived,
+				m_interface->setInputCallback(std::bind(&testInCallback::onDataReceived,
 				                                          this,
-				                                          std11::placeholders::_1,
-				                                          std11::placeholders::_2,
-				                                          std11::placeholders::_3,
-				                                          std11::placeholders::_4,
-				                                          std11::placeholders::_5,
-				                                          std11::placeholders::_6));
+				                                          std::placeholders::_1,
+				                                          std::placeholders::_2,
+				                                          std::placeholders::_3,
+				                                          std::placeholders::_4,
+				                                          std::placeholders::_5,
+				                                          std::placeholders::_6));
 			}
 			void onDataReceived(const void* _data,
 			                    const audio::Time& _time,
@@ -85,10 +85,10 @@ namespace river_test_record_callback {
 	
 	TEST(TestALL, testInputCallBack) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		TEST_INFO("test input (callback mode)");
-		std11::shared_ptr<testInCallback> process = std11::make_shared<testInCallback>(manager);
+		std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

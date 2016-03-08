@@ -5,14 +5,14 @@
  */
 #pragma once
 
-#include <etk/log.h>
+#include <elog/log.h>
 
 namespace audio {
 	namespace river {
 		int32_t getLogId();
 	}
 }
-#define RIVER_BASE(info,data)  TK_LOG_BASE(audio::river::getLogId(),info,data)
+#define RIVER_BASE(info,data)  ELOG_BASE(audio::river::getLogId(),info,data)
 
 #define RIVER_CRITICAL(data)      RIVER_BASE(1, data)
 #define RIVER_ERROR(data)         RIVER_BASE(2, data)

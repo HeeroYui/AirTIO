@@ -18,10 +18,10 @@ namespace audio {
 		/**
 		 * @brief Audio interface manager : Single interface for every application that want to access on the Audio input/output
 		 */
-		class Manager  : public std11::enable_shared_from_this<Manager> {
+		class Manager  : public std::enable_shared_from_this<Manager> {
 			private:
 				const std::string& m_applicationUniqueId; //!< name of the application that open the Audio Interface.
-				std::vector<std11::weak_ptr<audio::river::Interface> > m_listOpenInterface; //!< List of all open Stream.
+				std::vector<std::weak_ptr<audio::river::Interface> > m_listOpenInterface; //!< List of all open Stream.
 			protected:
 				/**
 				 * @brief Constructor
@@ -33,7 +33,7 @@ namespace audio {
 				 * @param[in] _applicationUniqueId Unique name of the application
 				 * @return Pointer on the manager or nullptr if an error occured
 				 */
-				static std11::shared_ptr<audio::river::Manager> create(const std::string& _applicationUniqueId);
+				static std::shared_ptr<audio::river::Manager> create(const std::string& _applicationUniqueId);
 				/**
 				 * @brief Destructor
 				 */
@@ -106,7 +106,7 @@ namespace audio {
 				 * @param[in] _options Json option to configure default resampling and many other things.
 				 * @return a pointer on the interface
 				 */
-				virtual std11::shared_ptr<Interface> createOutput(float _freq = 48000,
+				virtual std::shared_ptr<Interface> createOutput(float _freq = 48000,
 				                                                  const std::vector<audio::channel>& _map = std::vector<audio::channel>(),
 				                                                  audio::format _format = audio::format_int16,
 				                                                  const std::string& _streamName = "",
@@ -120,7 +120,7 @@ namespace audio {
 				 * @param[in] _options Json option to configure default resampling and many other things.
 				 * @return a pointer on the interface
 				 */
-				virtual std11::shared_ptr<Interface> createInput(float _freq = 48000,
+				virtual std::shared_ptr<Interface> createInput(float _freq = 48000,
 				                                                 const std::vector<audio::channel>& _map = std::vector<audio::channel>(),
 				                                                 audio::format _format = audio::format_int16,
 				                                                 const std::string& _streamName = "",
@@ -134,7 +134,7 @@ namespace audio {
 				 * @param[in] _options Json option to configure default resampling and many other things.
 				 * @return a pointer on the interface
 				 */
-				virtual std11::shared_ptr<Interface> createFeedback(float _freq = 48000,
+				virtual std::shared_ptr<Interface> createFeedback(float _freq = 48000,
 				                                                    const std::vector<audio::channel>& _map = std::vector<audio::channel>(),
 				                                                    audio::format _format = audio::format_int16,
 				                                                    const std::string& _streamName = "",

@@ -28,10 +28,10 @@ namespace river_test_playback_write {
 	class testOutWrite {
 		public:
 			std::vector<audio::channel> m_channelMap;
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interface;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interface;
 		public:
-			testOutWrite(std11::shared_ptr<audio::river::Manager> _manager) :
+			testOutWrite(std::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager) {
 				//Set stereo output:
 				m_channelMap.push_back(audio::channel_frontLeft);
@@ -89,11 +89,11 @@ namespace river_test_playback_write {
 	
 	TEST(TestALL, testOutputWrite) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
 		TEST_INFO("test output (write mode)");
-		std11::shared_ptr<testOutWrite> process = std11::make_shared<testOutWrite>(manager);
+		std::shared_ptr<testOutWrite> process = std::make_shared<testOutWrite>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
@@ -102,11 +102,11 @@ namespace river_test_playback_write {
 	
 	class testOutWriteCallback {
 		public:
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interface;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testOutWriteCallback(std11::shared_ptr<audio::river::Manager> _manager) :
+			testOutWriteCallback(std::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				std::vector<audio::channel> channelMap;
@@ -122,13 +122,13 @@ namespace river_test_playback_write {
 					return;
 				}
 				m_interface->setReadwrite();
-				m_interface->setWriteCallback(std11::bind(&testOutWriteCallback::onDataNeeded,
+				m_interface->setWriteCallback(std::bind(&testOutWriteCallback::onDataNeeded,
 				                                          this,
-				                                          std11::placeholders::_1,
-				                                          std11::placeholders::_2,
-				                                          std11::placeholders::_3,
-				                                          std11::placeholders::_4,
-				                                          std11::placeholders::_5));
+				                                          std::placeholders::_1,
+				                                          std::placeholders::_2,
+				                                          std::placeholders::_3,
+				                                          std::placeholders::_4,
+				                                          std::placeholders::_5));
 			}
 			void onDataNeeded(const audio::Time& _time,
 			                  size_t _nbChunk,
@@ -166,11 +166,11 @@ namespace river_test_playback_write {
 	
 	TEST(TestALL, testOutputWriteWithCallback) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
 		TEST_INFO("test output (write with callback event mode)");
-		std11::shared_ptr<testOutWriteCallback> process = std11::make_shared<testOutWriteCallback>(manager);
+		std::shared_ptr<testOutWriteCallback> process = std::make_shared<testOutWriteCallback>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

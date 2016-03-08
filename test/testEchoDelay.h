@@ -13,14 +13,14 @@
 namespace river_test_echo_delay {
 	class TestClass {
 		private:
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interfaceOut;
-			std11::shared_ptr<audio::river::Interface> m_interfaceIn;
-			std11::shared_ptr<audio::river::Interface> m_interfaceFB;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interfaceOut;
+			std::shared_ptr<audio::river::Interface> m_interfaceIn;
+			std::shared_ptr<audio::river::Interface> m_interfaceFB;
 			double m_phase;
 			double m_freq;
 			int32_t m_nextSampleCount;
-			std11::chrono::milliseconds m_delayBetweenEvent;
+			std::chrono::milliseconds m_delayBetweenEvent;
 			audio::Time m_nextTick;
 			audio::Time m_currentTick;
 			int32_t m_stateFB;
@@ -31,7 +31,7 @@ namespace river_test_echo_delay {
 			int16_t m_volumeInputMin;
 			float m_gain;
 		public:
-			TestClass(std11::shared_ptr<audio::river::Manager> _manager) :
+			TestClass(std::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0),
 			  m_freq(400),
@@ -52,14 +52,14 @@ namespace river_test_echo_delay {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceOut->setOutputCallback(std11::bind(&TestClass::onDataNeeded,
+				m_interfaceOut->setOutputCallback(std::bind(&TestClass::onDataNeeded,
 				                                              this,
-				                                              std11::placeholders::_1,
-				                                              std11::placeholders::_2,
-				                                              std11::placeholders::_3,
-				                                              std11::placeholders::_4,
-				                                              std11::placeholders::_5,
-				                                              std11::placeholders::_6));
+				                                              std::placeholders::_1,
+				                                              std::placeholders::_2,
+				                                              std::placeholders::_3,
+				                                              std::placeholders::_4,
+				                                              std::placeholders::_5,
+				                                              std::placeholders::_6));
 				m_interfaceOut->addVolumeGroup("FLOW");
 				m_interfaceOut->setParameter("volume", "FLOW", etk::to_string(m_gain) + "dB");
 				
@@ -72,14 +72,14 @@ namespace river_test_echo_delay {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceIn->setInputCallback(std11::bind(&TestClass::onDataReceived,
+				m_interfaceIn->setInputCallback(std::bind(&TestClass::onDataReceived,
 				                                            this,
-				                                            std11::placeholders::_1,
-				                                            std11::placeholders::_2,
-				                                            std11::placeholders::_3,
-				                                            std11::placeholders::_4,
-				                                            std11::placeholders::_5,
-				                                            std11::placeholders::_6));
+				                                            std::placeholders::_1,
+				                                            std::placeholders::_2,
+				                                            std::placeholders::_3,
+				                                            std::placeholders::_4,
+				                                            std::placeholders::_5,
+				                                            std::placeholders::_6));
 				
 				m_interfaceFB = m_manager->createFeedback(48000,
 				                                          channelMap,
@@ -90,14 +90,14 @@ namespace river_test_echo_delay {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceFB->setInputCallback(std11::bind(&TestClass::onDataReceivedFeedBack,
+				m_interfaceFB->setInputCallback(std::bind(&TestClass::onDataReceivedFeedBack,
 				                                            this,
-				                                            std11::placeholders::_1,
-				                                            std11::placeholders::_2,
-				                                            std11::placeholders::_3,
-				                                            std11::placeholders::_4,
-				                                            std11::placeholders::_5,
-				                                            std11::placeholders::_6));
+				                                            std::placeholders::_1,
+				                                            std::placeholders::_2,
+				                                            std::placeholders::_3,
+				                                            std::placeholders::_4,
+				                                            std::placeholders::_5,
+				                                            std::placeholders::_6));
 				
 				m_manager->generateDotAll("activeProcess.dot");
 			}
@@ -416,9 +416,9 @@ namespace river_test_echo_delay {
 	
 	TEST(TestTime, testDelay) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std11::shared_ptr<TestClass> process = std11::make_shared<TestClass>(manager);
+		std::shared_ptr<TestClass> process = std::make_shared<TestClass>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

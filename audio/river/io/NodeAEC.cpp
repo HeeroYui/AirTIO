@@ -13,20 +13,20 @@
 #undef __class__
 #define __class__ "io::NodeAEC"
 
-std11::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
+std::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+	return std::shared_ptr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
 }
 
-std11::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,
+std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,
                                                                     const std::vector<audio::channel>& _map,
                                                                     audio::format _format,
                                                                     const std::string& _objectName,
                                                                     const std::string& _name) {
 	// check if the output exist
-	const std11::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
+	const std::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	std::string streamName = tmppp->getStringValue("map-on", "error");
 	
@@ -36,14 +36,14 @@ std11::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInpu
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// get global hardware interface:
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	// get the output or input channel :
-	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
+	std::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
-	std11::shared_ptr<audio::river::Interface> interface;
+	std::shared_ptr<audio::river::Interface> interface;
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
 	if (interface != nullptr) {
 		interface->setName(_name);
@@ -52,7 +52,7 @@ std11::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInpu
 }
 
 
-audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config),
   m_P_attaqueTime(1),
   m_P_releaseTime(100),
@@ -106,28 +106,28 @@ audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const std11::shared
 	}
 	
 	// set callback mode ...
-	m_interfaceFeedBack->setInputCallback(std11::bind(&audio::river::io::NodeAEC::onDataReceivedFeedBack,
+	m_interfaceFeedBack->setInputCallback(std::bind(&audio::river::io::NodeAEC::onDataReceivedFeedBack,
 	                                                  this,
-	                                                  std11::placeholders::_1,
-	                                                  std11::placeholders::_2,
-	                                                  std11::placeholders::_3,
-	                                                  std11::placeholders::_4,
-	                                                  std11::placeholders::_5,
-	                                                  std11::placeholders::_6));
+	                                                  std::placeholders::_1,
+	                                                  std::placeholders::_2,
+	                                                  std::placeholders::_3,
+	                                                  std::placeholders::_4,
+	                                                  std::placeholders::_5,
+	                                                  std::placeholders::_6));
 	// set callback mode ...
-	m_interfaceMicrophone->setInputCallback(std11::bind(&audio::river::io::NodeAEC::onDataReceivedMicrophone,
+	m_interfaceMicrophone->setInputCallback(std::bind(&audio::river::io::NodeAEC::onDataReceivedMicrophone,
 	                                                    this,
-	                                                    std11::placeholders::_1,
-	                                                    std11::placeholders::_2,
-	                                                    std11::placeholders::_3,
-	                                                    std11::placeholders::_4,
-	                                                    std11::placeholders::_5,
-	                                                    std11::placeholders::_6));
+	                                                    std::placeholders::_1,
+	                                                    std::placeholders::_2,
+	                                                    std::placeholders::_3,
+	                                                    std::placeholders::_4,
+	                                                    std::placeholders::_5,
+	                                                    std::placeholders::_6));
 	
-	m_bufferMicrophone.setCapacity(std11::chrono::milliseconds(1000),
+	m_bufferMicrophone.setCapacity(std::chrono::milliseconds(1000),
 	                               audio::getFormatBytes(hardwareFormat.getFormat())*hardwareFormat.getMap().size(),
 	                               hardwareFormat.getFrequency());
-	m_bufferFeedBack.setCapacity(std11::chrono::milliseconds(1000),
+	m_bufferFeedBack.setCapacity(std::chrono::milliseconds(1000),
 	                             audio::getFormatBytes(hardwareFormat.getFormat()), // only one channel ...
 	                             hardwareFormat.getFrequency());
 	
@@ -142,7 +142,7 @@ audio::river::io::NodeAEC::~NodeAEC() {
 };
 
 void audio::river::io::NodeAEC::start() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceFeedBack != nullptr) {
 		RIVER_INFO("Start FEEDBACK : ");
@@ -155,7 +155,7 @@ void audio::river::io::NodeAEC::start() {
 }
 
 void audio::river::io::NodeAEC::stop() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_interfaceFeedBack != nullptr) {
 		m_interfaceFeedBack->stop();
 	}
@@ -177,7 +177,7 @@ void audio::river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_bufferMicrophone.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 	process();
@@ -195,7 +195,7 @@ void audio::river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_bufferFeedBack.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 	process();
@@ -346,7 +346,7 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}

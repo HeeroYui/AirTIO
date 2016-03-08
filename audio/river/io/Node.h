@@ -29,7 +29,7 @@ namespace audio {
 			 * @brief A node is the base for input/output interface. When a output id declared, we automaticly have a feedback associated.
 			 * this manage the muxing of data for output an the demuxing for input.
 			 */
-			class Node : public std11::enable_shared_from_this<Node> {
+			class Node : public std::enable_shared_from_this<Node> {
 				friend class audio::river::io::Group;
 				protected:
 					uint32_t m_uid; //!< uniqueNodeID use for debug an dot generation.
@@ -39,7 +39,7 @@ namespace audio {
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					Node(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 				public:
 					/**
 					 * @brief Destructor
@@ -54,8 +54,8 @@ namespace audio {
 						return false;
 					};
 				protected:
-					mutable std11::mutex m_mutex; //!< prevent open/close/write/read access that is multi-threaded.
-					std11::shared_ptr<const ejson::Object> m_config; //!< configuration description.
+					mutable std::mutex m_mutex; //!< prevent open/close/write/read access that is multi-threaded.
+					std::shared_ptr<const ejson::Object> m_config; //!< configuration description.
 				protected:
 					audio::drain::Process m_process; //!< Low level algorithms
 				public:
@@ -82,10 +82,10 @@ namespace audio {
 						}
 					}
 				protected:
-					std11::shared_ptr<audio::drain::VolumeElement> m_volume; //!< if a volume is set it is set here ... for hardware interface only.
+					std::shared_ptr<audio::drain::VolumeElement> m_volume; //!< if a volume is set it is set here ... for hardware interface only.
 				protected:
-					std::vector<std11::weak_ptr<audio::river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
-					std::vector<std11::shared_ptr<audio::river::Interface> > m_list; //!< List of all connected interface at this node.
+					std::vector<std::weak_ptr<audio::river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
+					std::vector<std::shared_ptr<audio::river::Interface> > m_list; //!< List of all connected interface at this node.
 					/**
 					 * @brief Get the number of interface with a specific type.
 					 * @param[in] _interfaceType Type of the interface.
@@ -112,17 +112,17 @@ namespace audio {
 					 * @note We keep a std::weak_ptr. this is the reason why we do not have a remove.
 					 * @param[in] _interface Pointer on the interface to register.
 					 */
-					void registerAsRemote(const std11::shared_ptr<audio::river::Interface>& _interface);
+					void registerAsRemote(const std::shared_ptr<audio::river::Interface>& _interface);
 					/**
 					 * @brief Request this interface might receve/send dat on the flow. (start/resume)
 					 * @param[in] _interface Pointer on the interface to register.
 					 */
-					void interfaceAdd(const std11::shared_ptr<audio::river::Interface>& _interface);
+					void interfaceAdd(const std::shared_ptr<audio::river::Interface>& _interface);
 					/**
 					 * @brief Un-register the interface as an availlable read/write interface. (suspend/stop)
 					 * @param[in] _interface Pointer on the interface to register.
 					 */
-					void interfaceRemove(const std11::shared_ptr<audio::river::Interface>& _interface);
+					void interfaceRemove(const std::shared_ptr<audio::river::Interface>& _interface);
 				protected:
 					std::string m_name; //!< Name of the interface
 				public:
@@ -151,13 +151,13 @@ namespace audio {
 						return !m_isInput;
 					}
 				protected:
-					std11::weak_ptr<audio::river::io::Group> m_group; //!< reference on the group. If available.
+					std::weak_ptr<audio::river::io::Group> m_group; //!< reference on the group. If available.
 				public:
 					/**
 					 * @brief Set this node in a low level group.
 					 * @param[in] _group Group reference.
 					 */
-					void setGroup(std11::shared_ptr<audio::river::io::Group> _group) {
+					void setGroup(std::shared_ptr<audio::river::io::Group> _group) {
 						m_group = _group;
 					}
 				protected:
@@ -182,7 +182,7 @@ namespace audio {
 					 * @brief If this iss an hardware interface we can have a resuest of the volume stage:
 					 * @return pointer on the requested volume.
 					 */
-					const std11::shared_ptr<audio::drain::VolumeElement>& getVolume() {
+					const std::shared_ptr<audio::drain::VolumeElement>& getVolume() {
 						return m_volume;
 					}
 				public:

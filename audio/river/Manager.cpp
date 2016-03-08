@@ -15,13 +15,13 @@
 
 #undef __class__
 #define __class__ "Manager"
-static std11::mutex g_mutex;
-static std::vector<std11::weak_ptr<audio::river::Manager> > g_listOfAllManager;
+static std::mutex g_mutex;
+static std::vector<std::weak_ptr<audio::river::Manager> > g_listOfAllManager;
 
-std11::shared_ptr<audio::river::Manager> audio::river::Manager::create(const std::string& _applicationUniqueId) {
-	std11::unique_lock<std11::mutex> lock(g_mutex);
+std::shared_ptr<audio::river::Manager> audio::river::Manager::create(const std::string& _applicationUniqueId) {
+	std::unique_lock<std::mutex> lock(g_mutex);
 	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
-		std11::shared_ptr<audio::river::Manager> tmp = g_listOfAllManager[iii].lock();
+		std::shared_ptr<audio::river::Manager> tmp = g_listOfAllManager[iii].lock();
 		if (tmp == nullptr) {
 			continue;
 		}
@@ -30,7 +30,7 @@ std11::shared_ptr<audio::river::Manager> audio::river::Manager::create(const std
 		}
 	}
 	// create a new one:
-	std11::shared_ptr<audio::river::Manager> out = std11::shared_ptr<audio::river::Manager>(new audio::river::Manager(_applicationUniqueId));
+	std::shared_ptr<audio::river::Manager> out = std::shared_ptr<audio::river::Manager>(new audio::river::Manager(_applicationUniqueId));
 	// add it at the list:
 	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
 		if (g_listOfAllManager[iii].expired() == true) {
@@ -55,7 +55,7 @@ audio::river::Manager::~Manager() {
 
 std::vector<std::string> audio::river::Manager::getListStreamInput() {
 	std::vector<std::string> output;
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
@@ -66,7 +66,7 @@ std::vector<std::string> audio::river::Manager::getListStreamInput() {
 
 std::vector<std::string> audio::river::Manager::getListStreamOutput() {
 	std::vector<std::string> output;
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
@@ -77,7 +77,7 @@ std::vector<std::string> audio::river::Manager::getListStreamOutput() {
 
 std::vector<std::string> audio::river::Manager::getListStreamVirtual() {
 	std::vector<std::string> output;
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
@@ -88,7 +88,7 @@ std::vector<std::string> audio::river::Manager::getListStreamVirtual() {
 
 std::vector<std::string> audio::river::Manager::getListStream() {
 	std::vector<std::string> output;
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
@@ -98,7 +98,7 @@ std::vector<std::string> audio::river::Manager::getListStream() {
 }
 
 bool audio::river::Manager::setVolume(const std::string& _volumeName, float _valuedB) {
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return false;
@@ -107,7 +107,7 @@ bool audio::river::Manager::setVolume(const std::string& _volumeName, float _val
 }
 
 float audio::river::Manager::getVolume(const std::string& _volumeName) const {
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return false;
@@ -116,7 +116,7 @@ float audio::river::Manager::getVolume(const std::string& _volumeName) const {
 }
 
 std::pair<float,float> audio::river::Manager::getVolumeRange(const std::string& _volumeName) const {
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return std::make_pair<float,float>(0.0f,0.0f);
@@ -125,7 +125,7 @@ std::pair<float,float> audio::river::Manager::getVolumeRange(const std::string& 
 }
 
 void audio::river::Manager::setMute(const std::string& _volumeName, bool _mute) {
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return;
@@ -134,7 +134,7 @@ void audio::river::Manager::setMute(const std::string& _volumeName, bool _mute) 
 }
 
 bool audio::river::Manager::getMute(const std::string& _volumeName) const {
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return false;
@@ -142,30 +142,30 @@ bool audio::river::Manager::getMute(const std::string& _volumeName) const {
 	return manager->getMute(_volumeName);
 }
 
-std11::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(float _freq,
+std::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(float _freq,
                                                                                const std::vector<audio::channel>& _map,
                                                                                audio::format _format,
                                                                                const std::string& _streamName,
                                                                                const std::string& _options) {
 	// get global hardware interface:
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// get the output or input channel :
-	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(_streamName);
+	std::shared_ptr<audio::river::io::Node> node = manager->getNode(_streamName);
 	if (node == nullptr) {
 		RIVER_ERROR("Can not get the Requested stream '" << _streamName << "' ==> not listed in : " << manager->getListStream());
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	if (node->isOutput() != true) {
 		RIVER_ERROR("Can not Connect output on other thing than output ... for stream '" << _streamName << "'");;
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// create user iterface:
-	std11::shared_ptr<audio::river::Interface> interface;
-	std11::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
+	std::shared_ptr<audio::river::Interface> interface;
+	std::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
 	tmpOption->addString("io", "output");
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
@@ -173,30 +173,30 @@ std11::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(f
 	return interface;
 }
 
-std11::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(float _freq,
+std::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(float _freq,
                                                                               const std::vector<audio::channel>& _map,
                                                                               audio::format _format,
                                                                               const std::string& _streamName,
                                                                               const std::string& _options) {
 	// get global hardware interface:
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// get the output or input channel :
-	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(_streamName);
+	std::shared_ptr<audio::river::io::Node> node = manager->getNode(_streamName);
 	if (node == nullptr) {
 		RIVER_ERROR("Can not get the Requested stream '" << _streamName << "' ==> not listed in : " << manager->getListStream());
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	if (node->isInput() != true) {
 		RIVER_ERROR("Can not Connect input on other thing than input ... for stream '" << _streamName << "'");;
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// create user iterface:
-	std11::shared_ptr<audio::river::Interface> interface;
-	std11::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
+	std::shared_ptr<audio::river::Interface> interface;
+	std::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
 	tmpOption->addString("io", "input");
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
@@ -205,30 +205,30 @@ std11::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(fl
 }
 
 
-std11::shared_ptr<audio::river::Interface> audio::river::Manager::createFeedback(float _freq,
+std::shared_ptr<audio::river::Interface> audio::river::Manager::createFeedback(float _freq,
                                                                                  const std::vector<audio::channel>& _map,
                                                                                  audio::format _format,
                                                                                  const std::string& _streamName,
                                                                                  const std::string& _options) {
 	// get global hardware interface:
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// get the output or input channel :
-	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(_streamName);
+	std::shared_ptr<audio::river::io::Node> node = manager->getNode(_streamName);
 	if (node == nullptr) {
 		RIVER_ERROR("Can not get the Requested stream '" << _streamName << "' ==> not listed in : " << manager->getListStream());
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	if (node->isOutput() != true) {
 		RIVER_ERROR("Can not Connect feedback on other thing than output ... for stream '" << _streamName << "'");;
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// create user iterface:
-	std11::shared_ptr<audio::river::Interface> interface;
-	std11::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
+	std::shared_ptr<audio::river::Interface> interface;
+	std::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
 	tmpOption->addString("io", "feedback");
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
@@ -238,7 +238,7 @@ std11::shared_ptr<audio::river::Interface> audio::river::Manager::createFeedback
 
 void audio::river::Manager::generateDotAll(const std::string& _filename) {
 	// get global hardware interface:
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
 		RIVER_ERROR("Can not get the harware manager");
 		return;

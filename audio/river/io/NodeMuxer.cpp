@@ -13,20 +13,20 @@
 #undef __class__
 #define __class__ "io::NodeMuxer"
 
-std11::shared_ptr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
+std::shared_ptr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+	return std::shared_ptr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
 }
 
-std11::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createInput(float _freq,
+std::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createInput(float _freq,
                                                                       const std::vector<audio::channel>& _map,
                                                                       audio::format _format,
                                                                       const std::string& _objectName,
                                                                       const std::string& _name) {
 	// check if the output exist
-	const std11::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
+	const std::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
 	if (tmppp == nullptr) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	std::string streamName = tmppp->getStringValue("map-on", "error");
 	
@@ -36,14 +36,14 @@ std11::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createIn
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
-		return std11::shared_ptr<audio::river::Interface>();
+		return std::shared_ptr<audio::river::Interface>();
 	}
 	// get global hardware interface:
-	std11::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	// get the output or input channel :
-	std11::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
+	std::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
-	std11::shared_ptr<audio::river::Interface> interface;
+	std::shared_ptr<audio::river::Interface> interface;
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
 	if (interface != nullptr) {
 		interface->setName(_name);
@@ -52,7 +52,7 @@ std11::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createIn
 }
 
 
-audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -88,7 +88,7 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::sh
 		RIVER_ERROR("Can not opne virtual device ... map-on-input-1 in " << _name);
 		return;
 	}
-	std11::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("input-1-remap");
+	std::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("input-1-remap");
 	if (    listChannelMap == nullptr
 	     || listChannelMap->size() == 0) {
 		m_mapInput1 = m_interfaceInput1->getInterfaceFormat().getMap();
@@ -131,28 +131,28 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std11::sh
 	}
 	
 	// set callback mode ...
-	m_interfaceInput1->setInputCallback(std11::bind(&audio::river::io::NodeMuxer::onDataReceivedInput1,
+	m_interfaceInput1->setInputCallback(std::bind(&audio::river::io::NodeMuxer::onDataReceivedInput1,
 	                                                this,
-	                                                std11::placeholders::_1,
-	                                                std11::placeholders::_2,
-	                                                std11::placeholders::_3,
-	                                                std11::placeholders::_4,
-	                                                std11::placeholders::_5,
-	                                                std11::placeholders::_6));
+	                                                std::placeholders::_1,
+	                                                std::placeholders::_2,
+	                                                std::placeholders::_3,
+	                                                std::placeholders::_4,
+	                                                std::placeholders::_5,
+	                                                std::placeholders::_6));
 	// set callback mode ...
-	m_interfaceInput2->setInputCallback(std11::bind(&audio::river::io::NodeMuxer::onDataReceivedInput2,
+	m_interfaceInput2->setInputCallback(std::bind(&audio::river::io::NodeMuxer::onDataReceivedInput2,
 	                                                this,
-	                                                std11::placeholders::_1,
-	                                                std11::placeholders::_2,
-	                                                std11::placeholders::_3,
-	                                                std11::placeholders::_4,
-	                                                std11::placeholders::_5,
-	                                                std11::placeholders::_6));
+	                                                std::placeholders::_1,
+	                                                std::placeholders::_2,
+	                                                std::placeholders::_3,
+	                                                std::placeholders::_4,
+	                                                std::placeholders::_5,
+	                                                std::placeholders::_6));
 	
-	m_bufferInput1.setCapacity(std11::chrono::milliseconds(1000),
+	m_bufferInput1.setCapacity(std::chrono::milliseconds(1000),
 	                           audio::getFormatBytes(hardwareFormat.getFormat())*m_mapInput1.size(),
 	                           hardwareFormat.getFrequency());
-	m_bufferInput2.setCapacity(std11::chrono::milliseconds(1000),
+	m_bufferInput2.setCapacity(std::chrono::milliseconds(1000),
 	                           audio::getFormatBytes(hardwareFormat.getFormat())*m_mapInput2.size(),
 	                           hardwareFormat.getFrequency());
 	
@@ -167,7 +167,7 @@ audio::river::io::NodeMuxer::~NodeMuxer() {
 };
 
 void audio::river::io::NodeMuxer::start() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceInput1 != nullptr) {
 		RIVER_INFO("Start FEEDBACK : ");
@@ -180,7 +180,7 @@ void audio::river::io::NodeMuxer::start() {
 }
 
 void audio::river::io::NodeMuxer::stop() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_interfaceInput1 != nullptr) {
 		m_interfaceInput1->stop();
 	}
@@ -202,7 +202,7 @@ void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_bufferInput1.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 	process();
@@ -220,7 +220,7 @@ void audio::river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	m_bufferInput2.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 	process();
@@ -460,7 +460,7 @@ void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}

@@ -65,9 +65,9 @@ int main(int _argc, const char **_argv) {
 	// initialize river interface
 	audio::river::initString(configurationRiver);
 	// Create the River manager for tha application or part of the application.
-	std11::shared_ptr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
+	std::shared_ptr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
 	// create interface:
-	std11::shared_ptr<audio::river::Interface> interface;
+	std::shared_ptr<audio::river::Interface> interface;
 	//Get the generic input:
 	interface = manager->createOutput(48000,
 	                                  std::vector<audio::channel>(),
@@ -78,13 +78,13 @@ int main(int _argc, const char **_argv) {
 		return -1;
 	}
 	// set callback mode ...
-	interface->setOutputCallback(std11::bind(&onDataNeeded,
-	                                         std11::placeholders::_1,
-	                                         std11::placeholders::_2,
-	                                         std11::placeholders::_3,
-	                                         std11::placeholders::_4,
-	                                         std11::placeholders::_5,
-	                                         std11::placeholders::_6));
+	interface->setOutputCallback(std::bind(&onDataNeeded,
+	                                         std::placeholders::_1,
+	                                         std::placeholders::_2,
+	                                         std::placeholders::_3,
+	                                         std::placeholders::_4,
+	                                         std::placeholders::_5,
+	                                         std::placeholders::_6));
 	// start the stream
 	interface->start();
 	// wait 10 second ...

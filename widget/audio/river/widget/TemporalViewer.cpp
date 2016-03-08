@@ -41,7 +41,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
                                                           enum audio::format _format,
                                                           uint32_t _frequency,
                                                           const std::vector<audio::channel>& _map) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (_format != audio::format_float) {
 		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
 	}
@@ -59,7 +59,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
 }
 
 void audio::river::widget::TemporalViewer::recordToggle() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_interface == nullptr) {
 		//Get the generic input:
 		std::vector<audio::channel> channel;
@@ -73,14 +73,14 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 			return;
 		}
 		// set callback mode ...
-		m_interface->setInputCallback(std11::bind(&audio::river::widget::TemporalViewer::onDataReceived,
+		m_interface->setInputCallback(std::bind(&audio::river::widget::TemporalViewer::onDataReceived,
 		                                          this,
-		                                          std11::placeholders::_1,
-		                                          std11::placeholders::_2,
-		                                          std11::placeholders::_3,
-		                                          std11::placeholders::_4,
-		                                          std11::placeholders::_5,
-		                                          std11::placeholders::_6));
+		                                          std::placeholders::_1,
+		                                          std::placeholders::_2,
+		                                          std::placeholders::_3,
+		                                          std::placeholders::_4,
+		                                          std::placeholders::_5,
+		                                          std::placeholders::_6));
 		// start the stream
 		m_interface->start();
 		periodicCallEnable();
@@ -107,7 +107,7 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 	m_draw.setColor(etk::color::black);
 	m_draw.setPos(vec2(0,0));
 	m_draw.rectangleWidth(m_size);
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_data.size() == 0) {
 		return;
 	}
@@ -146,7 +146,7 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 
 
 void audio::river::widget::TemporalViewer::periodicCall(const ewol::event::Time& _event) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	int32_t nbSampleDelta = _event.getDeltaCall() * float(m_sampleRate);
 	if (m_data.size()>m_sampleRate*nbSecond) {
 		if (nbSampleDelta < m_data.size()) {

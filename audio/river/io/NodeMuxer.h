@@ -18,9 +18,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeMuxer(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					NodeMuxer(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 				public:
-					static std11::shared_ptr<NodeMuxer> create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodeMuxer> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -28,9 +28,9 @@ namespace audio {
 				protected:
 					virtual void start();
 					virtual void stop();
-					std11::shared_ptr<audio::river::Interface> m_interfaceInput1;
-					std11::shared_ptr<audio::river::Interface> m_interfaceInput2;
-					std11::shared_ptr<audio::river::Interface> createInput(float _freq,
+					std::shared_ptr<audio::river::Interface> m_interfaceInput1;
+					std::shared_ptr<audio::river::Interface> m_interfaceInput2;
+					std::shared_ptr<audio::river::Interface> createInput(float _freq,
 					                                              const std::vector<audio::channel>& _map,
 					                                              audio::format _format,
 					                                              const std::string& _streamName,

@@ -8,6 +8,6 @@
 
 
 int32_t appl::getLogId() {
-	static int32_t g_val = etk::log::registerInstance("ioViewer");
+	static int32_t g_val = elog::registerInstance("ioViewer");
 	return g_val;
 }

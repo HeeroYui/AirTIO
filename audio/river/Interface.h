@@ -39,7 +39,7 @@ namespace audio {
 		 * @brief Interface is the basic handle to manage the input output stream
 		 * @note To create this class see @ref audio::river::Manager class
 		 */
-		class Interface : public std11::enable_shared_from_this<Interface> {
+		class Interface : public std::enable_shared_from_this<Interface> {
 			friend class io::Node;
 			friend class io::NodeAirTAudio;
 			friend class io::NodeAEC;
@@ -65,8 +65,8 @@ namespace audio {
 				bool init(float _freq,
 				          const std::vector<audio::channel>& _map,
 				          audio::format _format,
-				          const std11::shared_ptr<audio::river::io::Node>& _node,
-				          const std11::shared_ptr<const ejson::Object>& _config);
+				          const std::shared_ptr<audio::river::io::Node>& _node,
+				          const std::shared_ptr<const ejson::Object>& _config);
 				/**
 				 * @brief Factory of this interface (called by class audio::river::Manager)
 				 * @param[in] _freq Frequency.
@@ -77,19 +77,19 @@ namespace audio {
 				 * @return nullptr The configuration does not work.
 				 * @return pointer The interface has been corectly created.
 				 */
-				static std11::shared_ptr<Interface> create(float _freq,
+				static std::shared_ptr<Interface> create(float _freq,
 				                                           const std::vector<audio::channel>& _map,
 				                                           audio::format _format,
-				                                           const std11::shared_ptr<audio::river::io::Node>& _node,
-				                                           const std11::shared_ptr<const ejson::Object>& _config);
+				                                           const std::shared_ptr<audio::river::io::Node>& _node,
+				                                           const std::shared_ptr<const ejson::Object>& _config);
 			public:
 				/**
 				 * @brief Destructor
 				 */
 				virtual ~Interface();
 			protected:
-				mutable std11::recursive_mutex m_mutex; //!< Local mutex to protect data
-				std11::shared_ptr<const ejson::Object> m_config; //!< configuration set by the user.
+				mutable std::recursive_mutex m_mutex; //!< Local mutex to protect data
+				std::shared_ptr<const ejson::Object> m_config; //!< configuration set by the user.
 			protected:
 				enum modeInterface m_mode; //!< interface type (input/output/feedback)
 			public:
@@ -116,7 +116,7 @@ namespace audio {
 					}
 				}
 			protected:
-				std11::shared_ptr<audio::river::io::Node> m_node; //!< Hardware interface to/from stream audio flow.
+				std::shared_ptr<audio::river::io::Node> m_node; //!< Hardware interface to/from stream audio flow.
 			protected:
 				std::string m_name; //!< Name of the interface.
 			public:
@@ -245,7 +245,7 @@ namespace audio {
 				 * @brief Set buffer size size of the buffer with the stored time in µs
 				 * @param[in] _time Time in microsecond of the buffer
 				 */
-				virtual void setBufferSize(const std11::chrono::microseconds& _time);
+				virtual void setBufferSize(const std::chrono::microseconds& _time);
 				/**
 				 * @brief get buffer size in chunk number
 				 * @return Number of chunk that can be written in the buffer
@@ -255,7 +255,7 @@ namespace audio {
 				 * @brief Set buffer size size of the buffer with the stored time in µs
 				 * @return Time in microsecond that can be written in the buffer
 				 */
-				virtual std11::chrono::microseconds getBufferSizeMicrosecond();
+				virtual std::chrono::microseconds getBufferSizeMicrosecond();
 				/**
 				 * @brief Get buffer size filled in chunk number
 				 * @return Number of chunk in the buffer (that might be read/write)
@@ -265,7 +265,7 @@ namespace audio {
 				 * @brief Set buffer size size of the buffer with the stored time in µs
 				 * @return Time in microsecond of the buffer (that might be read/write)
 				 */
-				virtual std11::chrono::microseconds getBufferFillSizeMicrosecond();
+				virtual std::chrono::microseconds getBufferFillSizeMicrosecond();
 				/**
 				 * @brief Remove internal Buffer
 				 */

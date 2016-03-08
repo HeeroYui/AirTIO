@@ -42,7 +42,7 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
                                                  const audio::Time& _timeOutput,
                                                  uint32_t _nbChunk,
                                                  PaStreamCallbackFlags _status) {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	if (_inputBuffer != nullptr) {
 		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
@@ -56,11 +56,11 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
 }
 
 
-std11::shared_ptr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) {
-	return std11::shared_ptr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
+std::shared_ptr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+	return std::shared_ptr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
 }
 
-audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -72,7 +72,7 @@ audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const s
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
 	std::string streamName = "default";
-	const std11::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
+	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
 	if (tmpObject == nullptr) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
@@ -108,7 +108,7 @@ audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const s
 }
 
 audio::river::io::NodePortAudio::~NodePortAudio() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
 	PaError err = Pa_CloseStream( m_stream );
 	if( err != paNoError ) {
@@ -117,7 +117,7 @@ audio::river::io::NodePortAudio::~NodePortAudio() {
 };
 
 void audio::river::io::NodePortAudio::start() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	PaError err = Pa_StartStream(m_stream);
 	if( err != paNoError ) {
@@ -126,7 +126,7 @@ void audio::river::io::NodePortAudio::start() {
 }
 
 void audio::river::io::NodePortAudio::stop() {
-	std11::unique_lock<std11::mutex> lock(m_mutex);
+	std::unique_lock<std::mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	PaError err = Pa_StopStream(m_stream);
 	if( err != paNoError ) {

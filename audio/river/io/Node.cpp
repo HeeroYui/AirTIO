@@ -11,7 +11,7 @@
 #define __class__ "io::Node"
 
 
-audio::river::io::Node::Node(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
@@ -58,7 +58,7 @@ audio::river::io::Node::Node(const std::string& _name, const std11::shared_ptr<c
 	}
 	// Get map type :
 	std::vector<audio::channel> map;
-	const std11::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("channel-map");
+	const std::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("channel-map");
 	if (    listChannelMap == nullptr
 	     || listChannelMap->size() == 0) {
 		// set default channel property:
@@ -123,7 +123,7 @@ size_t audio::river::io::Node::getNumberOfInterface(enum audio::river::modeInter
 size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river::modeInterface _interfaceType) {
 	size_t out = 0;
 	for (size_t iii=0; iii<m_listAvaillable.size(); ++iii) {
-		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -134,8 +134,8 @@ size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river:
 	return out;
 }
 
-void audio::river::io::Node::registerAsRemote(const std11::shared_ptr<audio::river::Interface>& _interface) {
-	std::vector<std11::weak_ptr<audio::river::Interface> >::iterator it = m_listAvaillable.begin();
+void audio::river::io::Node::registerAsRemote(const std::shared_ptr<audio::river::Interface>& _interface) {
+	std::vector<std::weak_ptr<audio::river::Interface> >::iterator it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
 			it = m_listAvaillable.erase(it);
@@ -146,9 +146,9 @@ void audio::river::io::Node::registerAsRemote(const std11::shared_ptr<audio::riv
 	m_listAvaillable.push_back(_interface);
 }
 
-void audio::river::io::Node::interfaceAdd(const std11::shared_ptr<audio::river::Interface>& _interface) {
+void audio::river::io::Node::interfaceAdd(const std::shared_ptr<audio::river::Interface>& _interface) {
 	{
-		std11::unique_lock<std11::mutex> lock(m_mutex);
+		std::unique_lock<std::mutex> lock(m_mutex);
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				return;
@@ -162,9 +162,9 @@ void audio::river::io::Node::interfaceAdd(const std11::shared_ptr<audio::river::
 	}
 }
 
-void audio::river::io::Node::interfaceRemove(const std11::shared_ptr<audio::river::Interface>& _interface) {
+void audio::river::io::Node::interfaceRemove(const std::shared_ptr<audio::river::Interface>& _interface) {
 	{
-		std11::unique_lock<std11::mutex> lock(m_mutex);
+		std::unique_lock<std::mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				m_list.erase(m_list.begin()+iii);
@@ -182,7 +182,7 @@ void audio::river::io::Node::interfaceRemove(const std11::shared_ptr<audio::rive
 
 void audio::river::io::Node::volumeChange() {
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
-		std11::shared_ptr<audio::river::Interface> node = m_listAvaillable[iii].lock();
+		std::shared_ptr<audio::river::Interface> node = m_listAvaillable[iii].lock();
 		if (node != nullptr) {
 			node->systemVolumeChange();
 		}
@@ -324,7 +324,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std11::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -350,7 +350,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 
 
 void audio::river::io::Node::startInGroup() {
-	std11::shared_ptr<audio::river::io::Group> group = m_group.lock();
+	std::shared_ptr<audio::river::io::Group> group = m_group.lock();
 	if (group != nullptr) {
 		group->start();
 	} else {
@@ -359,7 +359,7 @@ void audio::river::io::Node::startInGroup() {
 }
 
 void audio::river::io::Node::stopInGroup() {
-	std11::shared_ptr<audio::river::io::Group> group = m_group.lock();
+	std::shared_ptr<audio::river::io::Group> group = m_group.lock();
 	if (group != nullptr) {
 		group->stop();
 	} else {

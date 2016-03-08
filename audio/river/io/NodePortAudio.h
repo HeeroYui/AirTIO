@@ -21,9 +21,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodePortAudio(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					NodePortAudio(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 				public:
-					static std11::shared_ptr<NodePortAudio> create(const std::string& _name, const std11::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodePortAudio> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
 					/**
 					 * @brief Destructor
 					 */

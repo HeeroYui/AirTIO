@@ -13,12 +13,12 @@
 namespace river_test_muxer {
 	class TestClass {
 		private:
-			std11::shared_ptr<audio::river::Manager> m_manager;
-			std11::shared_ptr<audio::river::Interface> m_interfaceIn;
-			std11::shared_ptr<audio::river::Interface> m_interfaceOut;
+			std::shared_ptr<audio::river::Manager> m_manager;
+			std::shared_ptr<audio::river::Interface> m_interfaceIn;
+			std::shared_ptr<audio::river::Interface> m_interfaceOut;
 			double m_phase;
 		public:
-			TestClass(std11::shared_ptr<audio::river::Manager> _manager) :
+			TestClass(std::shared_ptr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				std::vector<audio::channel> channelMap;
@@ -33,14 +33,14 @@ namespace river_test_muxer {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceOut->setOutputCallback(std11::bind(&TestClass::onDataNeeded,
+				m_interfaceOut->setOutputCallback(std::bind(&TestClass::onDataNeeded,
 				                                              this,
-				                                              std11::placeholders::_1,
-				                                              std11::placeholders::_2,
-				                                              std11::placeholders::_3,
-				                                              std11::placeholders::_4,
-				                                              std11::placeholders::_5,
-				                                              std11::placeholders::_6));
+				                                              std::placeholders::_1,
+				                                              std::placeholders::_2,
+				                                              std::placeholders::_3,
+				                                              std::placeholders::_4,
+				                                              std::placeholders::_5,
+				                                              std::placeholders::_6));
 				m_interfaceOut->addVolumeGroup("FLOW");
 				//m_interfaceOut->setParameter("volume", "FLOW", "-6dB");
 				
@@ -54,14 +54,14 @@ namespace river_test_muxer {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceIn->setInputCallback(std11::bind(&TestClass::onDataReceived,
+				m_interfaceIn->setInputCallback(std::bind(&TestClass::onDataReceived,
 				                                            this,
-				                                            std11::placeholders::_1,
-				                                            std11::placeholders::_2,
-				                                            std11::placeholders::_3,
-				                                            std11::placeholders::_4,
-				                                            std11::placeholders::_5,
-				                                            std11::placeholders::_6));
+				                                            std::placeholders::_1,
+				                                            std::placeholders::_2,
+				                                            std::placeholders::_3,
+				                                            std::placeholders::_4,
+				                                            std::placeholders::_5,
+				                                            std::placeholders::_6));
 				m_manager->generateDotAll("activeProcess.dot");
 			}
 			
@@ -166,9 +166,9 @@ namespace river_test_muxer {
 	
 	TEST(TestMuxer, testMuxing) {
 		audio::river::initString(configurationRiver);
-		std11::shared_ptr<audio::river::Manager> manager;
+		std::shared_ptr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std11::shared_ptr<TestClass> process = std11::make_shared<TestClass>(manager);
+		std::shared_ptr<TestClass> process = std::make_shared<TestClass>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);
