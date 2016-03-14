@@ -21,7 +21,7 @@ static const char* const g_eventChangeValues = "appl-change-value";
 static const char* const g_eventAutoMode = "appl-change-auto";
 
 appl::Windows::Windows() :
-  m_composer(NULL) {
+  m_composer(nullptr) {
 	addObjectType("appl::Windows");
 }
 
@@ -45,11 +45,12 @@ void appl::Windows::init() {
 	composition += "	<TemporalViewer name='displayer' expand='true' fill='true'/>\n";
 	composition += "</sizer>\n";
 	
-	m_composer = ewol::widget::Composer::create(ewol::widget::Composer::String, composition);
-	if (m_composer == NULL) {
+	m_composer = ewol::widget::Composer::create();
+	if (m_composer == nullptr) {
 		APPL_CRITICAL(" An error occured ... in the windows creatrion ...");
 		return;
 	}
+	m_composer->loadFromString(composition);
 	setSubWidget(m_composer);
 	subBind(ewol::widget::Button, "bt-record", signalPressed, shared_from_this(), &appl::Windows::onCallbackRecord);
 	subBind(ewol::widget::Button, "bt-generate", signalPressed, shared_from_this(), &appl::Windows::onCallbackGenerate);
@@ -57,14 +58,14 @@ void appl::Windows::init() {
 
 void appl::Windows::onCallbackRecord() {
 	std::shared_ptr<audio::river::widget::TemporalViewer> tmpDisp = std::dynamic_pointer_cast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
-	if (tmpDisp != NULL) {
+	if (tmpDisp != nullptr) {
 		tmpDisp->recordToggle();
 	}
 }
 
 void appl::Windows::onCallbackGenerate() {
 	std::shared_ptr<audio::river::widget::TemporalViewer> tmpDisp = std::dynamic_pointer_cast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
-	if (tmpDisp != NULL) {
+	if (tmpDisp != nullptr) {
 		tmpDisp->generateToggle();
 	}
 }
