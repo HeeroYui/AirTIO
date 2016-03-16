@@ -17,17 +17,14 @@
 #undef __class__
 #define __class__ "Windows"
 
-static const char* const g_eventChangeValues = "appl-change-value";
-static const char* const g_eventAutoMode = "appl-change-auto";
-
 appl::Windows::Windows() :
   m_composer(nullptr) {
 	addObjectType("appl::Windows");
+	propertyTitle.setDirectCheck("River IO viewer");
 }
 
 void appl::Windows::init() {
 	ewol::widget::Windows::init();
-	setTitle("example 001_HelloWord");
 	std::string composition = std::string("");
 	composition += "<sizer mode='vert'>\n";
 	composition += "	<sizer mode='hori' lock='true' min-size='10,10%'>\n";
