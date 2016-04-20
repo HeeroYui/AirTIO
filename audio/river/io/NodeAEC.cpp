@@ -13,7 +13,7 @@
 #undef __class__
 #define __class__ "io::NodeAEC"
 
-std::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+std::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const ejson::Object& _config) {
 	return std::shared_ptr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
 }
 
@@ -23,16 +23,16 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(
                                                                     const std::string& _objectName,
                                                                     const std::string& _name) {
 	// check if the output exist
-	const std::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
-	if (tmppp == nullptr) {
-		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
+	const ejson::Object tmppp = m_config[_objectName].toObject();
+	if (tmppp.exist() == false) {
+		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config.getKeys());
 		return std::shared_ptr<audio::river::Interface>();
 	}
-	std::string streamName = tmppp->getStringValue("map-on", "error");
+	std::string streamName = tmppp.getStringValue("map-on", "error");
 	
-	m_nbChunk = m_config->getNumberValue("nb-chunk", 1024);
+	m_nbChunk = m_config.getNumberValue("nb-chunk", 1024);
 	// check if it is an Output:
-	std::string type = tmppp->getStringValue("io", "error");
+	std::string type = tmppp.getStringValue("io", "error");
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
@@ -52,7 +52,7 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(
 }
 
 
-audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const ejson::Object& _config) :
   Node(_name, _config),
   m_P_attaqueTime(1),
   m_P_releaseTime(100),

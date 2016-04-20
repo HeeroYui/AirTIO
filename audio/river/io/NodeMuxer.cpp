@@ -13,7 +13,7 @@
 #undef __class__
 #define __class__ "io::NodeMuxer"
 
-std::shared_ptr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+std::shared_ptr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const ejson::Object& _config) {
 	return std::shared_ptr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
 }
 
@@ -23,16 +23,16 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createInpu
                                                                       const std::string& _objectName,
                                                                       const std::string& _name) {
 	// check if the output exist
-	const std::shared_ptr<const ejson::Object> tmppp = m_config->getObject(_objectName);
-	if (tmppp == nullptr) {
-		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config->getKeys());
+	const ejson::Object tmppp = m_config[_objectName].toObject();
+	if (tmppp.exist() == false) {
+		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config.getKeys());
 		return std::shared_ptr<audio::river::Interface>();
 	}
-	std::string streamName = tmppp->getStringValue("map-on", "error");
+	std::string streamName = tmppp.getStringValue("map-on", "error");
 	
 	
 	// check if it is an Output:
-	std::string type = tmppp->getStringValue("io", "error");
+	std::string type = tmppp.getStringValue("io", "error");
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
@@ -52,7 +52,7 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeMuxer::createInpu
 }
 
 
-audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const ejson::Object& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -88,14 +88,14 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std::shar
 		RIVER_ERROR("Can not opne virtual device ... map-on-input-1 in " << _name);
 		return;
 	}
-	std::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("input-1-remap");
-	if (    listChannelMap == nullptr
-	     || listChannelMap->size() == 0) {
+	const ejson::Array listChannelMap = m_config["input-1-remap"].toArray();
+	if (    listChannelMap.exist() == false
+	     || listChannelMap.size() == 0) {
 		m_mapInput1 = m_interfaceInput1->getInterfaceFormat().getMap();
 	} else {
 		m_mapInput1.clear();
-		for (size_t iii=0; iii<listChannelMap->size(); ++iii) {
-			std::string value = listChannelMap->getStringValue(iii);
+		for (const auto it : listChannelMap) {
+			std::string value = it.toString().get();
 			m_mapInput1.push_back(audio::getChannelFromString(value));
 		}
 		if (m_mapInput1.size() != m_interfaceInput1->getInterfaceFormat().getMap().size()) {
@@ -114,14 +114,14 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const std::shar
 		RIVER_ERROR("Can not opne virtual device ... map-on-input-2 in " << _name);
 		return;
 	}
-	listChannelMap = m_config->getArray("input-2-remap");
-	if (    listChannelMap == nullptr
-	     || listChannelMap->size() == 0) {
+	const ejson::Array listChannelMap2 = m_config["input-2-remap"].toArray();
+	if (    listChannelMap2.exist() == false
+	     || listChannelMap2.size() == 0) {
 		m_mapInput2 = m_interfaceInput2->getInterfaceFormat().getMap();
 	} else {
 		m_mapInput2.clear();
-		for (size_t iii=0; iii<listChannelMap->size(); ++iii) {
-			std::string value = listChannelMap->getStringValue(iii);
+		for (const auto it : listChannelMap2) {
+			std::string value = it.toString().get();
 			m_mapInput2.push_back(audio::getChannelFromString(value));
 		}
 		if (m_mapInput2.size() != m_interfaceInput2->getInterfaceFormat().getMap().size()) {

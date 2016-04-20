@@ -37,11 +37,11 @@ int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
 
 
 
-std::shared_ptr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+std::shared_ptr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const std::string& _name, const ejson::Object& _config) {
 	return std::shared_ptr<audio::river::io::NodeOrchestra>(new audio::river::io::NodeOrchestra(_name, _config));
 }
 
-audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const ejson::Object& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -54,23 +54,23 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 	*/
 	std::string typeInterface = audio::orchestra::type_undefined;
 	std::string streamName = "default";
-	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
-	if (tmpObject == nullptr) {
+	const ejson::Object tmpObject = m_config["map-on"].toObject();
+	if (tmpObject.exist() == false) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
-		typeInterface = tmpObject->getStringValue("interface", audio::orchestra::type_undefined);
+		typeInterface = tmpObject.getStringValue("interface", audio::orchestra::type_undefined);
 		if (typeInterface == "auto") {
 			typeInterface = audio::orchestra::type_undefined;
 		}
-		streamName = tmpObject->getStringValue("name", "default");
+		streamName = tmpObject.getStringValue("name", "default");
 	}
-	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
+	int32_t nbChunk = m_config.getNumberValue("nb-chunk", 1024);
 	
 	// intanciate specific API ...
 	m_interface.instanciate(typeInterface);
 	m_interface.setName(_name);
 	// TODO : Check return ...
-	std::string type = m_config->getStringValue("type", "int16");
+	std::string type = m_config.getStringValue("type", "int16");
 	if (streamName == "") {
 		streamName = "default";
 	}
@@ -189,7 +189,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const s
 		RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.channels.size() << ").");
 	}
 	audio::orchestra::StreamOptions option;
-	etk::from_string(option.mode, tmpObject->getStringValue("timestamp-mode", "soft"));
+	etk::from_string(option.mode, tmpObject.getStringValue("timestamp-mode", "soft"));
 	
 	RIVER_DEBUG("interfaceFormat=" << interfaceFormat);
 	RIVER_DEBUG("hardwareFormat=" << hardwareFormat);

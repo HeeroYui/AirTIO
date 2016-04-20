@@ -28,12 +28,12 @@ bool audio::river::Interface::init(float _freq,
                             const std::vector<audio::channel>& _map,
                             audio::format _format,
                             const std::shared_ptr<audio::river::io::Node>& _node,
-                            const std::shared_ptr<const ejson::Object>& _config) {
+                            const ejson::Object& _config) {
 	std::vector<audio::channel> map(_map);
 	m_node = _node;
 	m_config = _config;
 	m_mode = audio::river::modeInterface_unknow;
-	std::string type = m_config->getStringValue("io", "error");
+	std::string type = m_config.getStringValue("io", "error");
 	static int32_t uid=0;
 	m_name = _node->getName() + "__" + (_node->isInput()==true?"input":"output") + "__" + type + "__" + etk::to_string(uid++);
 	if (type == "output") {
@@ -99,7 +99,7 @@ std::shared_ptr<audio::river::Interface> audio::river::Interface::create(float _
                                                              const std::vector<audio::channel>& _map,
                                                              audio::format _format,
                                                              const std::shared_ptr<audio::river::io::Node>& _node,
-                                                             const std::shared_ptr<const ejson::Object>& _config) {
+                                                             const ejson::Object& _config) {
 	std::shared_ptr<audio::river::Interface> out = std::shared_ptr<audio::river::Interface>(new audio::river::Interface());
 	out->init(_freq, _map, _format, _node, _config);
 	return out;

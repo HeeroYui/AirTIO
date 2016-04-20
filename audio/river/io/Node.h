@@ -39,7 +39,7 @@ namespace audio {
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					Node(const std::string& _name, const ejson::Object& _config);
 				public:
 					/**
 					 * @brief Destructor
@@ -55,7 +55,7 @@ namespace audio {
 					};
 				protected:
 					mutable std::mutex m_mutex; //!< prevent open/close/write/read access that is multi-threaded.
-					std::shared_ptr<const ejson::Object> m_config; //!< configuration description.
+					const ejson::Object m_config; //!< configuration description.
 				protected:
 					audio::drain::Process m_process; //!< Low level algorithms
 				public:

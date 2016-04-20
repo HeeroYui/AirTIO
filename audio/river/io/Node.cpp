@@ -11,7 +11,7 @@
 #define __class__ "io::Node"
 
 
-audio::river::io::Node::Node(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _config) :
   m_config(_config),
   m_name(_name),
   m_isInput(false) {
@@ -34,7 +34,7 @@ audio::river::io::Node::Node(const std::string& _name, const std::shared_ptr<con
 		# muxer/demuxer format type (int8-on-int16, int16-on-int32, int24-on-int32, int32-on-int64, float)
 		mux-demux-type:"int16_on_int32", 
 	*/
-	std::string interfaceType = m_config->getStringValue("io");
+	std::string interfaceType = m_config.getStringValue("io");
 	RIVER_INFO("interfaceType=" << interfaceType);
 	if (    interfaceType == "input"
 	     || interfaceType == "PAinput"
@@ -45,12 +45,12 @@ audio::river::io::Node::Node(const std::string& _name, const std::shared_ptr<con
 		m_isInput = false;
 	}
 	
-	int32_t frequency = m_config->getNumberValue("frequency", 1);
+	int32_t frequency = m_config.getNumberValue("frequency", 1);
 	// Get audio format type:
-	std::string type = m_config->getStringValue("type", "int16");
+	std::string type = m_config.getStringValue("type", "int16");
 	enum audio::format formatType = audio::getFormatFromString(type);
 	// Get volume stage :
-	std::string volumeName = m_config->getStringValue("volume-name", "");
+	std::string volumeName = m_config.getStringValue("volume-name", "");
 	if (volumeName != "") {
 		RIVER_INFO("add node volume stage : '" << volumeName << "'");
 		// use global manager for volume ...
@@ -58,15 +58,15 @@ audio::river::io::Node::Node(const std::string& _name, const std::shared_ptr<con
 	}
 	// Get map type :
 	std::vector<audio::channel> map;
-	const std::shared_ptr<const ejson::Array> listChannelMap = m_config->getArray("channel-map");
-	if (    listChannelMap == nullptr
-	     || listChannelMap->size() == 0) {
+	const ejson::Array listChannelMap = m_config["channel-map"].toArray();
+	if (    listChannelMap.exist() == false
+	     || listChannelMap.size() == 0) {
 		// set default channel property:
 		map.push_back(audio::channel_frontLeft);
 		map.push_back(audio::channel_frontRight);
 	} else {
-		for (size_t iii=0; iii<listChannelMap->size(); ++iii) {
-			std::string value = listChannelMap->getStringValue(iii);
+		for (auto it : listChannelMap) {
+			std::string value = it.toString().get();
 			map.push_back(audio::getChannelFromString(value));
 		}
 	}
@@ -75,9 +75,9 @@ audio::river::io::Node::Node(const std::string& _name, const std::shared_ptr<con
 	
 	std::string muxerDemuxerConfig;
 	if (m_isInput == true) {
-		muxerDemuxerConfig = m_config->getStringValue("mux-demux-type", "int16");
+		muxerDemuxerConfig = m_config.getStringValue("mux-demux-type", "int16");
 	} else {
-		muxerDemuxerConfig = m_config->getStringValue("mux-demux-type", "int16-on-int32");
+		muxerDemuxerConfig = m_config.getStringValue("mux-demux-type", "int16-on-int32");
 	}
 	enum audio::format muxerFormatType = audio::getFormatFromString(muxerDemuxerConfig);
 	if (m_isInput == true) {

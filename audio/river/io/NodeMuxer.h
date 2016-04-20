@@ -18,9 +18,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeMuxer(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					NodeMuxer(const std::string& _name, const ejson::Object& _config);
 				public:
-					static std::shared_ptr<NodeMuxer> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodeMuxer> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */

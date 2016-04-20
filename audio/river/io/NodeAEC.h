@@ -18,14 +18,14 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeAEC(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					NodeAEC(const std::string& _name, const ejson::Object& _config);
 				public:
 					/**
 					 * @brief Factory of this Virtual Node.
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					static std::shared_ptr<NodeAEC> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodeAEC> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */

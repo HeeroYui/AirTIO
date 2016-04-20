@@ -108,13 +108,13 @@ std::vector<std::string> audio::river::io::Manager::getListStreamInput() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
-	for (size_t iii=0; iii<keys.size(); ++iii) {
-		const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
-		if (tmppp != nullptr) {
-			std::string type = tmppp->getStringValue("io", "error");
+	for (auto &it : keys) {
+		const ejson::Object tmppp = m_config[it].toObject();
+		if (tmppp.exist() == true) {
+			std::string type = tmppp.getStringValue("io", "error");
 			if (    type == "input"
 			     || type == "PAinput") {
-				output.push_back(keys[iii]);
+				output.push_back(it);
 			}
 		}
 	}
@@ -125,13 +125,13 @@ std::vector<std::string> audio::river::io::Manager::getListStreamOutput() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
-	for (size_t iii=0; iii<keys.size(); ++iii) {
-		const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
-		if (tmppp != nullptr) {
-			std::string type = tmppp->getStringValue("io", "error");
+	for (auto &it : keys) {
+		const ejson::Object tmppp = m_config[it].toObject();
+		if (tmppp.exist() == true) {
+			std::string type = tmppp.getStringValue("io", "error");
 			if (    type == "output"
 			     || type == "PAoutput") {
-				output.push_back(keys[iii]);
+				output.push_back(it);
 			}
 		}
 	}
@@ -142,16 +142,16 @@ std::vector<std::string> audio::river::io::Manager::getListStreamVirtual() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
-	for (size_t iii=0; iii<keys.size(); ++iii) {
-		const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
-		if (tmppp != nullptr) {
-			std::string type = tmppp->getStringValue("io", "error");
+	for (auto &it : keys) {
+		const ejson::Object tmppp = m_config[it].toObject();
+		if (tmppp.exist() == true) {
+			std::string type = tmppp.getStringValue("io", "error");
 			if (    type != "input"
 			     && type != "PAinput"
 			     && type != "output"
 			     && type != "PAoutput"
 			     && type != "error") {
-				output.push_back(keys[iii]);
+				output.push_back(it);
 			}
 		}
 	}
@@ -162,12 +162,12 @@ std::vector<std::string> audio::river::io::Manager::getListStream() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	std::vector<std::string> output;
 	std::vector<std::string> keys = m_config.getKeys();
-	for (size_t iii=0; iii<keys.size(); ++iii) {
-		const std::shared_ptr<const ejson::Object> tmppp = m_config.getObject(keys[iii]);
-		if (tmppp != nullptr) {
-			std::string type = tmppp->getStringValue("io", "error");
+	for (auto &it : keys) {
+		const ejson::Object tmppp = m_config[it].toObject();
+		if (tmppp.exist() == true) {
+			std::string type = tmppp.getStringValue("io", "error");
 			if (type != "error") {
-				output.push_back(keys[iii]);
+				output.push_back(it);
 			}
 		}
 	}
@@ -202,12 +202,12 @@ std::shared_ptr<audio::river::io::Node> audio::river::io::Manager::getNode(const
 	}
 	RIVER_WARNING("Try create a new one : " << _name);
 	// check if the node can be open :
-	const std::shared_ptr<const ejson::Object> tmpObject = m_config.getObject(_name);
-	if (tmpObject != nullptr) {
+	const ejson::Object tmpObject = m_config[_name].toObject();
+	if (tmpObject.exist() == true) {
 		//Check if it is in a group:
-		std::string groupName = tmpObject->getStringValue("group", "");
+		std::string groupName = tmpObject.getStringValue("group", "");
 		// get type : io
-		std::string ioType = tmpObject->getStringValue("io", "error");
+		std::string ioType = tmpObject.getStringValue("io", "error");
 		if (    groupName != ""
 		     && (    ioType == "input"
 		          || ioType == "output"

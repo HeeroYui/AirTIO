@@ -24,9 +24,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeFile(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					NodeFile(const std::string& _name, const ejson::Object& _config);
 				public:
-					static std::shared_ptr<NodeFile> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodeFile> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */

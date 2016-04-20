@@ -66,7 +66,7 @@ namespace audio {
 				          const std::vector<audio::channel>& _map,
 				          audio::format _format,
 				          const std::shared_ptr<audio::river::io::Node>& _node,
-				          const std::shared_ptr<const ejson::Object>& _config);
+				          const ejson::Object& _config);
 				/**
 				 * @brief Factory of this interface (called by class audio::river::Manager)
 				 * @param[in] _freq Frequency.
@@ -81,7 +81,7 @@ namespace audio {
 				                                           const std::vector<audio::channel>& _map,
 				                                           audio::format _format,
 				                                           const std::shared_ptr<audio::river::io::Node>& _node,
-				                                           const std::shared_ptr<const ejson::Object>& _config);
+				                                           const ejson::Object& _config);
 			public:
 				/**
 				 * @brief Destructor
@@ -89,7 +89,7 @@ namespace audio {
 				virtual ~Interface();
 			protected:
 				mutable std::recursive_mutex m_mutex; //!< Local mutex to protect data
-				std::shared_ptr<const ejson::Object> m_config; //!< configuration set by the user.
+				ejson::Object m_config; //!< configuration set by the user.
 			protected:
 				enum modeInterface m_mode; //!< interface type (input/output/feedback)
 			public:

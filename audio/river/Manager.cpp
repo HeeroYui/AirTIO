@@ -13,8 +13,6 @@
 #include "debug.h"
 #include <ejson/ejson.h>
 
-#undef __class__
-#define __class__ "Manager"
 static std::mutex g_mutex;
 static std::vector<std::weak_ptr<audio::river::Manager> > g_listOfAllManager;
 
@@ -165,8 +163,8 @@ std::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(flo
 	}
 	// create user iterface:
 	std::shared_ptr<audio::river::Interface> interface;
-	std::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
-	tmpOption->addString("io", "output");
+	ejson::Object tmpOption = ejson::Object(_options);
+	tmpOption.addString("io", "output");
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
@@ -196,8 +194,8 @@ std::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(floa
 	}
 	// create user iterface:
 	std::shared_ptr<audio::river::Interface> interface;
-	std::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
-	tmpOption->addString("io", "input");
+	ejson::Object tmpOption = ejson::Object(_options);
+	tmpOption.addString("io", "input");
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
@@ -228,8 +226,8 @@ std::shared_ptr<audio::river::Interface> audio::river::Manager::createFeedback(f
 	}
 	// create user iterface:
 	std::shared_ptr<audio::river::Interface> interface;
-	std::shared_ptr<ejson::Object> tmpOption = ejson::Object::create(_options);
-	tmpOption->addString("io", "feedback");
+	ejson::Object tmpOption = ejson::Object(_options);
+	tmpOption.addString("io", "feedback");
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);

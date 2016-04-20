@@ -18,15 +18,15 @@
 void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
 	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");
 	for (size_t iii=0; iii<_obj.size(); ++iii) {
-		const std::shared_ptr<const ejson::Object> tmpObject = _obj.getObject(_obj.getKey(iii));
-		if (tmpObject == nullptr) {
+		const ejson::Object tmpObject = _obj[iii].toObject();
+		if (tmpObject.exist() == false) {
 			continue;
 		}
-		std::string groupName = tmpObject->getStringValue("group", "");
+		std::string groupName = tmpObject.getStringValue("group", "");
 		if (groupName == _name) {
 			RIVER_INFO("Add element in Group[" << _name << "]: " << _obj.getKey(iii));
 			// get type : io
-			std::string ioType = tmpObject->getStringValue("io", "error");
+			std::string ioType = tmpObject.getStringValue("io", "error");
 			#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 				if (    ioType == "input"
 				     || ioType == "output") {

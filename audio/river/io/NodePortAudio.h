@@ -15,15 +15,15 @@ namespace audio {
 	namespace river {
 		namespace io {
 			class Manager;
-			//! @not-in-doc
+			//! @not_in_doc
 			class NodePortAudio : public Node {
 				protected:
 					/**
 					 * @brief Constructor
 					 */
-					NodePortAudio(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					NodePortAudio(const std::string& _name, const ejson::Object& _config);
 				public:
-					static std::shared_ptr<NodePortAudio> create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config);
+					static std::shared_ptr<NodePortAudio> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */

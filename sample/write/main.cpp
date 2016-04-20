@@ -16,16 +16,19 @@ static const std::string configurationRiver =
 		"	speaker:{\n"
 		"		io:'output',\n"
 		"		map-on:{\n"
-		"			interface:'auto',\n"
-		"			name:'default',\n"
+		"			interface:'alsa',\n"
+		"			name:'hw:2,0',\n"
 		"		},\n"
 		"		frequency:0,\n"
+		//"		channel-map:['front-left', 'front-right', 'rear-left', 'rear-right'],\n"
 		"		channel-map:['front-left', 'front-right'],\n"
-		"		type:'auto',\n"
+		"		type:'int32',\n"
 		"		nb-chunk:1024,\n"
 		"		volume-name:'MASTER'\n"
 		"	}\n"
 		"}\n";
+
+static const int32_t nbChannelMax=8;
 
 void onDataNeeded(void* _data,
                   const audio::Time& _time,
@@ -33,19 +36,21 @@ void onDataNeeded(void* _data,
                   enum audio::format _format,
                   uint32_t _frequency,
                   const std::vector<audio::channel>& _map) {
-	static double phase = 0;
+	static double phase[8] = {0,0,0,0,0,0,0,0};
+	
 	if (_format != audio::format_int16) {
 		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
 	}
+	//std::cout << "Map " << _map << std::endl;
 	int16_t* data = static_cast<int16_t*>(_data);
-	double baseCycle = 2.0*M_PI/(double)48000 * (double)550;
+	double baseCycle = 2.0*M_PI/double(48000) * double(440);
 	for (int32_t iii=0; iii<_nbChunk; iii++) {
 		for (int32_t jjj=0; jjj<_map.size(); jjj++) {
-			data[_map.size()*iii+jjj] = cos(phase) * 30000;
-		}
-		phase += baseCycle;
-		if (phase >= 2*M_PI) {
-			phase -= 2*M_PI;
+			data[_map.size()*iii+jjj] = cos(phase[jjj]) * 30000;
+			phase[jjj] += baseCycle*jjj;
+			if (phase[jjj] >= 2*M_PI) {
+				phase[jjj] -= 2*M_PI;
+			}
 		}
 	}
 }

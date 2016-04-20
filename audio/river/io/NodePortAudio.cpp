@@ -56,11 +56,11 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
 }
 
 
-std::shared_ptr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) {
+std::shared_ptr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const ejson::Object& _config) {
 	return std::shared_ptr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
 }
 
-audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const std::shared_ptr<const ejson::Object>& _config) :
+audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const ejson::Object& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -72,14 +72,14 @@ audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const s
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
 	std::string streamName = "default";
-	const std::shared_ptr<const ejson::Object> tmpObject = m_config->getObject("map-on");
-	if (tmpObject == nullptr) {
+	const ejson::Object tmpObject = m_config["map-on"].toObject();
+	if (tmpObject.exist() == false) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
-		std::string value = tmpObject->getStringValue("interface", "default");
-		streamName = tmpObject->getStringValue("name", "default");
+		std::string value = tmpObject.getStringValue("interface", "default");
+		streamName = tmpObject.getStringValue("name", "default");
 	}
-	int32_t nbChunk = m_config->getNumberValue("nb-chunk", 1024);
+	int32_t nbChunk = m_config.getNumberValue("nb-chunk", 1024);
 	
 	PaError err = 0;
 	if (m_isInput == true) {
