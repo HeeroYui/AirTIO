@@ -58,19 +58,19 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 	if (tmpObject.exist() == false) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
-		typeInterface = tmpObject.getStringValue("interface", audio::orchestra::type_undefined);
+		typeInterface = tmpObject["interface"].toString().get(audio::orchestra::type_undefined);
 		if (typeInterface == "auto") {
 			typeInterface = audio::orchestra::type_undefined;
 		}
-		streamName = tmpObject.getStringValue("name", "default");
+		streamName = tmpObject["name"].toString().get("default");
 	}
-	int32_t nbChunk = m_config.getNumberValue("nb-chunk", 1024);
+	int32_t nbChunk = m_config["nb-chunk"].toNumber().get(1024);
 	
 	// intanciate specific API ...
 	m_interface.instanciate(typeInterface);
 	m_interface.setName(_name);
 	// TODO : Check return ...
-	std::string type = m_config.getStringValue("type", "int16");
+	std::string type = m_config["type"].toString().get("int16");
 	if (streamName == "") {
 		streamName = "default";
 	}
@@ -189,7 +189,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 		RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.channels.size() << ").");
 	}
 	audio::orchestra::StreamOptions option;
-	etk::from_string(option.mode, tmpObject.getStringValue("timestamp-mode", "soft"));
+	etk::from_string(option.mode, tmpObject["timestamp-mode"].toString().get("soft"));
 	
 	RIVER_DEBUG("interfaceFormat=" << interfaceFormat);
 	RIVER_DEBUG("hardwareFormat=" << hardwareFormat);

@@ -22,11 +22,11 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 		if (tmpObject.exist() == false) {
 			continue;
 		}
-		std::string groupName = tmpObject.getStringValue("group", "");
+		std::string groupName = tmpObject["group"].toString().get();
 		if (groupName == _name) {
 			RIVER_INFO("Add element in Group[" << _name << "]: " << _obj.getKey(iii));
 			// get type : io
-			std::string ioType = tmpObject.getStringValue("io", "error");
+			std::string ioType = tmpObject["io"].toString().get("error");
 			#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 				if (    ioType == "input"
 				     || ioType == "output") {

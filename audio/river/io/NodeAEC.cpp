@@ -28,11 +28,11 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config.getKeys());
 		return std::shared_ptr<audio::river::Interface>();
 	}
-	std::string streamName = tmppp.getStringValue("map-on", "error");
+	std::string streamName = tmppp["map-on"].toString().get("error");
 	
-	m_nbChunk = m_config.getNumberValue("nb-chunk", 1024);
+	m_nbChunk = m_config["nb-chunk"].toNumber().get(1024);
 	// check if it is an Output:
-	std::string type = tmppp.getStringValue("io", "error");
+	std::string type = tmppp["io"].toString().get("error");
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);

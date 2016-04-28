@@ -111,7 +111,7 @@ std::vector<std::string> audio::river::io::Manager::getListStreamInput() {
 	for (auto &it : keys) {
 		const ejson::Object tmppp = m_config[it].toObject();
 		if (tmppp.exist() == true) {
-			std::string type = tmppp.getStringValue("io", "error");
+			std::string type = tmppp["io"].toString().get("error");
 			if (    type == "input"
 			     || type == "PAinput") {
 				output.push_back(it);
@@ -128,7 +128,7 @@ std::vector<std::string> audio::river::io::Manager::getListStreamOutput() {
 	for (auto &it : keys) {
 		const ejson::Object tmppp = m_config[it].toObject();
 		if (tmppp.exist() == true) {
-			std::string type = tmppp.getStringValue("io", "error");
+			std::string type = tmppp["io"].toString().get("error");
 			if (    type == "output"
 			     || type == "PAoutput") {
 				output.push_back(it);
@@ -145,7 +145,7 @@ std::vector<std::string> audio::river::io::Manager::getListStreamVirtual() {
 	for (auto &it : keys) {
 		const ejson::Object tmppp = m_config[it].toObject();
 		if (tmppp.exist() == true) {
-			std::string type = tmppp.getStringValue("io", "error");
+			std::string type = tmppp["io"].toString().get("error");
 			if (    type != "input"
 			     && type != "PAinput"
 			     && type != "output"
@@ -165,7 +165,7 @@ std::vector<std::string> audio::river::io::Manager::getListStream() {
 	for (auto &it : keys) {
 		const ejson::Object tmppp = m_config[it].toObject();
 		if (tmppp.exist() == true) {
-			std::string type = tmppp.getStringValue("io", "error");
+			std::string type = tmppp["io"].toString().get("error");
 			if (type != "error") {
 				output.push_back(it);
 			}
@@ -205,9 +205,9 @@ std::shared_ptr<audio::river::io::Node> audio::river::io::Manager::getNode(const
 	const ejson::Object tmpObject = m_config[_name].toObject();
 	if (tmpObject.exist() == true) {
 		//Check if it is in a group:
-		std::string groupName = tmpObject.getStringValue("group", "");
+		std::string groupName = tmpObject["group"].toString().get();
 		// get type : io
-		std::string ioType = tmpObject.getStringValue("io", "error");
+		std::string ioType = tmpObject["io"].toString().get("error");
 		if (    groupName != ""
 		     && (    ioType == "input"
 		          || ioType == "output"

@@ -34,7 +34,7 @@ audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _con
 		# muxer/demuxer format type (int8-on-int16, int16-on-int32, int24-on-int32, int32-on-int64, float)
 		mux-demux-type:"int16_on_int32", 
 	*/
-	std::string interfaceType = m_config.getStringValue("io");
+	std::string interfaceType = m_config["io"].toString().get();
 	RIVER_INFO("interfaceType=" << interfaceType);
 	if (    interfaceType == "input"
 	     || interfaceType == "PAinput"
@@ -45,12 +45,12 @@ audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _con
 		m_isInput = false;
 	}
 	
-	int32_t frequency = m_config.getNumberValue("frequency", 1);
+	int32_t frequency = m_config["frequency"].toNumber().get(1);
 	// Get audio format type:
-	std::string type = m_config.getStringValue("type", "int16");
+	std::string type = m_config["type"].toString().get("int16");
 	enum audio::format formatType = audio::getFormatFromString(type);
 	// Get volume stage :
-	std::string volumeName = m_config.getStringValue("volume-name", "");
+	std::string volumeName = m_config["volume-name"].toString().get();
 	if (volumeName != "") {
 		RIVER_INFO("add node volume stage : '" << volumeName << "'");
 		// use global manager for volume ...
@@ -75,9 +75,9 @@ audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _con
 	
 	std::string muxerDemuxerConfig;
 	if (m_isInput == true) {
-		muxerDemuxerConfig = m_config.getStringValue("mux-demux-type", "int16");
+		muxerDemuxerConfig = m_config["mux-demux-type"].toString().get("int16");
 	} else {
-		muxerDemuxerConfig = m_config.getStringValue("mux-demux-type", "int16-on-int32");
+		muxerDemuxerConfig = m_config["mux-demux-type"].toString().get("int16-on-int32");
 	}
 	enum audio::format muxerFormatType = audio::getFormatFromString(muxerDemuxerConfig);
 	if (m_isInput == true) {

@@ -141,10 +141,10 @@ bool audio::river::Manager::getMute(const std::string& _volumeName) const {
 }
 
 std::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(float _freq,
-                                                                               const std::vector<audio::channel>& _map,
-                                                                               audio::format _format,
-                                                                               const std::string& _streamName,
-                                                                               const std::string& _options) {
+                                                                             const std::vector<audio::channel>& _map,
+                                                                             audio::format _format,
+                                                                             const std::string& _streamName,
+                                                                             const std::string& _options) {
 	// get global hardware interface:
 	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
@@ -164,7 +164,7 @@ std::shared_ptr<audio::river::Interface> audio::river::Manager::createOutput(flo
 	// create user iterface:
 	std::shared_ptr<audio::river::Interface> interface;
 	ejson::Object tmpOption = ejson::Object(_options);
-	tmpOption.addString("io", "output");
+	tmpOption.add("io", ejson::String("output"));
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
@@ -195,7 +195,7 @@ std::shared_ptr<audio::river::Interface> audio::river::Manager::createInput(floa
 	// create user iterface:
 	std::shared_ptr<audio::river::Interface> interface;
 	ejson::Object tmpOption = ejson::Object(_options);
-	tmpOption.addString("io", "input");
+	tmpOption.add("io", ejson::String("input"));
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
@@ -227,7 +227,7 @@ std::shared_ptr<audio::river::Interface> audio::river::Manager::createFeedback(f
 	// create user iterface:
 	std::shared_ptr<audio::river::Interface> interface;
 	ejson::Object tmpOption = ejson::Object(_options);
-	tmpOption.addString("io", "feedback");
+	tmpOption.add("io", ejson::String("feedback"));
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmpOption);
 	// store it in a list (needed to apply some parameters).
 	m_listOpenInterface.push_back(interface);
