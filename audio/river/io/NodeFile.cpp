@@ -52,15 +52,15 @@ audio::river::io::NodeFile::NodeFile(const std::string& _name, const ejson::Obje
 		},
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
-	std::string typeInterface = audio::orchestra::type_undefined;
+	std::string typeInterface = audio::orchestra::type::undefined;
 	std::string streamName = "default";
 	const ejson::Object tmpObject = m_config["map-on"].toObject();
 	if (tmpObject.exist() == false) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
 	} else {
-		typeInterface = tmpObject.getStringValue("interface", audio::orchestra::type_undefined);
+		typeInterface = tmpObject.getStringValue("interface", audio::orchestra::type::undefined);
 		if (typeInterface == "auto") {
-			typeInterface = audio::orchestra::type_undefined;
+			typeInterface = audio::orchestra::type::undefined;
 		}
 		streamName = tmpObject.getStringValue("name", "default");
 	}
