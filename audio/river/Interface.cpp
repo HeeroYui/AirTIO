@@ -12,10 +12,6 @@
 #include <audio/drain/EndPointRead.h>
 #include <audio/drain/Volume.h>
 
-
-#undef __class__
-#define __class__ "Interface"
-
 audio::river::Interface::Interface(void) :
   m_node(),
   m_name("") {

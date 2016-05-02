@@ -10,9 +10,6 @@
 #include <audio/river/debug.h>
 #include <memory>
 
-#undef __class__
-#define __class__ "io::NodeFile"
-
 int32_t audio::river::io::NodeFile::recordCallback(const void* _inputBuffer,
                                                    const audio::Time& _timeInput,
                                                    uint32_t _nbChunk,

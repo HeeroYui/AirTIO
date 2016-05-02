@@ -7,9 +7,6 @@
 
 #include <test-debug/debug.h>
 
-#undef __class__
-#define __class__ "test_record_callback"
-
 namespace river_test_record_callback {
 	static const std::string configurationRiver =
 		"{\n"
@@ -96,7 +93,4 @@ namespace river_test_record_callback {
 	}
 
 };
-
-#undef __class__
-#define __class__ nullptr
 

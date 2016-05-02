@@ -10,9 +10,6 @@
 #include <memory>
 #include <functional>
 
-#undef __class__
-#define __class__ "io::NodeMuxer"
-
 std::shared_ptr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const ejson::Object& _config) {
 	return std::shared_ptr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
 }

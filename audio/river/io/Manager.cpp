@@ -17,9 +17,6 @@
 #include <etk/types.h>
 #include <utility>
 
-#undef __class__
-#define __class__ "io::Manager"
-
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 	#include <portaudio/portaudio.h>
 #endif

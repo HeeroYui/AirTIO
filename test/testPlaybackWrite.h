@@ -5,9 +5,6 @@
  */
 #pragma once
 
-#undef __class__
-#define __class__ "test_playback_write"
-
 namespace river_test_playback_write {
 	static const std::string configurationRiver =
 		"{\n"
@@ -178,7 +175,4 @@ namespace river_test_playback_write {
 	}
 
 };
-
-#undef __class__
-#define __class__ nullptr
 

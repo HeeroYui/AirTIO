@@ -1,9 +1,7 @@
-/**
- * @author Edouard DUPIN
- * 
- * @copyright 2010, Edouard DUPIN, all right reserved
- * 
- * @license BSD 3 clauses (see license file)
+/** @file
+ * @author Edouard DUPIN 
+ * @copyright 2015, Edouard DUPIN, all right reserved
+ * @license APACHE v2.0 (see license file)
  */
 
 #include <ewol/ewol.h>
@@ -13,9 +11,6 @@
 #include <ewol/widget/Button.h>
 #include <audio/river/widget/TemporalViewer.h>
 #include <etk/tool.h>
-
-#undef __class__
-#define __class__ "Windows"
 
 appl::Windows::Windows() :
   m_composer(nullptr) {

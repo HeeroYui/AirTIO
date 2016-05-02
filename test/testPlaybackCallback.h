@@ -5,9 +5,6 @@
  */
 #pragma once
 
-#undef __class__
-#define __class__ "test_playback_callback"
-
 namespace river_test_playback_callback {
 	
 	class testOutCallback {
@@ -129,10 +126,5 @@ namespace river_test_playback_callback {
 		usleep(500000);
 		audio::river::unInit();
 	}
-
-
 };
-
-#undef __class__
-#define __class__ nullptr
 

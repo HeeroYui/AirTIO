@@ -5,9 +5,6 @@
  */
 #pragma once
 
-#undef __class__
-#define __class__ "test_format"
-
 namespace river_test_format {
 	static const std::string configurationRiver =
 		"{\n"
@@ -235,10 +232,6 @@ namespace river_test_format {
 		}
 		audio::river::unInit();
 	}
-
-
 };
 
-#undef __class__
-#define __class__ nullptr
 

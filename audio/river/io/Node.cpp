@@ -7,10 +7,6 @@
 #include "Node.h"
 #include <audio/river/debug.h>
 
-#undef __class__
-#define __class__ "io::Node"
-
-
 audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _config) :
   m_config(_config),
   m_name(_name),

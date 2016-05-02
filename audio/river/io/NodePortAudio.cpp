@@ -12,9 +12,6 @@
 #include <audio/Time.h>
 #include <audio/Duration.h>
 
-#undef __class__
-#define __class__ "io::NodePortAudio"
-
 static int portAudioStreamCallback(const void *_input,
                                    void *_output,
                                    unsigned long _frameCount,

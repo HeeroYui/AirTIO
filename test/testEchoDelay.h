@@ -7,9 +7,6 @@
 
 #include <test-debug/debug.h>
 
-#undef __class__
-#define __class__ "test_echo_delay"
-
 namespace river_test_echo_delay {
 	class TestClass {
 		private:
@@ -426,6 +423,4 @@ namespace river_test_echo_delay {
 	}
 };
 
-#undef __class__
-#define __class__ nullptr
 

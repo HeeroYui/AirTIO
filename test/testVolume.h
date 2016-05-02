@@ -5,9 +5,6 @@
  */
 #pragma once
 
-#undef __class__
-#define __class__ "test_volume"
-
 namespace river_test_volume {
 	static const std::string configurationRiver =
 		"{\n"
@@ -133,6 +130,4 @@ namespace river_test_volume {
 
 };
 
-#undef __class__
-#define __class__ nullptr
 

@@ -12,9 +12,6 @@
 #include "NodePortAudio.h"
 #include "Node.h"
 
-#undef __class__
-#define __class__ "io::Group"
-
 void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
 	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");
 	for (size_t iii=0; iii<_obj.size(); ++iii) {

@@ -10,9 +10,6 @@
 #include <memory>
 #include <functional>
 
-#undef __class__
-#define __class__ "io::NodeAEC"
-
 std::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const ejson::Object& _config) {
 	return std::shared_ptr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
 }

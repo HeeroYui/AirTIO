@@ -5,9 +5,6 @@
  */
 #pragma once
 
-#undef __class__
-#define __class__ "test_aec"
-
 namespace river_test_aec {
 	
 	class Linker {
@@ -215,6 +212,4 @@ namespace river_test_aec {
 	}
 };
 
-#undef __class__
-#define __class__ nullptr
 

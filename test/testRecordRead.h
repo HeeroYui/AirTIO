@@ -5,13 +5,7 @@
  */
 #pragma once
 
-#undef __class__
-#define __class__ "test_record_read"
-
 namespace river_test_record_read {
 	
 };
-
-#undef __class__
-#define __class__ nullptr
 

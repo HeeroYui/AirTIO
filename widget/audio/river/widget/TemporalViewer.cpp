@@ -8,9 +8,6 @@
 #include <audio/river/widget/TemporalViewer.h>
 #include <etk/tool.h>
 
-#undef __class__
-#define __class__ "TemporalViewer"
-
 static const int32_t nbSecond = 3;
 
 

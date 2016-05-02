@@ -7,9 +7,6 @@
 
 #include <test-debug/debug.h>
 
-#undef __class__
-#define __class__ "test_muxer"
-
 namespace river_test_muxer {
 	class TestClass {
 		private:
@@ -176,6 +173,4 @@ namespace river_test_muxer {
 	}
 };
 
-#undef __class__
-#define __class__ nullptr
 
