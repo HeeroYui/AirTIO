@@ -21,10 +21,10 @@ audio::river::Interface::Interface(void) :
 }
 
 bool audio::river::Interface::init(float _freq,
-                            const std::vector<audio::channel>& _map,
-                            audio::format _format,
-                            const std::shared_ptr<audio::river::io::Node>& _node,
-                            const ejson::Object& _config) {
+                                   const std::vector<audio::channel>& _map,
+                                   audio::format _format,
+                                   ememory::SharedPtr<audio::river::io::Node> _node,
+                                   const ejson::Object& _config) {
 	std::vector<audio::channel> map(_map);
 	m_node = _node;
 	m_config = _config;
@@ -40,7 +40,7 @@ bool audio::river::Interface::init(float _freq,
 		m_mode = audio::river::modeInterface_feedback;
 	}
 	// register interface to be notify from the volume change.
-	m_node->registerAsRemote(shared_from_this());
+	m_node->registerAsRemote(sharedFromThis());
 	
 	if (map.size() == 0) {
 		RIVER_INFO("Select auto map system ...");
@@ -53,10 +53,10 @@ bool audio::river::Interface::init(float _freq,
 	     && m_mode == audio::river::modeInterface_input) {
 		m_process.setInputConfig(m_node->getInterfaceFormat());
 		// Add volume only if the Low level has a volume (otherwise it will be added by the application)
-		std::shared_ptr<audio::drain::VolumeElement> tmpVolume = m_node->getVolume();
+		ememory::SharedPtr<audio::drain::VolumeElement> tmpVolume = m_node->getVolume();
 		if (tmpVolume != nullptr) {
 			// add all time the volume stage :
-			std::shared_ptr<audio::drain::Volume> algo = audio::drain::Volume::create();
+			ememory::SharedPtr<audio::drain::Volume> algo = audio::drain::Volume::create();
 			//algo->setInputFormat(m_node->getInterfaceFormat());
 			algo->setName("volume");
 			m_process.pushBack(algo);
@@ -68,10 +68,10 @@ bool audio::river::Interface::init(float _freq,
 	            && m_mode == audio::river::modeInterface_output) {
 		m_process.setInputConfig(audio::drain::IOFormatInterface(map, _format, _freq));
 		// Add volume only if the Low level has a volume (otherwise it will be added by the application)
-		std::shared_ptr<audio::drain::VolumeElement> tmpVolume = m_node->getVolume();
+		ememory::SharedPtr<audio::drain::VolumeElement> tmpVolume = m_node->getVolume();
 		if (tmpVolume != nullptr) {
 			// add all time the volume stage :
-			std::shared_ptr<audio::drain::Volume> algo = audio::drain::Volume::create();
+			ememory::SharedPtr<audio::drain::Volume> algo = audio::drain::Volume::create();
 			//algo->setOutputFormat(m_node->getInterfaceFormat());
 			algo->setName("volume");
 			m_process.pushBack(algo);
@@ -91,12 +91,12 @@ bool audio::river::Interface::init(float _freq,
 	return true;
 }
 
-std::shared_ptr<audio::river::Interface> audio::river::Interface::create(float _freq,
+ememory::SharedPtr<audio::river::Interface> audio::river::Interface::create(float _freq,
                                                              const std::vector<audio::channel>& _map,
                                                              audio::format _format,
-                                                             const std::shared_ptr<audio::river::io::Node>& _node,
+                                                             const ememory::SharedPtr<audio::river::io::Node>& _node,
                                                              const ejson::Object& _config) {
-	std::shared_ptr<audio::river::Interface> out = std::shared_ptr<audio::river::Interface>(new audio::river::Interface());
+	ememory::SharedPtr<audio::river::Interface> out = ememory::SharedPtr<audio::river::Interface>(new audio::river::Interface());
 	out->init(_freq, _map, _format, _node, _config);
 	return out;
 }
@@ -104,7 +104,7 @@ std::shared_ptr<audio::river::Interface> audio::river::Interface::create(float _
 audio::river::Interface::~Interface() {
 	//stop(true, true);
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
-	//m_node->interfaceRemove(shared_from_this());
+	//m_node->interfaceRemove(sharedFromThis());
 }
 /*
 bool audio::river::Interface::hasEndPoint() {
@@ -120,11 +120,11 @@ void audio::river::Interface::setReadwrite() {
 	}
 	if (m_node->isInput() == true) {
 		m_process.removeIfLast<audio::drain::EndPoint>();
-		std::shared_ptr<audio::drain::EndPointRead> algo = audio::drain::EndPointRead::create();
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = audio::drain::EndPointRead::create();
 		m_process.pushBack(algo);
 	} else {
 		m_process.removeIfFirst<audio::drain::EndPoint>();
-		std::shared_ptr<audio::drain::EndPointWrite> algo = audio::drain::EndPointWrite::create();
+		ememory::SharedPtr<audio::drain::EndPointWrite> algo = audio::drain::EndPointWrite::create();
 		m_process.pushFront(algo);
 	}
 }
@@ -137,7 +137,7 @@ void audio::river::Interface::setOutputCallback(audio::drain::playbackFunction _
 	}
 	m_process.removeAlgoDynamic();
 	m_process.removeIfFirst<audio::drain::EndPoint>();
-	std::shared_ptr<audio::drain::Algo> algo = audio::drain::EndPointCallback::create(_function);
+	ememory::SharedPtr<audio::drain::Algo> algo = audio::drain::EndPointCallback::create(_function);
 	m_process.pushFront(algo);
 }
 
@@ -149,7 +149,7 @@ void audio::river::Interface::setInputCallback(audio::drain::recordFunction _fun
 	}
 	m_process.removeAlgoDynamic();
 	m_process.removeIfLast<audio::drain::EndPoint>();
-	std::shared_ptr<audio::drain::Algo> algo = audio::drain::EndPointCallback::create(_function);
+	ememory::SharedPtr<audio::drain::Algo> algo = audio::drain::EndPointCallback::create(_function);
 	m_process.pushBack(algo);
 }
 
@@ -160,7 +160,7 @@ void audio::river::Interface::setWriteCallback(audio::drain::playbackFunctionWri
 		return;
 	}
 	m_process.removeAlgoDynamic();
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		return;
 	}
@@ -171,14 +171,14 @@ void audio::river::Interface::start(const audio::Time& _time) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("start [BEGIN]");
 	m_process.updateInterAlgo();
-	m_node->interfaceAdd(shared_from_this());
+	m_node->interfaceAdd(sharedFromThis());
 	RIVER_DEBUG("start [ END ]");
 }
 
 void audio::river::Interface::stop(bool _fast, bool _abort) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("stop [BEGIN]");
-	m_node->interfaceRemove(shared_from_this());
+	m_node->interfaceRemove(sharedFromThis());
 	RIVER_DEBUG("stop [ END]");
 }
 
@@ -197,7 +197,7 @@ bool audio::river::Interface::setParameter(const std::string& _filter, const std
 		RIVER_ERROR("Interface is not allowed to modify '" << _parameter << "' Volume just allowed to modify 'FLOW' volume");
 		return false;
 	}
-	std::shared_ptr<audio::drain::Algo> algo = m_process.get<audio::drain::Algo>(_filter);
+	ememory::SharedPtr<audio::drain::Algo> algo = m_process.get<audio::drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return false;
@@ -209,7 +209,7 @@ bool audio::river::Interface::setParameter(const std::string& _filter, const std
 std::string audio::river::Interface::getParameter(const std::string& _filter, const std::string& _parameter) const {
 	RIVER_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
-	std::shared_ptr<const audio::drain::Algo> algo = m_process.get<const audio::drain::Algo>(_filter);
+	ememory::SharedPtr<const audio::drain::Algo> algo = m_process.get<const audio::drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return "[ERROR]";
@@ -221,7 +221,7 @@ std::string audio::river::Interface::getParameter(const std::string& _filter, co
 std::string audio::river::Interface::getParameterProperty(const std::string& _filter, const std::string& _parameter) const {
 	RIVER_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
 	std::string out;
-	std::shared_ptr<const audio::drain::Algo> algo = m_process.get<const audio::drain::Algo>(_filter);
+	ememory::SharedPtr<const audio::drain::Algo> algo = m_process.get<const audio::drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
 		return "[ERROR]";
@@ -234,7 +234,7 @@ std::string audio::river::Interface::getParameterProperty(const std::string& _fi
 void audio::river::Interface::write(const void* _value, size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	m_process.updateInterAlgo();
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		return;
 	}
@@ -286,7 +286,7 @@ size_t audio::river::Interface::size() const {
 void audio::river::Interface::setBufferSize(size_t _nbChunk) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (m_node->isInput() == true) {
-		std::shared_ptr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
 		if (algo == nullptr) {
 			RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
 			return;
@@ -294,7 +294,7 @@ void audio::river::Interface::setBufferSize(size_t _nbChunk) {
 		algo->setBufferSize(_nbChunk);
 		return;
 	}
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
 		return;
@@ -305,7 +305,7 @@ void audio::river::Interface::setBufferSize(size_t _nbChunk) {
 void audio::river::Interface::setBufferSize(const std::chrono::microseconds& _time) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (m_node->isInput() == true) {
-		std::shared_ptr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
 		if (algo == nullptr) {
 			RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
 			return;
@@ -313,7 +313,7 @@ void audio::river::Interface::setBufferSize(const std::chrono::microseconds& _ti
 		algo->setBufferSize(_time);
 		return;
 	}
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		RIVER_ERROR("Request set buffer size for Interface that is not READ or WRITE mode ...");
 		return;
@@ -324,14 +324,14 @@ void audio::river::Interface::setBufferSize(const std::chrono::microseconds& _ti
 size_t audio::river::Interface::getBufferSize() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (m_node->isInput() == true) {
-		std::shared_ptr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
 		if (algo == nullptr) {
 			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 			return 0;
 		}
 		return algo->getBufferSize();
 	}
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 		return 0;
@@ -342,14 +342,14 @@ size_t audio::river::Interface::getBufferSize() {
 std::chrono::microseconds audio::river::Interface::getBufferSizeMicrosecond() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (m_node->isInput() == true) {
-		std::shared_ptr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
 		if (algo == nullptr) {
 			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 			return std::chrono::microseconds(0);
 		}
 		return algo->getBufferSizeMicrosecond();
 	}
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 		return std::chrono::microseconds(0);
@@ -360,14 +360,14 @@ std::chrono::microseconds audio::river::Interface::getBufferSizeMicrosecond() {
 size_t audio::river::Interface::getBufferFillSize() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (m_node->isInput() == true) {
-		std::shared_ptr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
 		if (algo == nullptr) {
 			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 			return 0;
 		}
 		return algo->getBufferFillSize();
 	}
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 		return 0;
@@ -379,14 +379,14 @@ size_t audio::river::Interface::getBufferFillSize() {
 std::chrono::microseconds audio::river::Interface::getBufferFillSizeMicrosecond() {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (m_node->isInput() == true) {
-		std::shared_ptr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
+		ememory::SharedPtr<audio::drain::EndPointRead> algo = m_process.get<audio::drain::EndPointRead>(m_process.size()-1);
 		if (algo == nullptr) {
 			RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 			return std::chrono::microseconds(0);
 		}
 		return algo->getBufferFillSizeMicrosecond();
 	}
-	std::shared_ptr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
+	ememory::SharedPtr<audio::drain::EndPointWrite> algo = m_process.get<audio::drain::EndPointWrite>(0);
 	if (algo == nullptr) {
 		RIVER_ERROR("Request get buffer size for Interface that is not READ or WRITE mode ...");
 		return std::chrono::microseconds(0);
@@ -413,7 +413,7 @@ audio::Time audio::river::Interface::getCurrentTime() const {
 void audio::river::Interface::addVolumeGroup(const std::string& _name) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("addVolumeGroup(" << _name << ")");
-	std::shared_ptr<audio::drain::Volume> algo = m_process.get<audio::drain::Volume>("volume");
+	ememory::SharedPtr<audio::drain::Volume> algo = m_process.get<audio::drain::Volume>("volume");
 	if (algo == nullptr) {
 		m_process.removeAlgoDynamic();
 		// add all time the volume stage :
@@ -427,10 +427,10 @@ void audio::river::Interface::addVolumeGroup(const std::string& _name) {
 	}
 	if (_name == "FLOW") {
 		// Local volume name
-		algo->addVolumeStage(std::make_shared<audio::drain::VolumeElement>(_name));
+		algo->addVolumeStage(ememory::makeShared<audio::drain::VolumeElement>(_name));
 	} else {
 		// get manager unique instance:
-		std::shared_ptr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
+		ememory::SharedPtr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
 		algo->addVolumeStage(mng->getVolumeGroup(_name));
 	}
 }
@@ -449,7 +449,7 @@ void audio::river::Interface::systemNeedOutputData(audio::Time _time, void* _dat
 
 void audio::river::Interface::systemVolumeChange() {
 	std::unique_lock<std::recursive_mutex> lockProcess(m_mutex);
-	std::shared_ptr<audio::drain::Volume> algo = m_process.get<audio::drain::Volume>("volume");
+	ememory::SharedPtr<audio::drain::Volume> algo = m_process.get<audio::drain::Volume>("volume");
 	if (algo == nullptr) {
 		return;
 	}

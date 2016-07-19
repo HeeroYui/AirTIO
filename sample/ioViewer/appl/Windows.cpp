@@ -44,19 +44,19 @@ void appl::Windows::init() {
 	}
 	m_composer->loadFromString(composition);
 	setSubWidget(m_composer);
-	subBind(ewol::widget::Button, "bt-record", signalPressed, shared_from_this(), &appl::Windows::onCallbackRecord);
-	subBind(ewol::widget::Button, "bt-generate", signalPressed, shared_from_this(), &appl::Windows::onCallbackGenerate);
+	subBind(ewol::widget::Button, "bt-record", signalPressed, sharedFromThis(), &appl::Windows::onCallbackRecord);
+	subBind(ewol::widget::Button, "bt-generate", signalPressed, sharedFromThis(), &appl::Windows::onCallbackGenerate);
 }
 
 void appl::Windows::onCallbackRecord() {
-	std::shared_ptr<audio::river::widget::TemporalViewer> tmpDisp = std::dynamic_pointer_cast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
+	ememory::SharedPtr<audio::river::widget::TemporalViewer> tmpDisp = ememory::dynamicPointerCast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
 	if (tmpDisp != nullptr) {
 		tmpDisp->recordToggle();
 	}
 }
 
 void appl::Windows::onCallbackGenerate() {
-	std::shared_ptr<audio::river::widget::TemporalViewer> tmpDisp = std::dynamic_pointer_cast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
+	ememory::SharedPtr<audio::river::widget::TemporalViewer> tmpDisp = ememory::dynamicPointerCast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
 	if (tmpDisp != nullptr) {
 		tmpDisp->generateToggle();
 	}

@@ -8,7 +8,7 @@
 
 #include <audio/river/io/NodePortAudio.h>
 #include <audio/river/debug.h>
-#include <memory>
+#include <ememory/memory.h>
 #include <audio/Time.h>
 #include <audio/Duration.h>
 
@@ -53,8 +53,8 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
 }
 
 
-std::shared_ptr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const ejson::Object& _config) {
-	return std::shared_ptr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
+ememory::SharedPtr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const std::string& _name, const ejson::Object& _config) {
+	return ememory::SharedPtr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
 }
 
 audio::river::io::NodePortAudio::NodePortAudio(const std::string& _name, const ejson::Object& _config) :

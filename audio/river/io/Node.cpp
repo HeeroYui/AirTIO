@@ -119,7 +119,7 @@ size_t audio::river::io::Node::getNumberOfInterface(enum audio::river::modeInter
 size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river::modeInterface _interfaceType) {
 	size_t out = 0;
 	for (size_t iii=0; iii<m_listAvaillable.size(); ++iii) {
-		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -130,8 +130,8 @@ size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river:
 	return out;
 }
 
-void audio::river::io::Node::registerAsRemote(const std::shared_ptr<audio::river::Interface>& _interface) {
-	std::vector<std::weak_ptr<audio::river::Interface> >::iterator it = m_listAvaillable.begin();
+void audio::river::io::Node::registerAsRemote(const ememory::SharedPtr<audio::river::Interface>& _interface) {
+	std::vector<ememory::WeakPtr<audio::river::Interface> >::iterator it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
 			it = m_listAvaillable.erase(it);
@@ -142,7 +142,7 @@ void audio::river::io::Node::registerAsRemote(const std::shared_ptr<audio::river
 	m_listAvaillable.push_back(_interface);
 }
 
-void audio::river::io::Node::interfaceAdd(const std::shared_ptr<audio::river::Interface>& _interface) {
+void audio::river::io::Node::interfaceAdd(const ememory::SharedPtr<audio::river::Interface>& _interface) {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
@@ -158,7 +158,7 @@ void audio::river::io::Node::interfaceAdd(const std::shared_ptr<audio::river::In
 	}
 }
 
-void audio::river::io::Node::interfaceRemove(const std::shared_ptr<audio::river::Interface>& _interface) {
+void audio::river::io::Node::interfaceRemove(const ememory::SharedPtr<audio::river::Interface>& _interface) {
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
@@ -178,7 +178,7 @@ void audio::river::io::Node::interfaceRemove(const std::shared_ptr<audio::river:
 
 void audio::river::io::Node::volumeChange() {
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
-		std::shared_ptr<audio::river::Interface> node = m_listAvaillable[iii].lock();
+		ememory::SharedPtr<audio::river::Interface> node = m_listAvaillable[iii].lock();
 		if (node != nullptr) {
 			node->systemVolumeChange();
 		}
@@ -320,7 +320,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -346,7 +346,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 
 
 void audio::river::io::Node::startInGroup() {
-	std::shared_ptr<audio::river::io::Group> group = m_group.lock();
+	ememory::SharedPtr<audio::river::io::Group> group = m_group.lock();
 	if (group != nullptr) {
 		group->start();
 	} else {
@@ -355,7 +355,7 @@ void audio::river::io::Node::startInGroup() {
 }
 
 void audio::river::io::Node::stopInGroup() {
-	std::shared_ptr<audio::river::io::Group> group = m_group.lock();
+	ememory::SharedPtr<audio::river::io::Group> group = m_group.lock();
 	if (group != nullptr) {
 		group->stop();
 	} else {

@@ -11,7 +11,7 @@
 namespace appl {
 	class Windows : public ewol::widget::Windows {
 		private:
-			std::shared_ptr<ewol::widget::Composer> m_composer;
+			ememory::SharedPtr<ewol::widget::Composer> m_composer;
 		protected:
 			Windows();
 			void init();

@@ -9,11 +9,11 @@ namespace river_test_playback_callback {
 	
 	class testOutCallback {
 		public:
-			std::shared_ptr<audio::river::Manager> m_manager;
-			std::shared_ptr<audio::river::Interface> m_interface;
+			ememory::SharedPtr<audio::river::Manager> m_manager;
+			ememory::SharedPtr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testOutCallback(std::shared_ptr<audio::river::Manager> _manager, const std::string& _io="speaker") :
+			testOutCallback(ememory::SharedPtr<audio::river::Manager> _manager, const std::string& _io="speaker") :
 			  m_manager(_manager),
 			  m_phase(0) {
 				//Set stereo output:
@@ -89,11 +89,11 @@ namespace river_test_playback_callback {
 	
 	TEST(TestALL, testOutputCallBack) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
 		TEST_INFO("test output (callback mode)");
-		std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker");
+		ememory::SharedPtr<testOutCallback> process = ememory::makeShared<testOutCallback>(manager, "speaker");
 		ASSERT_NE(process, nullptr);
 		process->run();
 		process.reset();
@@ -103,11 +103,11 @@ namespace river_test_playback_callback {
 	
 	TEST(TestALL, testOutputCallBackPulse) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
 		TEST_INFO("test output (callback mode)");
-		std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker-pulse");
+		ememory::SharedPtr<testOutCallback> process = ememory::makeShared<testOutCallback>(manager, "speaker-pulse");
 		process->run();
 		process.reset();
 		usleep(500000);
@@ -116,11 +116,11 @@ namespace river_test_playback_callback {
 	
 	TEST(TestALL, testOutputCallBackJack) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		
 		TEST_INFO("test output (callback mode)");
-		std::shared_ptr<testOutCallback> process = std::make_shared<testOutCallback>(manager, "speaker-jack");
+		ememory::SharedPtr<testOutCallback> process = ememory::makeShared<testOutCallback>(manager, "speaker-jack");
 		process->run();
 		process.reset();
 		usleep(500000);

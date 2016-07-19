@@ -26,7 +26,7 @@ namespace audio {
 					 */
 					NodeOrchestra(const std::string& _name, const ejson::Object& _config);
 				public:
-					static std::shared_ptr<NodeOrchestra> create(const std::string& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeOrchestra> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */

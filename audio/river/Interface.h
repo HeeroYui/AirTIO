@@ -11,7 +11,7 @@
 #include <mutex>
 #include <chrono>
 #include <functional>
-#include <memory>
+#include <ememory/memory.h>
 #include <audio/format.h>
 #include <audio/channel.h>
 #include <audio/drain/Process.h>
@@ -39,7 +39,7 @@ namespace audio {
 		 * @brief Interface is the basic handle to manage the input output stream
 		 * @note To create this class see @ref audio::river::Manager class
 		 */
-		class Interface : public std::enable_shared_from_this<Interface> {
+		class Interface : public ememory::EnableSharedFromThis<Interface> {
 			friend class io::Node;
 			friend class io::NodeAirTAudio;
 			friend class io::NodeAEC;
@@ -65,7 +65,7 @@ namespace audio {
 				bool init(float _freq,
 				          const std::vector<audio::channel>& _map,
 				          audio::format _format,
-				          const std::shared_ptr<audio::river::io::Node>& _node,
+				          ememory::SharedPtr<audio::river::io::Node> _node,
 				          const ejson::Object& _config);
 				/**
 				 * @brief Factory of this interface (called by class audio::river::Manager)
@@ -77,10 +77,10 @@ namespace audio {
 				 * @return nullptr The configuration does not work.
 				 * @return pointer The interface has been corectly created.
 				 */
-				static std::shared_ptr<Interface> create(float _freq,
+				static ememory::SharedPtr<Interface> create(float _freq,
 				                                           const std::vector<audio::channel>& _map,
 				                                           audio::format _format,
-				                                           const std::shared_ptr<audio::river::io::Node>& _node,
+				                                           const ememory::SharedPtr<audio::river::io::Node>& _node,
 				                                           const ejson::Object& _config);
 			public:
 				/**
@@ -116,7 +116,7 @@ namespace audio {
 					}
 				}
 			protected:
-				std::shared_ptr<audio::river::io::Node> m_node; //!< Hardware interface to/from stream audio flow.
+				ememory::SharedPtr<audio::river::io::Node> m_node; //!< Hardware interface to/from stream audio flow.
 			protected:
 				std::string m_name; //!< Name of the interface.
 			public:

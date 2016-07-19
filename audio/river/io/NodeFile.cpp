@@ -8,7 +8,7 @@
 
 #include <audio/river/io/NodeFile.h>
 #include <audio/river/debug.h>
-#include <memory>
+#include <ememory/memory.h>
 
 int32_t audio::river::io::NodeFile::recordCallback(const void* _inputBuffer,
                                                    const audio::Time& _timeInput,
@@ -34,8 +34,8 @@ int32_t audio::river::io::NodeFile::playbackCallback(void* _outputBuffer,
 
 
 
-std::shared_ptr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const std::string& _name, const ejson::Object& _config) {
-	return std::shared_ptr<audio::river::io::NodeFile>(new audio::river::io::NodeFile(_name, _config));
+ememory::SharedPtr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const std::string& _name, const ejson::Object& _config) {
+	return ememory::SharedPtr<audio::river::io::NodeFile>(new audio::river::io::NodeFile(_name, _config));
 }
 
 audio::river::io::NodeFile::NodeFile(const std::string& _name, const ejson::Object& _config) :
@@ -253,7 +253,7 @@ void audio::river::io::NodeFile::start() {
 	}
 	m_alive = true;
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"read":"write") );
-	m_thread = std::make_shared<std::thread>(&audio::river::io::NodeFile::threadCallback2, this);
+	m_thread = ememory::makeShared<std::thread>(&audio::river::io::NodeFile::threadCallback2, this);
 	m_time = audio::Time::now();
 }
 

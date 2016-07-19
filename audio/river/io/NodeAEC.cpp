@@ -7,14 +7,14 @@
 #include <audio/river/io/NodeAEC.h>
 #include <audio/river/debug.h>
 #include <etk/types.h>
-#include <memory>
+#include <ememory/memory.h>
 #include <functional>
 
-std::shared_ptr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const ejson::Object& _config) {
-	return std::shared_ptr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
+ememory::SharedPtr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const ejson::Object& _config) {
+	return ememory::SharedPtr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
 }
 
-std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,
+ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,
                                                                     const std::vector<audio::channel>& _map,
                                                                     audio::format _format,
                                                                     const std::string& _objectName,
@@ -23,7 +23,7 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(
 	const ejson::Object tmppp = m_config[_objectName].toObject();
 	if (tmppp.exist() == false) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config.getKeys());
-		return std::shared_ptr<audio::river::Interface>();
+		return ememory::SharedPtr<audio::river::Interface>();
 	}
 	std::string streamName = tmppp["map-on"].toString().get("error");
 	
@@ -33,14 +33,14 @@ std::shared_ptr<audio::river::Interface> audio::river::io::NodeAEC::createInput(
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
-		return std::shared_ptr<audio::river::Interface>();
+		return ememory::SharedPtr<audio::river::Interface>();
 	}
 	// get global hardware interface:
-	std::shared_ptr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
+	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	// get the output or input channel :
-	std::shared_ptr<audio::river::io::Node> node = manager->getNode(streamName);
+	ememory::SharedPtr<audio::river::io::Node> node = manager->getNode(streamName);
 	// create user iterface:
-	std::shared_ptr<audio::river::Interface> interface;
+	ememory::SharedPtr<audio::river::Interface> interface;
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
 	if (interface != nullptr) {
 		interface->setName(_name);
@@ -343,7 +343,7 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 		if (m_listAvaillable[iii].expired() == true) {
 			continue;
 		}
-		std::shared_ptr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}

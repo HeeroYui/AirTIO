@@ -70,9 +70,9 @@ int main(int _argc, const char **_argv) {
 	// initialize river interface
 	audio::river::initString(configurationRiver);
 	// Create the River manager for tha application or part of the application.
-	std::shared_ptr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
+	ememory::SharedPtr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
 	// create interface:
-	std::shared_ptr<audio::river::Interface> interface;
+	ememory::SharedPtr<audio::river::Interface> interface;
 	//Get the generic input:
 	interface = manager->createOutput(48000,
 	                                  std::vector<audio::channel>(),

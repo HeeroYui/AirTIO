@@ -8,7 +8,7 @@
 
 #include <audio/river/io/NodeOrchestra.h>
 #include <audio/river/debug.h>
-#include <memory>
+#include <ememory/memory.h>
 
 int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer,
                                                         const audio::Time& _timeInput,
@@ -34,8 +34,8 @@ int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
 
 
 
-std::shared_ptr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const std::string& _name, const ejson::Object& _config) {
-	return std::shared_ptr<audio::river::io::NodeOrchestra>(new audio::river::io::NodeOrchestra(_name, _config));
+ememory::SharedPtr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const std::string& _name, const ejson::Object& _config) {
+	return ememory::SharedPtr<audio::river::io::NodeOrchestra>(new audio::river::io::NodeOrchestra(_name, _config));
 }
 
 audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const ejson::Object& _config) :

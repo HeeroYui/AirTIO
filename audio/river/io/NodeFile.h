@@ -26,7 +26,7 @@ namespace audio {
 					 */
 					NodeFile(const std::string& _name, const ejson::Object& _config);
 				public:
-					static std::shared_ptr<NodeFile> create(const std::string& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeFile> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -41,7 +41,7 @@ namespace audio {
 					uint32_t m_sampleRate; //!< Sample Rate of the Raw file
 					audio::format m_format; //!< Format of the file
 					std::vector<audio::channel> m_map; //!< Map of the file
-					std::shared_ptr<std::thread> m_thread; //!< playing thread of the flow
+					ememory::SharedPtr<std::thread> m_thread; //!< playing thread of the flow
 					std::atomic<bool> m_alive; //!< thread is active
 				protected:
 					virtual void start();

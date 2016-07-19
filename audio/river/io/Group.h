@@ -23,7 +23,7 @@ namespace audio {
 			 * is stopped.
 			 * @note For the Alsa interface a low level link is availlable with AirTAudio for Alsa (One thread)
 			 */
-			class Group : public std::enable_shared_from_this<Group> {
+			class Group : public ememory::EnableSharedFromThis<Group> {
 				public:
 					/**
 					 * @brief Contructor. No special thing to do.
@@ -36,7 +36,7 @@ namespace audio {
 						// TODO : ...
 					}
 				private: 
-					std::vector< std::shared_ptr<Node> > m_list; //!< List of all node in the group
+					std::vector< ememory::SharedPtr<Node> > m_list; //!< List of all node in the group
 				public:
 					/**
 					 * @brief Create a group with all node needed to syncronize together
@@ -50,7 +50,7 @@ namespace audio {
 					 * @return nullptr The node named _name was not found.
 					 * @return pointer The node was find in this group.
 					 */
-					std::shared_ptr<audio::river::io::Node> getNode(const std::string& _name);
+					ememory::SharedPtr<audio::river::io::Node> getNode(const std::string& _name);
 					/**
 					 * @brief Start the group.
 					 * @note all sub-node will be started.

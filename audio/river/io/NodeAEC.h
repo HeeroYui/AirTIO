@@ -25,7 +25,7 @@ namespace audio {
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					static std::shared_ptr<NodeAEC> create(const std::string& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeAEC> create(const std::string& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -33,8 +33,8 @@ namespace audio {
 				protected:
 					virtual void start();
 					virtual void stop();
-					std::shared_ptr<audio::river::Interface> m_interfaceMicrophone; //!< Interface on the Microphone.
-					std::shared_ptr<audio::river::Interface> m_interfaceFeedBack; //!< Interface on the feedback of speaker.
+					ememory::SharedPtr<audio::river::Interface> m_interfaceMicrophone; //!< Interface on the Microphone.
+					ememory::SharedPtr<audio::river::Interface> m_interfaceFeedBack; //!< Interface on the feedback of speaker.
 					/**
 					 * @brief Internal: create an input with the specific parameter:
 					 * @param[in] _freq Frequency.
@@ -44,7 +44,7 @@ namespace audio {
 					 * @param[in] _name 
 					 * @return Interfae Pointer.
 					 */
-					std::shared_ptr<audio::river::Interface> createInput(float _freq,
+					ememory::SharedPtr<audio::river::Interface> createInput(float _freq,
 					                                                const std::vector<audio::channel>& _map,
 					                                                audio::format _format,
 					                                                const std::string& _streamName,

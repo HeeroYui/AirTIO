@@ -10,10 +10,10 @@
 namespace river_test_echo_delay {
 	class TestClass {
 		private:
-			std::shared_ptr<audio::river::Manager> m_manager;
-			std::shared_ptr<audio::river::Interface> m_interfaceOut;
-			std::shared_ptr<audio::river::Interface> m_interfaceIn;
-			std::shared_ptr<audio::river::Interface> m_interfaceFB;
+			ememory::SharedPtr<audio::river::Manager> m_manager;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceOut;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceIn;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceFB;
 			double m_phase;
 			double m_freq;
 			int32_t m_nextSampleCount;
@@ -28,7 +28,7 @@ namespace river_test_echo_delay {
 			int16_t m_volumeInputMin;
 			float m_gain;
 		public:
-			TestClass(std::shared_ptr<audio::river::Manager> _manager) :
+			TestClass(ememory::SharedPtr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0),
 			  m_freq(400),
@@ -413,9 +413,9 @@ namespace river_test_echo_delay {
 	
 	TEST(TestTime, testDelay) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std::shared_ptr<TestClass> process = std::make_shared<TestClass>(manager);
+		ememory::SharedPtr<TestClass> process = ememory::makeShared<TestClass>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

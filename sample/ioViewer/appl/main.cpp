@@ -47,7 +47,7 @@ class MainApplication : public ewol::context::Application {
 			
 			audio::river::widget::TemporalViewer::createManagerWidget(_context.getWidgetManager());
 			
-			std::shared_ptr<ewol::widget::Windows> basicWindows = appl::Windows::create();
+			ememory::SharedPtr<ewol::widget::Windows> basicWindows = appl::Windows::create();
 			// create the specific windows
 			_context.setWindows(basicWindows);
 			APPL_INFO("==> Init APPL (END)");

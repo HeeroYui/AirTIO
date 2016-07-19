@@ -10,12 +10,12 @@
 namespace river_test_muxer {
 	class TestClass {
 		private:
-			std::shared_ptr<audio::river::Manager> m_manager;
-			std::shared_ptr<audio::river::Interface> m_interfaceIn;
-			std::shared_ptr<audio::river::Interface> m_interfaceOut;
+			ememory::SharedPtr<audio::river::Manager> m_manager;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceIn;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceOut;
 			double m_phase;
 		public:
-			TestClass(std::shared_ptr<audio::river::Manager> _manager) :
+			TestClass(ememory::SharedPtr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
 				std::vector<audio::channel> channelMap;
@@ -163,9 +163,9 @@ namespace river_test_muxer {
 	
 	TEST(TestMuxer, testMuxing) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std::shared_ptr<TestClass> process = std::make_shared<TestClass>(manager);
+		ememory::SharedPtr<TestClass> process = ememory::makeShared<TestClass>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

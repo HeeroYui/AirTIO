@@ -43,8 +43,8 @@ namespace audio {
 					virtual void onRegenerateDisplay();
 					virtual void periodicCall(const ewol::event::Time& _event);
 				private:
-					std::shared_ptr<audio::river::Manager> m_manager;
-					std::shared_ptr<audio::river::Interface> m_interface;
+					ememory::SharedPtr<audio::river::Manager> m_manager;
+					ememory::SharedPtr<audio::river::Interface> m_interface;
 					void onDataReceived(const void* _data,
 					                    const audio::Time& _time,
 					                    size_t _nbChunk,

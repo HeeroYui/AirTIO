@@ -25,10 +25,10 @@ namespace river_test_record_callback {
 	
 	class testInCallback {
 		public:
-			std::shared_ptr<audio::river::Manager> m_manager;
-			std::shared_ptr<audio::river::Interface> m_interface;
+			ememory::SharedPtr<audio::river::Manager> m_manager;
+			ememory::SharedPtr<audio::river::Interface> m_interface;
 		public:
-			testInCallback(std::shared_ptr<audio::river::Manager> _manager, const std::string& _input="microphone") :
+			testInCallback(ememory::SharedPtr<audio::river::Manager> _manager, const std::string& _input="microphone") :
 			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
@@ -82,10 +82,10 @@ namespace river_test_record_callback {
 	
 	TEST(TestALL, testInputCallBack) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		TEST_INFO("test input (callback mode)");
-		std::shared_ptr<testInCallback> process = std::make_shared<testInCallback>(manager);
+		ememory::SharedPtr<testInCallback> process = ememory::makeShared<testInCallback>(manager);
 		process->run();
 		process.reset();
 		usleep(500000);

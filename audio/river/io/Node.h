@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <chrono>
 #include <functional>
-#include <memory>
+#include <ememory/memory.h>
 #include <audio/format.h>
 #include <audio/channel.h>
 #include "Manager.h"
@@ -29,7 +29,7 @@ namespace audio {
 			 * @brief A node is the base for input/output interface. When a output id declared, we automaticly have a feedback associated.
 			 * this manage the muxing of data for output an the demuxing for input.
 			 */
-			class Node : public std::enable_shared_from_this<Node> {
+			class Node : public ememory::EnableSharedFromThis<Node> {
 				friend class audio::river::io::Group;
 				protected:
 					uint32_t m_uid; //!< uniqueNodeID use for debug an dot generation.
@@ -82,10 +82,10 @@ namespace audio {
 						}
 					}
 				protected:
-					std::shared_ptr<audio::drain::VolumeElement> m_volume; //!< if a volume is set it is set here ... for hardware interface only.
+					ememory::SharedPtr<audio::drain::VolumeElement> m_volume; //!< if a volume is set it is set here ... for hardware interface only.
 				protected:
-					std::vector<std::weak_ptr<audio::river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
-					std::vector<std::shared_ptr<audio::river::Interface> > m_list; //!< List of all connected interface at this node.
+					std::vector<ememory::WeakPtr<audio::river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
+					std::vector<ememory::SharedPtr<audio::river::Interface> > m_list; //!< List of all connected interface at this node.
 					/**
 					 * @brief Get the number of interface with a specific type.
 					 * @param[in] _interfaceType Type of the interface.
@@ -109,20 +109,20 @@ namespace audio {
 				public:
 					/**
 					 * @brief Register an interface that can connect on it. (might be done in the Interface Init)
-					 * @note We keep a std::weak_ptr. this is the reason why we do not have a remove.
+					 * @note We keep a ememory::WeakPtr. this is the reason why we do not have a remove.
 					 * @param[in] _interface Pointer on the interface to register.
 					 */
-					void registerAsRemote(const std::shared_ptr<audio::river::Interface>& _interface);
+					void registerAsRemote(const ememory::SharedPtr<audio::river::Interface>& _interface);
 					/**
 					 * @brief Request this interface might receve/send dat on the flow. (start/resume)
 					 * @param[in] _interface Pointer on the interface to register.
 					 */
-					void interfaceAdd(const std::shared_ptr<audio::river::Interface>& _interface);
+					void interfaceAdd(const ememory::SharedPtr<audio::river::Interface>& _interface);
 					/**
 					 * @brief Un-register the interface as an availlable read/write interface. (suspend/stop)
 					 * @param[in] _interface Pointer on the interface to register.
 					 */
-					void interfaceRemove(const std::shared_ptr<audio::river::Interface>& _interface);
+					void interfaceRemove(const ememory::SharedPtr<audio::river::Interface>& _interface);
 				protected:
 					std::string m_name; //!< Name of the interface
 				public:
@@ -151,13 +151,13 @@ namespace audio {
 						return !m_isInput;
 					}
 				protected:
-					std::weak_ptr<audio::river::io::Group> m_group; //!< reference on the group. If available.
+					ememory::WeakPtr<audio::river::io::Group> m_group; //!< reference on the group. If available.
 				public:
 					/**
 					 * @brief Set this node in a low level group.
 					 * @param[in] _group Group reference.
 					 */
-					void setGroup(std::shared_ptr<audio::river::io::Group> _group) {
+					void setGroup(ememory::SharedPtr<audio::river::io::Group> _group) {
 						m_group = _group;
 					}
 				protected:
@@ -182,7 +182,7 @@ namespace audio {
 					 * @brief If this iss an hardware interface we can have a resuest of the volume stage:
 					 * @return pointer on the requested volume.
 					 */
-					const std::shared_ptr<audio::drain::VolumeElement>& getVolume() {
+					const ememory::SharedPtr<audio::drain::VolumeElement>& getVolume() {
 						return m_volume;
 					}
 				public:

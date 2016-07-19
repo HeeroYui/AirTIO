@@ -9,12 +9,12 @@ namespace river_test_aec {
 	
 	class Linker {
 		private:
-			std::shared_ptr<audio::river::Manager> m_manager;
-			std::shared_ptr<audio::river::Interface> m_interfaceOut;
-			std::shared_ptr<audio::river::Interface> m_interfaceIn;
+			ememory::SharedPtr<audio::river::Manager> m_manager;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceOut;
+			ememory::SharedPtr<audio::river::Interface> m_interfaceIn;
 			audio::drain::CircularBuffer m_buffer;
 		public:
-			Linker(std::shared_ptr<audio::river::Manager> _manager, const std::string& _input, const std::string& _output) :
+			Linker(ememory::SharedPtr<audio::river::Manager> _manager, const std::string& _input, const std::string& _output) :
 			  m_manager(_manager) {
 				//Set stereo output:
 				std::vector<audio::channel> channelMap;
@@ -195,10 +195,10 @@ namespace river_test_aec {
 	
 	TEST(TestUser, testAECManually) {
 		audio::river::initString(configurationRiver);
-		std::shared_ptr<audio::river::Manager> manager;
+		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		std::shared_ptr<Linker> processLink1 = std::make_shared<Linker>(manager, "microphone-clean", "speaker");
-		std::shared_ptr<Linker> processLink2 = std::make_shared<Linker>(manager, "microphone", "speaker-test");
+		ememory::SharedPtr<Linker> processLink1 = ememory::makeShared<Linker>(manager, "microphone-clean", "speaker");
+		ememory::SharedPtr<Linker> processLink2 = ememory::makeShared<Linker>(manager, "microphone", "speaker-test");
 		processLink1->start();
 		processLink2->start();
 		sleep(30);
