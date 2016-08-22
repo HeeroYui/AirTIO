@@ -15,10 +15,10 @@ ememory::SharedPtr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::cre
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeMuxer::createInput(float _freq,
-                                                                      const std::vector<audio::channel>& _map,
-                                                                      audio::format _format,
-                                                                      const std::string& _objectName,
-                                                                      const std::string& _name) {
+                                                                                     const std::vector<audio::channel>& _map,
+                                                                                     audio::format _format,
+                                                                                     const std::string& _objectName,
+                                                                                     const std::string& _name) {
 	// check if the output exist
 	const ejson::Object tmppp = m_config[_objectName].toObject();
 	if (tmppp.exist() == false) {
@@ -188,38 +188,42 @@ void audio::river::io::NodeMuxer::stop() {
 
 
 void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
-                                                const audio::Time& _time,
-                                                size_t _nbChunk,
-                                                enum audio::format _format,
-                                                uint32_t _frequency,
-                                                const std::vector<audio::channel>& _map) {
-	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
-	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
+                                                       const audio::Time& _time,
+                                                       size_t _nbChunk,
+                                                       enum audio::format _format,
+                                                       uint32_t _frequency,
+                                                       const std::vector<audio::channel>& _map) {
+	RIVER_PRINT("Input-1 Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
+	RIVER_DEBUG("        next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
+	/*
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
+	*/
 	// push data synchronize
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_bufferInput1.write(_data, _nbChunk, _time);
-	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
+	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_input_1.raw", _data, _nbChunk*_map.size());
 	process();
 }
 
 void audio::river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
-                                                const audio::Time& _time,
-                                                size_t _nbChunk,
-                                                enum audio::format _format,
-                                                uint32_t _frequency,
-                                                const std::vector<audio::channel>& _map) {
-	RIVER_DEBUG("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
-	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
+                                                       const audio::Time& _time,
+                                                       size_t _nbChunk,
+                                                       enum audio::format _format,
+                                                       uint32_t _frequency,
+                                                       const std::vector<audio::channel>& _map) {
+	RIVER_PRINT("Input-2 Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
+	RIVER_DEBUG("        next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
+	/*
 	if (_format != audio::format_int16) {
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
+	*/
 	// push data synchronize
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_bufferInput2.write(_data, _nbChunk, _time);
-	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
+	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_input_2.raw", _data, _nbChunk*_map.size());
 	process();
 }
 
@@ -230,6 +234,7 @@ void audio::river::io::NodeMuxer::process() {
 	if (m_bufferInput2.getSize() <= 256) {
 		return;
 	}
+	RIVER_PRINT("process : s1=" << m_bufferInput1.getSize() << " s2=" << m_bufferInput2.getSize());
 	audio::Time in1Time = m_bufferInput1.getReadTimeStamp();
 	audio::Time in2Time = m_bufferInput2.getReadTimeStamp();
 	audio::Duration delta;
@@ -238,18 +243,17 @@ void audio::river::io::NodeMuxer::process() {
 	} else {
 		delta = in1Time - in2Time;
 	}
-	
-	RIVER_INFO("check delta " << delta.count() << " > " << m_sampleTime.count());
+	RIVER_VERBOSE("check delta " << delta.count() << " > " << m_sampleTime.count());
 	if (delta > m_sampleTime) {
 		// Synchronize if possible
 		if (in1Time < in2Time) {
-			RIVER_INFO("in1Time < in2Time : Change Microphone time start " << in2Time);
+			RIVER_INFO("in1Time < in2Time : Change Input-1 time start " << in2Time);
 			RIVER_INFO("                                 old time stamp=" << m_bufferInput1.getReadTimeStamp());
 			m_bufferInput1.setReadPosition(in2Time);
 			RIVER_INFO("                                 new time stamp=" << m_bufferInput1.getReadTimeStamp());
 		}
 		if (in1Time > in2Time) {
-			RIVER_INFO("in1Time > in2Time : Change FeedBack time start " << in1Time);
+			RIVER_INFO("in1Time > in2Time : Change Input-2 time start " << in1Time);
 			RIVER_INFO("                               old time stamp=" << m_bufferInput2.getReadTimeStamp());
 			m_bufferInput2.setReadPosition(in1Time);
 			RIVER_INFO("                               new time stamp=" << m_bufferInput2.getReadTimeStamp());
@@ -272,17 +276,17 @@ void audio::river::io::NodeMuxer::process() {
 	}
 	std::vector<uint8_t> dataIn1;
 	std::vector<uint8_t> dataIn2;
-	dataIn1.resize(256*sizeof(int16_t)*m_mapInput1.size(), 0);
-	dataIn2.resize(256*sizeof(int16_t)*m_mapInput2.size(), 0);
-	m_data.resize(256*sizeof(int16_t)*getInterfaceFormat().getMap().size(), 0);
+	dataIn1.resize(256*audio::getFormatBytes(getInterfaceFormat().getFormat())*m_mapInput1.size(), 0);
+	dataIn2.resize(256*audio::getFormatBytes(getInterfaceFormat().getFormat())*m_mapInput2.size(), 0);
+	m_data.resize(256*audio::getFormatBytes(getInterfaceFormat().getFormat())*getInterfaceFormat().getMap().size(), 0);
 	while (true) {
 		in1Time = m_bufferInput1.getReadTimeStamp();
 		in2Time = m_bufferInput2.getReadTimeStamp();
 		//RIVER_INFO(" process 256 samples ... in1Time=" << in1Time << " in2Time=" << in2Time << " delta = " << (in1Time-in2Time).count());
 		m_bufferInput1.read(&dataIn1[0], 256);
 		m_bufferInput2.read(&dataIn2[0], 256);
-		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT1.raw", &dataIn1[0], 256 * m_mapInput1.size());
-		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_INPUT2.raw", &dataIn2[0], 256 * m_mapInput2.size());
+		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_output_1.raw", &dataIn1[0], 256 * m_mapInput1.size());
+		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_output_2.raw", &dataIn2[0], 256 * m_mapInput2.size());
 		// if threaded : send event / otherwise, process ...
 		processMuxer(&dataIn1[0], &dataIn2[0], 256, in1Time);
 		if (    m_bufferInput1.getSize() <= 256

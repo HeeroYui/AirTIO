@@ -145,7 +145,8 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 					RIVER_CRITICAL("auto set format no element in the configuration: " << m_info.nativeFormats);
 				}
 			} else {
-				RIVER_CRITICAL("Can not manage input transforamtion: " << hardwareFormat.getFormat() << " not in " << m_info.nativeFormats);
+				RIVER_ERROR("Can not manage input transforamtion: " << hardwareFormat.getFormat() << " not in " << m_info.nativeFormats);
+				hardwareFormat.setFormat(hardwareFormat.getFormat());
 			}
 		}
 		if (etk::isIn(hardwareFormat.getFrequency(), m_info.sampleRates) == false) {
@@ -171,7 +172,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 				hardwareFormat.setFrequency(m_info.sampleRates[0]);
 				RIVER_INFO("auto set frequency: " << hardwareFormat.getFrequency() << "(first element in list) in " << m_info.sampleRates);
 			} else {
-				RIVER_CRITICAL("Can not manage input transforamtion:" << hardwareFormat.getFrequency() << " not in " << m_info.sampleRates);
+				RIVER_ERROR("Can not manage input transforamtion:" << hardwareFormat.getFrequency() << " not in " << m_info.sampleRates);
 			}
 			interfaceFormat.setFrequency(hardwareFormat.getFrequency());
 		}
@@ -183,7 +184,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 	params.deviceName = streamName;
 	params.nChannels = hardwareFormat.getMap().size();
 	if (m_info.channels.size() < params.nChannels) {
-		RIVER_CRITICAL("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.channels.size() << ").");
+		RIVER_ERROR("Can not open hardware device with more channel (" << params.nChannels << ") that is autorized by hardware (" << m_info.channels.size() << ").");
 	}
 	audio::orchestra::StreamOptions option;
 	etk::from_string(option.mode, tmpObject["timestamp-mode"].toString().get("soft"));
@@ -198,28 +199,28 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
 		err = m_interface.openStream(nullptr, &params,
-		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&audio::river::io::NodeOrchestra::recordCallback,
-		                                    this,
-		                                    std::placeholders::_1,
-		                                    std::placeholders::_2,
-		                                    std::placeholders::_5,
-		                                    std::placeholders::_6),
-		                        option
-		                        );
+		                             hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
+		                             std::bind(&audio::river::io::NodeOrchestra::recordCallback,
+		                                       this,
+		                                       std::placeholders::_1,
+		                                       std::placeholders::_2,
+		                                       std::placeholders::_5,
+		                                       std::placeholders::_6),
+		                            option
+		                            );
 	} else {
 		m_process.setInputConfig(interfaceFormat);
 		m_process.setOutputConfig(hardwareFormat);
 		err = m_interface.openStream(&params, nullptr,
-		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&audio::river::io::NodeOrchestra::playbackCallback,
-		                                    this,
-		                                    std::placeholders::_3,
-		                                    std::placeholders::_4,
-		                                    std::placeholders::_5,
-		                                    std::placeholders::_6),
-		                        option
-		                        );
+		                             hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
+		                             std::bind(&audio::river::io::NodeOrchestra::playbackCallback,
+		                                       this,
+		                                       std::placeholders::_3,
+		                                       std::placeholders::_4,
+		                                       std::placeholders::_5,
+		                                       std::placeholders::_6),
+		                            option
+		                            );
 	}
 	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);

@@ -14,6 +14,7 @@ namespace audio {
 }
 #define RIVER_BASE(info,data)  ELOG_BASE(audio::river::getLogId(),info,data)
 
+#define RIVER_PRINT(data)         RIVER_BASE(-1, data)
 #define RIVER_CRITICAL(data)      RIVER_BASE(1, data)
 #define RIVER_ERROR(data)         RIVER_BASE(2, data)
 #define RIVER_WARNING(data)       RIVER_BASE(3, data)

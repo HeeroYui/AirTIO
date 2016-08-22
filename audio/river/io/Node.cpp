@@ -77,9 +77,7 @@ audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _con
 	}
 	enum audio::format muxerFormatType = audio::getFormatFromString(muxerDemuxerConfig);
 	if (m_isInput == true) {
-		if (muxerFormatType != audio::format_int16) {
-			RIVER_CRITICAL("not supported demuxer type ... " << muxerFormatType << " for INPUT set in file:" << muxerDemuxerConfig);
-		}
+		// Support all ...
 	} else {
 		if (muxerFormatType != audio::format_int16_on_int32) {
 			RIVER_CRITICAL("not supported demuxer type ... " << muxerFormatType << " for OUTPUT set in file:" << muxerDemuxerConfig);
@@ -186,12 +184,11 @@ void audio::river::io::Node::volumeChange() {
 }
 
 void audio::river::io::Node::newInput(const void* _inputBuffer,
-                               uint32_t _nbChunk,
-                               const audio::Time& _time) {
+                                      uint32_t _nbChunk,
+                                      const audio::Time& _time) {
 	if (_inputBuffer == nullptr) {
 		return;
 	}
-	const int16_t* inputBuffer = static_cast<const int16_t *>(_inputBuffer);
 	for (size_t iii=0; iii< m_list.size(); ++iii) {
 		if (m_list[iii] == nullptr) {
 			continue;
@@ -200,7 +197,7 @@ void audio::river::io::Node::newInput(const void* _inputBuffer,
 			continue;
 		}
 		RIVER_VERBOSE("    IO name="<< m_list[iii]->getName());
-		m_list[iii]->systemNewInputData(_time, inputBuffer, _nbChunk);
+		m_list[iii]->systemNewInputData(_time, _inputBuffer, _nbChunk);
 	}
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [ END ]");
 	return;

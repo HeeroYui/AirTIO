@@ -19,6 +19,7 @@ static const std::string configurationRiver =
 	"		map-on:{\n"
 	"			interface:'auto',\n"
 	"			name:'default',\n"
+	//"			timestamp-mode:'trigered',\n"
 	"		},\n"
 	"		frequency:0,\n"
 	"		channel-map:['front-left', 'front-right'],\n"
@@ -35,21 +36,34 @@ void onDataReceived(const void* _data,
                     uint32_t _frequency,
                     const std::vector<audio::channel>& _map,
                     etk::FSNode* _outputNode) {
-	if (_format != audio::format_int16) {
-		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
+	if (    _format != audio::format_int16
+	     && _format != audio::format_float) {
+		std::cout << "[ERROR] call wrong type ... (need int16_t.float)" << std::endl;
+		return;
 	}
 	if (_outputNode->fileIsOpen() == false) {
-		// get the curent power of the signal.
-		const int16_t* data = static_cast<const int16_t*>(_data);
-		int64_t value = 0;
-		for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-			value += std::abs(data[iii]);
+		if (_format != audio::format_int16) {
+			// get the curent power of the signal.
+			const int16_t* data = static_cast<const int16_t*>(_data);
+			int64_t value = 0;
+			for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
+				value += std::abs(data[iii]);
+			}
+			value /= (_nbChunk*_map.size());
+			std::cout << "Get data ... average=" << int32_t(value) << std::endl;
+		} else {
+			// get the curent power of the signal.
+			const float* data = static_cast<const float*>(_data);
+			float value = 0;
+			for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
+				value += std::abs(data[iii]);
+			}
+			value /= (_nbChunk*_map.size());
+			std::cout << "Get data ... average=" << float(value) << std::endl;
 		}
-		value /= (_nbChunk*_map.size());
-		std::cout << "Get data ... average=" << int32_t(value) << std::endl;
 	} else {
 		// just write data
-		std::cout << "Get data ... chunks=" << _nbChunk << " time=" << _time << std::endl;
+		//std::cout << "Get data ... chunks=" << _nbChunk << " time=" << _time << std::endl;
 		_outputNode->fileWrite(_data, _map.size()*audio::getFormatBytes(_format), _nbChunk);
 	}
 }
