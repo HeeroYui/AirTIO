@@ -35,7 +35,7 @@ def create(target, module_name):
 	my_module.add_header_file([
 		'audio/river/widget/TemporalViewer.h'
 		])
-	my_module.add_module_depend(['ewol', 'audio-river'])
+	my_module.add_depend(['ewol', 'audio-river'])
 	my_module.add_path(tools.get_current_path(__file__))
 	return my_module
 

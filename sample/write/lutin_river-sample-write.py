@@ -29,7 +29,7 @@ def create(target, module_name):
 	my_module.add_src_file([
 		'main.cpp',
 		])
-	my_module.add_module_depend(['audio-river', 'etk'])
+	my_module.add_depend(['audio-river', 'etk'])
 	return my_module
 
 

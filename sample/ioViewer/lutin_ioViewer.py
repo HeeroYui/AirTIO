@@ -25,12 +25,12 @@ def get_maintainer():
 
 def create(target, module_name):
 	my_module = module.Module(__file__, module_name, get_type())
-	my_module.add_extra_compile_flags()
+	my_module.add_extra_flags()
 	my_module.add_src_file([
 		'appl/debug.cpp',
 		'appl/main.cpp',
 		'appl/Windows.cpp'])
-	my_module.add_module_depend(['ewol', 'audio-river', 'audio-river-widget'])
+	my_module.add_depend(['ewol', 'audio-river', 'audio-river-widget'])
 	my_module.add_path(tools.get_current_path(__file__))
 	# set the package properties :
 	my_module.pkg_set("VERSION", "1.0.0")
