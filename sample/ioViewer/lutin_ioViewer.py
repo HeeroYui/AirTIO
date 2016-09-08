@@ -33,16 +33,16 @@ def create(target, module_name):
 	my_module.add_depend(['ewol', 'audio-river', 'audio-river-widget'])
 	my_module.add_path(tools.get_current_path(__file__))
 	# set the package properties :
-	my_module.pkg_set("VERSION", "1.0.0")
-	my_module.pkg_set("VERSION_CODE", "1")
-	my_module.pkg_set("COMPAGNY_TYPE", "org")
-	my_module.pkg_set("COMPAGNY_NAME", "Edouard DUPIN")
-	my_module.pkg_set("MAINTAINER", ["Mr DUPIN Edouard <yui.heero@gmail.com>"])
-	my_module.pkg_set("SECTION", ["Development"])
-	my_module.pkg_set("PRIORITY", "optional")
-	my_module.pkg_set("DESCRIPTION", "Simple wiewer")
-	my_module.pkg_set("NAME", "ioViewer")
+	my_module.set_pkg("VERSION", "1.0.0")
+	my_module.set_pkg("VERSION_CODE", "1")
+	my_module.set_pkg("COMPAGNY_TYPE", "org")
+	my_module.set_pkg("COMPAGNY_NAME", "Edouard DUPIN")
+	my_module.set_pkg("MAINTAINER", ["Mr DUPIN Edouard <yui.heero@gmail.com>"])
+	my_module.set_pkg("SECTION", ["Development"])
+	my_module.set_pkg("PRIORITY", "optional")
+	my_module.set_pkg("DESCRIPTION", "Simple wiewer")
+	my_module.set_pkg("NAME", "ioViewer")
 	
-	my_module.pkg_add("RIGHT", "RECORD_AUDIO")
+	my_module.add_pkg("RIGHT", "RECORD_AUDIO")
 	return my_module
 
