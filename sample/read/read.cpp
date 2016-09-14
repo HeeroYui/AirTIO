@@ -4,14 +4,18 @@
  * @license APACHE v2.0 (see license file)
  */
 
+//! [audio_river_sample_read_all]
+//! [audio_river_sample_include]
 #include <audio/river/river.h>
 #include <audio/river/Manager.h>
 #include <audio/river/Interface.h>
+//! [audio_river_sample_include]
 #include <etk/os/FSNode.h>
 #include <etk/etk.h>
 #include <unistd.h>
 
 
+//! [audio_river_sample_read_config_file]
 static const std::string configurationRiver =
 	"{\n"
 	"	microphone:{\n"
@@ -27,8 +31,10 @@ static const std::string configurationRiver =
 	"		nb-chunk:1024\n"
 	"	}\n"
 	"}\n";
+//! [audio_river_sample_read_config_file]
 
 
+//! [audio_river_sample_callback_implement]
 void onDataReceived(const void* _data,
                     const audio::Time& _time,
                     size_t _nbChunk,
@@ -41,6 +47,7 @@ void onDataReceived(const void* _data,
 		std::cout << "[ERROR] call wrong type ... (need int16_t.float)" << std::endl;
 		return;
 	}
+	//! [audio_river_sample_callback_implement]
 	if (_outputNode->fileIsOpen() == false) {
 		if (_format != audio::format_int16) {
 			// get the curent power of the signal.
@@ -69,8 +76,10 @@ void onDataReceived(const void* _data,
 }
 
 int main(int _argc, const char **_argv) {
+	//! [audio_river_sample_init]
 	// the only one init for etk:
 	etk::init(_argc, _argv);
+	//! [audio_river_sample_init]
 	// local parameter:
 	std::string configFile;
 	std::string ioName="microphone";
@@ -101,8 +110,11 @@ int main(int _argc, const char **_argv) {
 	} else {
 		audio::river::init(configFile);
 	}
+	//! [audio_river_sample_get_interface]
 	// Create the River manager for tha application or part of the application.
 	ememory::SharedPtr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
+	//! [audio_river_sample_get_interface]
+	//! [audio_river_sample_create_read_interface]
 	// create interface:
 	ememory::SharedPtr<audio::river::Interface> interface;
 	//Get the generic input:
@@ -114,30 +126,37 @@ int main(int _argc, const char **_argv) {
 		std::cout << "nullptr interface" << std::endl;
 		return -1;
 	}
+	//! [audio_river_sample_create_read_interface]
 	etk::FSNode outputNode;
 	// open output file if needed:
 	if (outputFileName != "") {
 		outputNode.setName(outputFileName);
 		outputNode.fileOpenWrite();
 	}
+	//! [audio_river_sample_set_callback]
 	// set callback mode ...
 	interface->setInputCallback(std::bind(&onDataReceived,
-	                                        std::placeholders::_1,
-	                                        std::placeholders::_2,
-	                                        std::placeholders::_3,
-	                                        std::placeholders::_4,
-	                                        std::placeholders::_5,
-	                                        std::placeholders::_6,
-	                                        &outputNode));
+	                                      std::placeholders::_1,
+	                                      std::placeholders::_2,
+	                                      std::placeholders::_3,
+	                                      std::placeholders::_4,
+	                                      std::placeholders::_5,
+	                                      std::placeholders::_6,
+	                                      &outputNode));
+	//! [audio_river_sample_set_callback]
+	//! [audio_river_sample_read_start_stop]
 	// start the stream
 	interface->start();
 	// wait 10 second ...
 	sleep(10);
 	// stop the stream
 	interface->stop();
+	//! [audio_river_sample_read_start_stop]
+	//! [audio_river_sample_read_reset]
 	// remove interface and manager.
 	interface.reset();
 	manager.reset();
+	//! [audio_river_sample_read_reset]
 	// close the output file
 	if (outputFileName != "") {
 		outputNode.fileClose();
@@ -145,3 +164,5 @@ int main(int _argc, const char **_argv) {
 	return 0;
 }
 
+
+//! [audio_river_sample_read_all]

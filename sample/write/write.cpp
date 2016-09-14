@@ -4,13 +4,15 @@
  * @license APACHE v2.0 (see license file)
  */
 
+//! [audio_river_sample_write_all]
+
 #include <audio/river/river.h>
 #include <audio/river/Manager.h>
 #include <audio/river/Interface.h>
 #include <etk/etk.h>
 #include <unistd.h>
 
-
+//! [audio_river_sample_write_config_file]
 static const std::string configurationRiver =
 		"{\n"
 		"	speaker:{\n"
@@ -27,9 +29,11 @@ static const std::string configurationRiver =
 		"		volume-name:'MASTER'\n"
 		"	}\n"
 		"}\n";
+//! [audio_river_sample_write_config_file]
 
 static const int32_t nbChannelMax=8;
 
+//! [audio_river_sample_callback_implement]
 void onDataNeeded(void* _data,
                   const audio::Time& _time,
                   size_t _nbChunk,
@@ -54,6 +58,7 @@ void onDataNeeded(void* _data,
 		}
 	}
 }
+//! [audio_river_sample_callback_implement]
 
 int main(int _argc, const char **_argv) {
 	// the only one init for etk:
@@ -71,6 +76,7 @@ int main(int _argc, const char **_argv) {
 	audio::river::initString(configurationRiver);
 	// Create the River manager for tha application or part of the application.
 	ememory::SharedPtr<audio::river::Manager> manager = audio::river::Manager::create("river_sample_read");
+	//! [audio_river_sample_create_write_interface]
 	// create interface:
 	ememory::SharedPtr<audio::river::Interface> interface;
 	//Get the generic input:
@@ -82,6 +88,8 @@ int main(int _argc, const char **_argv) {
 		std::cout << "nullptr interface" << std::endl;
 		return -1;
 	}
+	//! [audio_river_sample_create_write_interface]
+	//! [audio_river_sample_set_callback]
 	// set callback mode ...
 	interface->setOutputCallback(std::bind(&onDataNeeded,
 	                                         std::placeholders::_1,
@@ -90,6 +98,7 @@ int main(int _argc, const char **_argv) {
 	                                         std::placeholders::_4,
 	                                         std::placeholders::_5,
 	                                         std::placeholders::_6));
+	//! [audio_river_sample_set_callback]
 	// start the stream
 	interface->start();
 	// wait 10 second ...
@@ -101,4 +110,6 @@ int main(int _argc, const char **_argv) {
 	manager.reset();
 	return 0;
 }
+
+//! [audio_river_sample_write_all]
 

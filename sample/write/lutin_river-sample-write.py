@@ -27,7 +27,7 @@ def get_maintainer():
 def create(target, module_name):
 	my_module = module.Module(__file__, module_name, get_type())
 	my_module.add_src_file([
-		'main.cpp',
+		'write.cpp',
 		])
 	my_module.add_depend(['audio-river', 'etk'])
 	return my_module

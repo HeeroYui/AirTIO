@@ -6,8 +6,13 @@
 #pragma once
 
 #include <etk/types.h>
-
+/**
+ * @brief Audio library namespace
+ */
 namespace audio {
+	/**
+	 * @brief Audio-river library namespace
+	 */
 	namespace river {
 		/**
 		 * @brief Initialize the River Library

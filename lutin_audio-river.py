@@ -49,7 +49,11 @@ def create(target, module_name):
 		])
 	my_module.add_optionnal_depend('audio-orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
 	my_module.add_optionnal_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])
-	my_module.add_depend(['audio', 'audio-drain', 'ejson'])
+	my_module.add_depend([
+	    'audio',
+	    'audio-drain',
+	    'ejson'
+	    ])
 	my_module.add_path(tools.get_current_path(__file__))
 	return my_module
 
