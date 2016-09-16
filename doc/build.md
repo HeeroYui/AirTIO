@@ -58,7 +58,7 @@ sources:                                           {#audio_river_build_download_
 They are already download in the repo manifest in:
 
 ```{.sh}
-	cd WORKING_DIRECTORY/framework/atria-soft/audio-river
+	cd WORKING_DIRECTORY/framework/musicdsp/audio-river
 ```
 
 Build:                                             {#audio_river_build_build}
