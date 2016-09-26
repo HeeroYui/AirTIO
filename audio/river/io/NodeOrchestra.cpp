@@ -27,7 +27,7 @@ int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
                                                           const std::vector<audio::orchestra::status>& _status) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO : Manage status ...
-	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
+	RIVER_INFO("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size() << "  data=" << uint64_t(_outputBuffer));
 	newOutput(_outputBuffer, _nbChunk, _timeOutput);
 	return 0;
 }

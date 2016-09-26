@@ -141,10 +141,10 @@ bool audio::river::Manager::getMute(const std::string& _volumeName) const {
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createOutput(float _freq,
-                                                                             const std::vector<audio::channel>& _map,
-                                                                             audio::format _format,
-                                                                             const std::string& _streamName,
-                                                                             const std::string& _options) {
+                                                                                const std::vector<audio::channel>& _map,
+                                                                                audio::format _format,
+                                                                                const std::string& _streamName,
+                                                                                const std::string& _options) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
@@ -172,10 +172,10 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createOutput(
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createInput(float _freq,
-                                                                              const std::vector<audio::channel>& _map,
-                                                                              audio::format _format,
-                                                                              const std::string& _streamName,
-                                                                              const std::string& _options) {
+                                                                               const std::vector<audio::channel>& _map,
+                                                                               audio::format _format,
+                                                                               const std::string& _streamName,
+                                                                               const std::string& _options) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
@@ -204,10 +204,10 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createInput(f
 
 
 ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createFeedback(float _freq,
-                                                                                 const std::vector<audio::channel>& _map,
-                                                                                 audio::format _format,
-                                                                                 const std::string& _streamName,
-                                                                                 const std::string& _options) {
+                                                                                  const std::vector<audio::channel>& _map,
+                                                                                  audio::format _format,
+                                                                                  const std::string& _streamName,
+                                                                                  const std::string& _options) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
 	if (manager == nullptr) {
