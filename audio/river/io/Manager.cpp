@@ -34,7 +34,8 @@ static std::string basicAutoConfig =
 	"			'front-left', 'front-right'\n"
 	"		],\n"
 	"		type:'auto',\n"
-	"		nb-chunk:1024\n"
+	"		nb-chunk:1024,\n"
+	"		mux-demux-type:'float'\n"
 	"	},\n"
 	"	speaker:{\n"
 	"		io:'output',\n"
@@ -48,7 +49,8 @@ static std::string basicAutoConfig =
 	"		],\n"
 	"		type:'auto',\n"
 	"		nb-chunk:1024,\n"
-	"		volume-name:'MASTER'\n"
+	"		volume-name:'MASTER',\n"
+	"		mux-demux-type:'float'\n"
 	"	}\n"
 	"}\n";
 

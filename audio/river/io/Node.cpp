@@ -79,7 +79,12 @@ audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _con
 	if (m_isInput == true) {
 		// Support all ...
 	} else {
-		if (muxerFormatType != audio::format_int16_on_int32) {
+		if (    muxerFormatType != audio::format_int8_on_int16
+		     && muxerFormatType != audio::format_int16_on_int32
+		     && muxerFormatType != audio::format_int24_on_int32
+		     && muxerFormatType != audio::format_int32_on_int64
+		     && muxerFormatType != audio::format_float
+		     && muxerFormatType != audio::format_double) {
 			RIVER_CRITICAL("not supported demuxer type ... " << muxerFormatType << " for OUTPUT set in file:" << muxerDemuxerConfig);
 		}
 	}
@@ -209,15 +214,22 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 	if (_outputBuffer == nullptr) {
 		return;
 	}
-	std::vector<int32_t> output;
-	RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
-	output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-	// TODO : set here the mixer selection ...
-	if (true) {
-		const int32_t* outputTmp = nullptr;
-		std::vector<uint8_t> outputTmp2;
-		RIVER_VERBOSE("resize=" << sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
-		outputTmp2.resize(sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk, 0);
+	enum audio::format muxerFormatType = m_process.getInputConfig().getFormat();
+	std::vector<uint8_t> outputTmp2;
+	uint32_t nbByteTmpBuffer = audio::getFormatBytes(muxerFormatType)*m_process.getInputConfig().getMap().size()*_nbChunk;
+	RIVER_VERBOSE("resize=" << nbByteTmpBuffer);
+	outputTmp2.resize(nbByteTmpBuffer);
+	
+	if (muxerFormatType == audio::format_int8_on_int16) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		//            process 16 bits
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		// $$$$ change the int16
+		std::vector<int16_t> output;
+		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
+		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
+		// $$$$ change the int16
+		const int16_t* outputTmp = nullptr;
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (m_list[iii] == nullptr) {
 				continue;
@@ -227,19 +239,144 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 			}
 			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
 			// clear datas ...
-			memset(&outputTmp2[0], 0, sizeof(int32_t)*m_process.getInputConfig().getMap().size()*_nbChunk);
+			memset(&outputTmp2[0], 0, nbByteTmpBuffer);
 			RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
-			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, sizeof(int32_t)*m_process.getInputConfig().getMap().size());
+			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, audio::getFormatBytes(muxerFormatType)*m_process.getInputConfig().getMap().size());
+			// $$$$ change the int16
+			outputTmp = reinterpret_cast<const int16_t*>(&outputTmp2[0]);
+			RIVER_VERBOSE("        Mix it ...");
+			// Add data to the output tmp buffer:
+			for (size_t kkk=0; kkk<output.size(); ++kkk) {
+				output[kkk] += outputTmp[kkk];
+			}
+			// TODO : if a signal is upper than 256* the maximum of 1 it can create a real problem ...
+		}
+		RIVER_VERBOSE("    End stack process data ...");
+		m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
+	} else if (    muxerFormatType == audio::format_int16_on_int32
+	            || muxerFormatType == audio::format_int24_on_int32) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		//            process 32 bits
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		std::vector<int32_t> output;
+		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
+		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
+		const int32_t* outputTmp = nullptr;
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (m_list[iii] == nullptr) {
+				continue;
+			}
+			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
+				continue;
+			}
+			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
+			// clear datas ...
+			memset(&outputTmp2[0], 0, nbByteTmpBuffer);
+			RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
+			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, audio::getFormatBytes(muxerFormatType)*m_process.getInputConfig().getMap().size());
 			outputTmp = reinterpret_cast<const int32_t*>(&outputTmp2[0]);
 			RIVER_VERBOSE("        Mix it ...");
-			// Add data to the output tmp buffer :
+			// Add data to the output tmp buffer:
+			for (size_t kkk=0; kkk<output.size(); ++kkk) {
+				output[kkk] += outputTmp[kkk];
+			}
+			// TODO : if a signal is upper than 256* (for 24 bits) or 65335* (for 16 bits) the maximum of 1 it can create a real problem ...
+		}
+		RIVER_VERBOSE("    End stack process data ...");
+		m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
+	} else if (muxerFormatType == audio::format_int32_on_int64) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		//            process 64 bits
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		std::vector<int64_t> output;
+		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
+		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
+		const int64_t* outputTmp = nullptr;
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (m_list[iii] == nullptr) {
+				continue;
+			}
+			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
+				continue;
+			}
+			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
+			// clear datas ...
+			memset(&outputTmp2[0], 0, nbByteTmpBuffer);
+			RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
+			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, audio::getFormatBytes(muxerFormatType)*m_process.getInputConfig().getMap().size());
+			outputTmp = reinterpret_cast<const int64_t*>(&outputTmp2[0]);
+			RIVER_VERBOSE("        Mix it ...");
+			// Add data to the output tmp buffer:
+			for (size_t kkk=0; kkk<output.size(); ++kkk) {
+				output[kkk] += outputTmp[kkk];
+			}
+			// TODO : if a signal is upper than 2000000000* the maximum of 1 it can create a real problem ...
+		}
+		RIVER_VERBOSE("    End stack process data ...");
+		m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
+	} else if (muxerFormatType == audio::format_float) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		//            process 32 bits FLOAT
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		std::vector<float> output;
+		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
+		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
+		const float* outputTmp = nullptr;
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (m_list[iii] == nullptr) {
+				continue;
+			}
+			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
+				continue;
+			}
+			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
+			// clear datas ...
+			memset(&outputTmp2[0], 0, nbByteTmpBuffer);
+			RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
+			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, audio::getFormatBytes(muxerFormatType)*m_process.getInputConfig().getMap().size());
+			outputTmp = reinterpret_cast<const float*>(&outputTmp2[0]);
+			RIVER_VERBOSE("        Mix it ...");
+			// Add data to the output tmp buffer:
 			for (size_t kkk=0; kkk<output.size(); ++kkk) {
 				output[kkk] += outputTmp[kkk];
 			}
 		}
+		RIVER_VERBOSE("    End stack process data ...");
+		m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
+	} else if (muxerFormatType == audio::format_double) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		//            process 64 bits FLOAT
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		std::vector<double> output;
+		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
+		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
+		const double* outputTmp = nullptr;
+		for (size_t iii=0; iii< m_list.size(); ++iii) {
+			if (m_list[iii] == nullptr) {
+				continue;
+			}
+			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
+				continue;
+			}
+			RIVER_VERBOSE("    IO name="<< m_list[iii]->getName() << " " << iii);
+			// clear datas ...
+			memset(&outputTmp2[0], 0, nbByteTmpBuffer);
+			RIVER_VERBOSE("        request Data="<< _nbChunk << " time=" << _time);
+			m_list[iii]->systemNeedOutputData(_time, &outputTmp2[0], _nbChunk, audio::getFormatBytes(muxerFormatType)*m_process.getInputConfig().getMap().size());
+			outputTmp = reinterpret_cast<const double*>(&outputTmp2[0]);
+			RIVER_VERBOSE("        Mix it ...");
+			// Add data to the output tmp buffer:
+			for (size_t kkk=0; kkk<output.size(); ++kkk) {
+				output[kkk] += outputTmp[kkk];
+			}
+		}
+		RIVER_VERBOSE("    End stack process data ...");
+		m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
+	} else {
+		RIVER_ERROR("Wrong demuxer type: " << muxerFormatType);
+		return;
 	}
-	RIVER_VERBOSE("    End stack process data ...");
-	m_process.processIn(&output[0], _nbChunk, _outputBuffer, _nbChunk);
+	// The feedback get the real output data (after processing ...==> then no nneed to specify for each channels
 	RIVER_VERBOSE("    Feedback :");
 	for (size_t iii=0; iii< m_list.size(); ++iii) {
 		if (m_list[iii] == nullptr) {
