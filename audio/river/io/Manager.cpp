@@ -4,17 +4,17 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/io/Manager.h>
-#include <audio/river/debug.h>
-#include <audio/river/river.h>
-#include <audio/river/io/Node.h>
-#include <audio/river/io/NodeAEC.h>
-#include <audio/river/io/NodeMuxer.h>
-#include <audio/river/io/NodeOrchestra.h>
-#include <audio/river/io/NodePortAudio.h>
-#include <etk/os/FSNode.h>
-#include <ememory/memory.h>
-#include <etk/types.h>
+#include <audio/river/io/Manager.hpp>
+#include <audio/river/debug.hpp>
+#include <audio/river/river.hpp>
+#include <audio/river/io/Node.hpp>
+#include <audio/river/io/NodeAEC.hpp>
+#include <audio/river/io/NodeMuxer.hpp>
+#include <audio/river/io/NodeOrchestra.hpp>
+#include <audio/river/io/NodePortAudio.hpp>
+#include <etk/os/FSNode.hpp>
+#include <ememory/memory.hpp>
+#include <etk/types.hpp>
 #include <utility>
 
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO

@@ -4,7 +4,7 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/widget/debug.h>
+#include <audio/river/widget/debug.hpp>
 
 
 int32_t audio::river::widget::getLogId() {

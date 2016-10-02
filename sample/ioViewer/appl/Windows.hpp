@@ -5,8 +5,8 @@
  */
 #pragma once
 
-#include <ewol/widget/Windows.h>
-#include <ewol/widget/Composer.h>
+#include <ewol/widget/Windows.hpp>
+#include <ewol/widget/Composer.hpp>
 
 namespace appl {
 	class Windows : public ewol::widget::Windows {

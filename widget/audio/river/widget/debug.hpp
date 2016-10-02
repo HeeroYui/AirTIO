@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include <elog/log.h>
+#include <elog/log.hpp>
 
 namespace audio {
 	namespace river {

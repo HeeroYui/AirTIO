@@ -40,12 +40,12 @@ def create(target, module_name):
 		'audio/river/io/Manager.cpp'
 		])
 	my_module.add_header_file([
-		'audio/river/river.h',
-		'audio/river/Manager.h',
-		'audio/river/Interface.h',
-		'audio/river/io/Group.h',
-		'audio/river/io/Node.h',
-		'audio/river/io/Manager.h'
+		'audio/river/river.hpp',
+		'audio/river/Manager.hpp',
+		'audio/river/Interface.hpp',
+		'audio/river/io/Group.hpp',
+		'audio/river/io/Node.hpp',
+		'audio/river/io/Manager.hpp'
 		])
 	my_module.add_optionnal_depend('audio-orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
 	my_module.add_optionnal_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])

@@ -4,14 +4,14 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include "Manager.h"
-#include "Interface.h"
+#include "Manager.hpp"
+#include "Interface.hpp"
 #include <stdexcept>
 
-#include "io/Manager.h"
-#include "io/Node.h"
-#include "debug.h"
-#include <ejson/ejson.h>
+#include "io/Manager.hpp"
+#include "io/Node.hpp"
+#include "debug.hpp"
+#include <ejson/ejson.hpp>
 
 static std::mutex g_mutex;
 static std::vector<ememory::WeakPtr<audio::river::Manager> > g_listOfAllManager;

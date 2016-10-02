@@ -4,9 +4,9 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/widget/debug.h>
-#include <audio/river/widget/TemporalViewer.h>
-#include <etk/tool.h>
+#include <audio/river/widget/debug.hpp>
+#include <audio/river/widget/TemporalViewer.hpp>
+#include <etk/tool.hpp>
 
 static const int32_t nbSecond = 3;
 

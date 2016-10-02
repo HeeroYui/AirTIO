@@ -5,11 +5,11 @@
  */
 #pragma once
 
-#include <ewol/widget/Widget.h>
-#include <ewol/compositing/Drawing.h>
-#include <audio/river/river.h>
-#include <audio/river/Manager.h>
-#include <audio/river/Interface.h>
+#include <ewol/widget/Widget.hpp>
+#include <ewol/compositing/Drawing.hpp>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
 #include <mutex>
 
 namespace audio {

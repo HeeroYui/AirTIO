@@ -6,10 +6,10 @@
 
 //! [audio_river_sample_write_all]
 
-#include <audio/river/river.h>
-#include <audio/river/Manager.h>
-#include <audio/river/Interface.h>
-#include <etk/etk.h>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
+#include <etk/etk.hpp>
 #include <unistd.h>
 
 //! [audio_river_sample_write_config_file]

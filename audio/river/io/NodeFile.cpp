@@ -6,9 +6,9 @@
 
 #ifdef AUDIO_RIVER_BUILD_FILE
 
-#include <audio/river/io/NodeFile.h>
-#include <audio/river/debug.h>
-#include <ememory/memory.h>
+#include <audio/river/io/NodeFile.hpp>
+#include <audio/river/debug.hpp>
+#include <ememory/memory.hpp>
 
 int32_t audio::river::io::NodeFile::recordCallback(const void* _inputBuffer,
                                                    const audio::Time& _timeInput,

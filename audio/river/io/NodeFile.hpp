@@ -7,8 +7,8 @@
 
 #ifdef AUDIO_RIVER_BUILD_FILE
 
-#include <audio/river/io/Node.h>
-#include <audio/orchestra/Interface.h>
+#include <audio/river/io/Node.hpp>
+#include <audio/orchestra/Interface.hpp>
 
 namespace audio {
 	namespace river {

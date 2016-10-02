@@ -5,9 +5,9 @@
  */
 #pragma once
 
-#include <audio/river/io/Node.h>
-#include <audio/river/Interface.h>
-#include <audio/drain/CircularBuffer.h>
+#include <audio/river/io/Node.hpp>
+#include <audio/river/Interface.hpp>
+#include <audio/drain/CircularBuffer.hpp>
 
 namespace audio {
 	namespace river {

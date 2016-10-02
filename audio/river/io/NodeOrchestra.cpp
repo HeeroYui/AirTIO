@@ -6,9 +6,9 @@
 
 #ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 
-#include <audio/river/io/NodeOrchestra.h>
-#include <audio/river/debug.h>
-#include <ememory/memory.h>
+#include <audio/river/io/NodeOrchestra.hpp>
+#include <audio/river/debug.hpp>
+#include <ememory/memory.hpp>
 
 int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer,
                                                         const audio::Time& _timeInput,

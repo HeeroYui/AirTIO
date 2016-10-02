@@ -4,8 +4,8 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include "Node.h"
-#include <audio/river/debug.h>
+#include "Node.hpp"
+#include <audio/river/debug.hpp>
 
 audio::river::io::Node::Node(const std::string& _name, const ejson::Object& _config) :
   m_config(_config),

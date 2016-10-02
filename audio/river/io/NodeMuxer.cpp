@@ -4,10 +4,10 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/io/NodeMuxer.h>
-#include <audio/river/debug.h>
-#include <etk/types.h>
-#include <ememory/memory.h>
+#include <audio/river/io/NodeMuxer.hpp>
+#include <audio/river/debug.hpp>
+#include <etk/types.hpp>
+#include <ememory/memory.hpp>
 #include <functional>
 
 ememory::SharedPtr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const ejson::Object& _config) {

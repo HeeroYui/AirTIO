@@ -4,9 +4,9 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/river.h>
-#include <audio/river/debug.h>
-#include <audio/river/io/Manager.h>
+#include <audio/river/river.hpp>
+#include <audio/river/debug.hpp>
+#include <audio/river/io/Manager.hpp>
 
 static bool river_isInit = false;
 static std::string river_configFile = "";

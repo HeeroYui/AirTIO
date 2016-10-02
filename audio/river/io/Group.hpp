@@ -8,8 +8,8 @@
 
 #include <string>
 #include <vector>
-#include <ejson/ejson.h>
-#include <etk/os/FSNode.h>
+#include <ejson/ejson.hpp>
+#include <etk/os/FSNode.hpp>
 
 namespace audio {
 	namespace river {

@@ -11,15 +11,15 @@
 #include <mutex>
 #include <chrono>
 #include <functional>
-#include <ememory/memory.h>
-#include <audio/format.h>
-#include <audio/channel.h>
-#include <audio/drain/Process.h>
-#include <audio/drain/EndPointCallback.h>
-#include <audio/drain/EndPointWrite.h>
-#include <ejson/ejson.h>
-#include <etk/os/FSNode.h>
-#include <audio/Time.h>
+#include <ememory/memory.hpp>
+#include <audio/format.hpp>
+#include <audio/channel.hpp>
+#include <audio/drain/Process.hpp>
+#include <audio/drain/EndPointCallback.hpp>
+#include <audio/drain/EndPointWrite.hpp>
+#include <ejson/ejson.hpp>
+#include <etk/os/FSNode.hpp>
+#include <audio/Time.hpp>
 
 namespace audio {
 	namespace river {

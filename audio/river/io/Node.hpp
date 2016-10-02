@@ -11,14 +11,14 @@
 #include <stdint.h>
 #include <chrono>
 #include <functional>
-#include <ememory/memory.h>
-#include <audio/format.h>
-#include <audio/channel.h>
-#include "Manager.h"
-#include <audio/river/Interface.h>
-#include <audio/drain/IOFormatInterface.h>
-#include <audio/drain/Volume.h>
-#include <etk/os/FSNode.h>
+#include <ememory/memory.hpp>
+#include <audio/format.hpp>
+#include <audio/channel.hpp>
+#include "Manager.hpp"
+#include <audio/river/Interface.hpp>
+#include <audio/drain/IOFormatInterface.hpp>
+#include <audio/drain/Volume.hpp>
+#include <etk/os/FSNode.hpp>
 
 namespace audio {
 	namespace river {

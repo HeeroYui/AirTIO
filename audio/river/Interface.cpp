@@ -4,13 +4,13 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include "debug.h"
-#include "Interface.h"
-#include "io/Node.h"
-#include <audio/drain/EndPointCallback.h>
-#include <audio/drain/EndPointWrite.h>
-#include <audio/drain/EndPointRead.h>
-#include <audio/drain/Volume.h>
+#include "debug.hpp"
+#include "Interface.hpp"
+#include "io/Node.hpp"
+#include <audio/drain/EndPointCallback.hpp>
+#include <audio/drain/EndPointWrite.hpp>
+#include <audio/drain/EndPointRead.hpp>
+#include <audio/drain/Volume.hpp>
 
 audio::river::Interface::Interface(void) :
   m_node(),

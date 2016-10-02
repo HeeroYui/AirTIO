@@ -13,12 +13,12 @@
 #include <mutex>
 #include <chrono>
 #include <functional>
-#include <ememory/memory.h>
-#include <audio/format.h>
-#include <audio/channel.h>
-#include <ejson/ejson.h>
-#include <audio/drain/Volume.h>
-#include <audio/river/io/Group.h>
+#include <ememory/memory.hpp>
+#include <audio/format.hpp>
+#include <audio/channel.hpp>
+#include <ejson/ejson.hpp>
+#include <audio/drain/Volume.hpp>
+#include <audio/river/io/Group.hpp>
 
 namespace audio {
 	namespace river {

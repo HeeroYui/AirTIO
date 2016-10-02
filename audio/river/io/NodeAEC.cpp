@@ -4,10 +4,10 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/io/NodeAEC.h>
-#include <audio/river/debug.h>
-#include <etk/types.h>
-#include <ememory/memory.h>
+#include <audio/river/io/NodeAEC.hpp>
+#include <audio/river/debug.hpp>
+#include <etk/types.hpp>
+#include <ememory/memory.hpp>
 #include <functional>
 
 ememory::SharedPtr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const ejson::Object& _config) {

@@ -7,11 +7,11 @@
 
 #include <string>
 #include <stdint.h>
-#include <ememory/memory.h>
-#include <audio/river/Interface.h>
-#include <audio/format.h>
-#include <audio/channel.h>
-#include <ejson/ejson.h>
+#include <ememory/memory.hpp>
+#include <audio/river/Interface.hpp>
+#include <audio/format.hpp>
+#include <audio/channel.hpp>
+#include <ejson/ejson.hpp>
 
 namespace audio {
 	namespace river {

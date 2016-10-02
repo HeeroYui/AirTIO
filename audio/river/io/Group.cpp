@@ -4,13 +4,13 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <audio/river/io/Group.h>
-#include <audio/river/debug.h>
-#include "Node.h"
-#include "NodeAEC.h"
-#include "NodeOrchestra.h"
-#include "NodePortAudio.h"
-#include "Node.h"
+#include <audio/river/io/Group.hpp>
+#include <audio/river/debug.hpp>
+#include "Node.hpp"
+#include "NodeAEC.hpp"
+#include "NodeOrchestra.hpp"
+#include "NodePortAudio.hpp"
+#include "Node.hpp"
 
 void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
 	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");

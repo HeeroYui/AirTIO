@@ -7,9 +7,9 @@
 
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 
-#include <audio/river/Interface.h>
-#include <audio/river/io/Node.h>
-#include <portaudio/portaudio.h>
+#include <audio/river/Interface.hpp>
+#include <audio/river/io/Node.hpp>
+#include <portaudio/portaudio.hpp>
 
 namespace audio {
 	namespace river {

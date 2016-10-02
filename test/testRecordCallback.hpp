@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include <test-debug/debug.h>
+#include <test-debug/debug.hpp>
 
 namespace river_test_record_callback {
 	static const std::string configurationRiver =

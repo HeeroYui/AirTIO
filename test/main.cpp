@@ -4,7 +4,7 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <test-debug/debug.h>
+#include <test-debug/debug.hpp>
 
 #define TEST_SAVE_FILE_MACRO(type,fileName,dataPointer,nbElement) \
 	do { \
@@ -27,25 +27,25 @@
 
 
 
-#include <audio/river/river.h>
-#include <audio/river/Manager.h>
-#include <audio/river/Interface.h>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
 #include <gtest/gtest.h>
-#include <etk/etk.h>
-#include <etk/os/FSNode.h>
-#include <math.h>
+#include <etk/etk.hpp>
+#include <etk/os/FSNode.hpp>
+#include <cmath>
 #include <sstream>
 #include <unistd.h>
 #include <thread>
-#include "testAEC.h"
-#include "testEchoDelay.h"
-#include "testFormat.h"
-#include "testMuxer.h"
-#include "testPlaybackCallback.h"
-#include "testPlaybackWrite.h"
-#include "testRecordCallback.h"
-#include "testRecordRead.h"
-#include "testVolume.h"
+#include "testAEC.hpp"
+#include "testEchoDelay.hpp"
+#include "testFormat.hpp"
+#include "testMuxer.hpp"
+#include "testPlaybackCallback.hpp"
+#include "testPlaybackWrite.hpp"
+#include "testRecordCallback.hpp"
+#include "testRecordRead.hpp"
+#include "testVolume.hpp"
 
 int main(int _argc, const char** _argv) {
 	// init Google test :

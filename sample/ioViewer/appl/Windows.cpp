@@ -4,13 +4,13 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <ewol/ewol.h>
-#include <appl/debug.h>
-#include <appl/Windows.h>
-#include <ewol/widget/Label.h>
-#include <ewol/widget/Button.h>
-#include <audio/river/widget/TemporalViewer.h>
-#include <etk/tool.h>
+#include <ewol/ewol.hpp>
+#include <appl/debug.hpp>
+#include <appl/Windows.hpp>
+#include <ewol/widget/Label.hpp>
+#include <ewol/widget/Button.hpp>
+#include <audio/river/widget/TemporalViewer.hpp>
+#include <etk/tool.hpp>
 
 appl::Windows::Windows() :
   m_composer(nullptr) {

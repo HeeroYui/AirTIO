@@ -6,12 +6,12 @@
 
 //! [audio_river_sample_read_all]
 //! [audio_river_sample_include]
-#include <audio/river/river.h>
-#include <audio/river/Manager.h>
-#include <audio/river/Interface.h>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
 //! [audio_river_sample_include]
-#include <etk/os/FSNode.h>
-#include <etk/etk.h>
+#include <etk/os/FSNode.hpp>
+#include <etk/etk.hpp>
 #include <unistd.h>
 
 

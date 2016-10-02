@@ -6,11 +6,11 @@
 
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 
-#include <audio/river/io/NodePortAudio.h>
-#include <audio/river/debug.h>
-#include <ememory/memory.h>
-#include <audio/Time.h>
-#include <audio/Duration.h>
+#include <audio/river/io/NodePortAudio.hpp>
+#include <audio/river/debug.hpp>
+#include <ememory/memory.hpp>
+#include <audio/Time.hpp>
+#include <audio/Duration.hpp>
 
 static int portAudioStreamCallback(const void *_input,
                                    void *_output,
