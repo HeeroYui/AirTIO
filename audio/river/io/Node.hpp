@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <stdint.h>
+#include <cstdint>
 #include <chrono>
 #include <functional>
 #include <ememory/memory.hpp>

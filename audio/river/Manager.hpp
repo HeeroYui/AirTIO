@@ -6,7 +6,7 @@
 #pragma once
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <ememory/memory.hpp>
 #include <audio/river/Interface.hpp>
 #include <audio/format.hpp>

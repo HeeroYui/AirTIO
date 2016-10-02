@@ -9,7 +9,7 @@
 #include <vector>
 #include <map>
 #include <list>
-#include <stdint.h>
+#include <cstdint>
 #include <mutex>
 #include <chrono>
 #include <functional>
