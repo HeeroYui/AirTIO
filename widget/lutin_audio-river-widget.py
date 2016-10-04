@@ -1,7 +1,6 @@
 #!/usr/bin/python
-import lutin.module as module
-import lutin.tools as tools
 import lutin.debug as debug
+import lutin.tools as tools
 import os
 
 
@@ -26,17 +25,19 @@ def get_maintainer():
 def get_version():
 	return [0,0,0]
 
-def create(target, module_name):
-	my_module = module.Module(__file__, module_name, get_type())
+def configure(target, my_module):
 	my_module.add_src_file([
-		'audio/river/widget/TemporalViewer.cpp',
-		'audio/river/widget/debug.cpp'
-		])
+	    'audio/river/widget/TemporalViewer.cpp',
+	    'audio/river/widget/debug.cpp'
+	    ])
 	my_module.add_header_file([
-		'audio/river/widget/TemporalViewer.hpp'
-		])
-	my_module.add_depend(['ewol', 'audio-river'])
-	my_module.add_path(tools.get_current_path(__file__))
-	return my_module
+	    'audio/river/widget/TemporalViewer.hpp'
+	    ])
+	my_module.add_depend([
+	    'ewol',
+	    'audio-river'
+	    ])
+	my_module.add_path(".")
+	return True
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import lutin.module as module
+import lutin.debug as debug
 import lutin.tools as tools
 
 
@@ -24,29 +24,28 @@ def get_maintainer():
 def get_version():
 	return "version.txt"
 
-def create(target, module_name):
-	my_module = module.Module(__file__, module_name, get_type())
+def configure(target, my_module):
 	my_module.add_src_file([
-		'audio/river/debug.cpp',
-		'audio/river/river.cpp',
-		'audio/river/Manager.cpp',
-		'audio/river/Interface.cpp',
-		'audio/river/io/Group.cpp',
-		'audio/river/io/Node.cpp',
-		'audio/river/io/NodeOrchestra.cpp',
-		'audio/river/io/NodePortAudio.cpp',
-		'audio/river/io/NodeAEC.cpp',
-		'audio/river/io/NodeMuxer.cpp',
-		'audio/river/io/Manager.cpp'
-		])
+	    'audio/river/debug.cpp',
+	    'audio/river/river.cpp',
+	    'audio/river/Manager.cpp',
+	    'audio/river/Interface.cpp',
+	    'audio/river/io/Group.cpp',
+	    'audio/river/io/Node.cpp',
+	    'audio/river/io/NodeOrchestra.cpp',
+	    'audio/river/io/NodePortAudio.cpp',
+	    'audio/river/io/NodeAEC.cpp',
+	    'audio/river/io/NodeMuxer.cpp',
+	    'audio/river/io/Manager.cpp'
+	    ])
 	my_module.add_header_file([
-		'audio/river/river.hpp',
-		'audio/river/Manager.hpp',
-		'audio/river/Interface.hpp',
-		'audio/river/io/Group.hpp',
-		'audio/river/io/Node.hpp',
-		'audio/river/io/Manager.hpp'
-		])
+	    'audio/river/river.hpp',
+	    'audio/river/Manager.hpp',
+	    'audio/river/Interface.hpp',
+	    'audio/river/io/Group.hpp',
+	    'audio/river/io/Node.hpp',
+	    'audio/river/io/Manager.hpp'
+	    ])
 	my_module.add_optionnal_depend('audio-orchestra', ["c++", "-DAUDIO_RIVER_BUILD_ORCHESTRA"])
 	my_module.add_optionnal_depend('portaudio', ["c++", "-DAUDIO_RIVER_BUILD_PORTAUDIO"])
 	my_module.add_depend([
@@ -54,8 +53,8 @@ def create(target, module_name):
 	    'audio-drain',
 	    'ejson'
 	    ])
-	my_module.add_path(tools.get_current_path(__file__))
-	return my_module
+	my_module.add_path(".")
+	return True
 
 
 
