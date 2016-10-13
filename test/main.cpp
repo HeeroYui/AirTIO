@@ -35,7 +35,7 @@
 #include <etk/os/FSNode.hpp>
 #include <cmath>
 #include <sstream>
-#include <unistd.h>
+
 #include <thread>
 #include "testAEC.hpp"
 #include "testEchoDelay.hpp"

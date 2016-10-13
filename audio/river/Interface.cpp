@@ -252,7 +252,7 @@ std::vector<int16_t> audio::river::Interface::read(size_t _nbChunk) {
 	int32_t nbChunkBuffer = m_circularBuffer.size() / m_map.size();
 	m_mutex.unlock();
 	while (nbChunkBuffer < _nbChunk) {
-		usleep(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		nbChunkBuffer = m_circularBuffer.size() / m_map.size();
 	}
 	m_mutex.lock();

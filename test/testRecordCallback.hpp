@@ -75,7 +75,7 @@ namespace river_test_record_callback {
 				}
 				m_interface->start();
 				// wait 2 second ...
-				usleep(20000000);
+				std::this_thread::sleep_for(std::chrono::seconds(20));
 				m_interface->stop();
 			}
 	};
@@ -88,7 +88,7 @@ namespace river_test_record_callback {
 		ememory::SharedPtr<testInCallback> process = ememory::makeShared<testInCallback>(manager);
 		process->run();
 		process.reset();
-		usleep(500000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		audio::river::unInit();
 	}
 

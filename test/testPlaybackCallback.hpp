@@ -66,7 +66,7 @@ namespace river_test_playback_callback {
 				}
 				m_interface->start();
 				// wait 2 second ...
-				usleep(2000000);
+				std::this_thread::sleep_for(std::chrono::seconds(2));
 				m_interface->stop();
 			}
 	};
@@ -97,7 +97,7 @@ namespace river_test_playback_callback {
 		ASSERT_NE(process, nullptr);
 		process->run();
 		process.reset();
-		usleep(500000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		audio::river::unInit();
 	}
 	
@@ -110,7 +110,7 @@ namespace river_test_playback_callback {
 		ememory::SharedPtr<testOutCallback> process = ememory::makeShared<testOutCallback>(manager, "speaker-pulse");
 		process->run();
 		process.reset();
-		usleep(500000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		audio::river::unInit();
 	}
 	
@@ -123,7 +123,7 @@ namespace river_test_playback_callback {
 		ememory::SharedPtr<testOutCallback> process = ememory::makeShared<testOutCallback>(manager, "speaker-jack");
 		process->run();
 		process.reset();
-		usleep(500000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		audio::river::unInit();
 	}
 };

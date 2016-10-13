@@ -78,7 +78,7 @@ namespace river_test_playback_write {
 					}
 					m_interface->write(&data[0], data.size()/m_channelMap.size());
 					// TODO : Add a function to get number of time we need to wait enought time ...
-					usleep(15000);
+					std::this_thread::sleep_for(std::chrono::milliseconds(15));
 				}
 				m_interface->stop();
 			}
@@ -93,7 +93,7 @@ namespace river_test_playback_write {
 		ememory::SharedPtr<testOutWrite> process = ememory::makeShared<testOutWrite>(manager);
 		process->run();
 		process.reset();
-		usleep(500000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		audio::river::unInit();
 	}
 	
@@ -156,7 +156,7 @@ namespace river_test_playback_write {
 					return;
 				}
 				m_interface->start();
-				usleep(1000000);
+				std::this_thread::sleep_for(std::chrono::seconds(1));
 				m_interface->stop();
 			}
 	};
@@ -170,7 +170,7 @@ namespace river_test_playback_write {
 		ememory::SharedPtr<testOutWriteCallback> process = ememory::makeShared<testOutWriteCallback>(manager);
 		process->run();
 		process.reset();
-		usleep(500000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		audio::river::unInit();
 	}
 

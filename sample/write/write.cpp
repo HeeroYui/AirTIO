@@ -10,7 +10,8 @@
 #include <audio/river/Manager.hpp>
 #include <audio/river/Interface.hpp>
 #include <etk/etk.hpp>
-#include <unistd.h>
+#include <thread>
+
 
 //! [audio_river_sample_write_config_file]
 static const std::string configurationRiver =
@@ -102,7 +103,7 @@ int main(int _argc, const char **_argv) {
 	// start the stream
 	interface->start();
 	// wait 10 second ...
-	sleep(10);
+	std::this_thread::sleep_for(std::chrono::seconds(10));
 	// stop the stream
 	interface->stop();
 	// remove interface and manager.
