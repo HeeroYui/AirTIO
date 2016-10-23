@@ -1,0 +1,182 @@
+<!-- HTML header for doxygen 1.8.8-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- For Mobile Devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+        <meta name="generator" content="Doxygen 1.8.12"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <title>audio-river: Multi-nodal audio interface: Write stream to Audio output</title>
+        <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
+        <script type="text/javascript" src="dynsections.js"></script>
+        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+        <link href="doxygen.css" rel="stylesheet" type="text/css" />
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="doxy-boot.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">audio-river: Multi-nodal audio interface 0.4.0</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="index.html">Main&nbsp;Page</a></li>
+                        <li><a href="pages.html">Related&nbsp;Pages</a></li>
+                        <li><a href="namespaces.html">Namespaces</a></li>
+                        <li><a href="annotated.html">Classes</a></li>
+                        <li><a href="files.html">Files</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Link-libs<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="http://HeeroYui.github.io/lutin">lutin</a></li>
+                                <li><a href="http://atria-soft.github.io/ewol">ewol</a></li>
+                                <li><a href="http://atria-soft.github.io/etk">etk</a></li>
+                                <li><a href="http://atria-soft.github.io/ejson">ejson</a></li>
+                                <li><a href="http://atria-soft.github.io/exml">exml</a></li>
+                                <li><a href="http://atria-soft.github.io/esvg">esvg</a></li>
+                                <li><a href="http://atria-soft.github.io/egami">egami</a></li>
+                                <li><a href="http://atria-soft.github.io/gale">gale</a></li>
+                                <li><a href="http://atria-soft.github.io/ege">ege</a></li>
+                                <li><a href="http://atria-soft.github.io/elog">elog</a></li>
+                                <li><a href="http://atria-soft.github.io/ememory">ememory</a></li>
+                                <li><a href="http://atria-soft.github.io/enet">enet</a></li>
+                                <li><a href="http://atria-soft.github.io/eproperty">eproperty</a></li>
+                                <li><a href="http://atria-soft.github.io/esignal">esignal</a></li>
+                                <li><a href="http://atria-soft.github.io/zeus">zeus</a></li>
+                                <li><a href="http://atria-soft.github.io/audio-ess">audio-ess</a></li>
+                                <li><a href="http://musicdsp.github.io/audio">audio</a></li>
+                                <li><a href="http://musicdsp.github.io/audio-drain">audio-drain</a></li>
+                                <li><a href="http://musicdsp.github.io/audio-orchestra">audio-orchestra</a></li>
+                                <li><a href="http://musicdsp.github.io/audio-river">audio-river</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div id="search-box" class="input-group">
+                        <div class="input-group-btn">
+                            <button aria-expanded="false" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-search"></span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">All</a></li>
+                                <li><a href="#">Classes</a></li>
+                                <li><a href="#">Namespaces</a></li>
+                                <li><a href="#">Files</a></li>
+                                <li><a href="#">Functions</a></li>
+                                <li><a href="#">Variables</a></li>
+                                <li><a href="#">Typedefs</a></li>
+                                <li><a href="#">Enumerations</a></li>
+                                <li><a href="#">Enumerator</a></li>
+                                <li><a href="#">Friends</a></li>
+                                <li><a href="#">Macros</a></li>
+                                <li><a href="#">Pages</a></li>
+                            </ul>
+                        </div>
+                        <button id="search-close" type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true"></span>
+                        </button>
+                        <input id="search-field" class="form-control" accesskey="S" onkeydown="searchBox.OnSearchFieldChange(event);" placeholder="Search ..." type="text">
+                    </div>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+            <div class="content" id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 panel panel-default" style="padding-bottom: 15px;">
+                            <div style="margin-bottom: 15px;">
+<!-- end header part -->
+<!-- Generated by Doxygen 1.8.12 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">Write stream to Audio output </div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#audio_river_write_objectif">Objectifs:                                         </a></li>
+<li class="level1"><a href="#audio_river_write_config">File configuration:                                </a></li>
+<li class="level1"><a href="#audio_river_write_interface">Create your write interface:                       </a></li>
+<li class="level1"><a href="#audio_river_write_get_data">set data callback:                                </a></li>
+<li class="level1"><a href="#audio_river_write_callback">Callback inplementation:                          </a></li>
+<li class="level1"><a href="#audio_river_write_full_sample">Full Sample:                                     </a></li>
+</ul>
+</div>
+<div class="textblock"><h1><a class="anchor" id="audio_river_write_objectif"></a>
+Objectifs:                                         </h1>
+<ul>
+<li>Understand write audio stream</li>
+</ul>
+<p>The writing work nearly like the read turoral. Then we will just see what has change.</p>
+<h1><a class="anchor" id="audio_river_write_config"></a>
+File configuration:                                </h1>
+<div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> std::string configurationRiver =</div><div class="line">        <span class="stringliteral">&quot;{\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   speaker:{\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       io:&#39;output&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       map-on:{\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;           interface:&#39;alsa&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;           name:&#39;hw:0,0&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       },\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       frequency:48000,\n&quot;</span></div><div class="line">        <span class="comment">//&quot;     channel-map:[&#39;front-left&#39;, &#39;front-right&#39;, &#39;rear-left&#39;, &#39;rear-right&#39;],\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       channel-map:[&#39;front-left&#39;, &#39;front-right&#39;],\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       type:&#39;int16&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       nb-chunk:1024,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       volume-name:&#39;MASTER&#39;\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   }\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;}\n&quot;</span>;</div></div><!-- fragment --><h1><a class="anchor" id="audio_river_write_interface"></a>
+Create your write interface:                       </h1>
+<p>Generic code: </p><div class="fragment"><div class="line">    <span class="comment">// create interface:</span></div><div class="line">    <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/ememory.tag:http://atria-soft.github.io/ememory/" href="http://atria-soft.github.io/ememory/classememory_1_1_shared_ptr.html">ememory::SharedPtr&lt;audio::river::Interface&gt;</a> interface;</div><div class="line">    <span class="comment">//Get the generic input:</span></div><div class="line">    <span class="keyword">interface </span>= manager-&gt;createOutput(48000,</div><div class="line">                                      <a class="code" href="namespacestd.html">std</a>::vector&lt;audio::channel&gt;(),</div><div class="line">                                      <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/audio.tag:http://musicdsp.github.io/audio/" href="http://musicdsp.github.io/audio/namespaceaudio.html#a2e69fde0e376bc9b0b6fa91fb93105cba7ed7669dfdfed5d7ec2626caafbad9d7">audio::format_int16</a>,</div><div class="line">                                      &quot;speaker&quot;);</div><div class="line">    if(interface == nullptr) {</div><div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;nullptr interface&quot;</span> &lt;&lt; std::endl;</div><div class="line">        <span class="keywordflow">return</span> -1;</div><div class="line">    }</div></div><!-- fragment --><p> Here we create an interface with:</p><ul>
+<li>The frequency of 48000 Hz.</li>
+<li>The default Low level definition channel</li>
+<li>A data interface of 16 bits samples coded in [-32768..32767]</li>
+<li>Select input interaface name "speaker"</li>
+</ul>
+<h1><a class="anchor" id="audio_river_write_get_data"></a>
+set data callback:                                </h1>
+<p>The best way to get data is to instanciate a simple callback. The callback is called when sample are needed and you have the nbChunk/frequency to generate the data, otherwise you can generate error in data stream.</p>
+<div class="fragment"><div class="line">    <span class="comment">// set callback mode ...</span></div><div class="line">    interface-&gt;setOutputCallback(std::bind(&amp;onDataNeeded,</div><div class="line">                                             std::placeholders::_1,</div><div class="line">                                             std::placeholders::_2,</div><div class="line">                                             std::placeholders::_3,</div><div class="line">                                             std::placeholders::_4,</div><div class="line">                                             std::placeholders::_5,</div><div class="line">                                             std::placeholders::_6));</div></div><!-- fragment --> <h1><a class="anchor" id="audio_river_write_callback"></a>
+Callback inplementation:                          </h1>
+<p>Simply declare your function and do what you want inside.</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> onDataNeeded(<span class="keywordtype">void</span>* _data,</div><div class="line">                  <span class="keyword">const</span> audio::Time&amp; _time,</div><div class="line">                  <span class="keywordtype">size_t</span> _nbChunk,</div><div class="line">                  <span class="keyword">enum</span> <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/audio.tag:http://musicdsp.github.io/audio/" href="http://musicdsp.github.io/audio/namespaceaudio.html#a2e69fde0e376bc9b0b6fa91fb93105cb">audio::format</a> _format,</div><div class="line">                  uint32_t _frequency,</div><div class="line">                  <span class="keyword">const</span> std::vector&lt;audio::channel&gt;&amp; _map) {</div><div class="line">    <span class="keyword">static</span> <span class="keywordtype">double</span> phase[8] = {0,0,0,0,0,0,0,0};</div><div class="line">    </div><div class="line">    <span class="keywordflow">if</span> (_format != <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/audio.tag:http://musicdsp.github.io/audio/" href="http://musicdsp.github.io/audio/namespaceaudio.html#a2e69fde0e376bc9b0b6fa91fb93105cba7ed7669dfdfed5d7ec2626caafbad9d7">audio::format_int16</a>) {</div><div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;[ERROR] call wrong type ... (need int16_t)&quot;</span> &lt;&lt; std::endl;</div><div class="line">    }</div><div class="line">    <span class="comment">//std::cout &lt;&lt; &quot;Map &quot; &lt;&lt; _map &lt;&lt; std::endl;</span></div><div class="line">    int16_t* data = <span class="keyword">static_cast&lt;</span>int16_t*<span class="keyword">&gt;</span>(_data);</div><div class="line">    <span class="keywordtype">double</span> baseCycle = 2.0*M_PI/double(48000) * double(440);</div><div class="line">    <span class="keywordflow">for</span> (int32_t iii=0; iii&lt;_nbChunk; iii++) {</div><div class="line">        <span class="keywordflow">for</span> (int32_t jjj=0; jjj&lt;_map.size(); jjj++) {</div><div class="line">            data[_map.size()*iii+jjj] = cos(phase[jjj]) * 30000;</div><div class="line">            phase[jjj] += baseCycle*jjj;</div><div class="line">            <span class="keywordflow">if</span> (phase[jjj] &gt;= 2*M_PI) {</div><div class="line">                phase[jjj] -= 2*M_PI;</div><div class="line">            }</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></div><!-- fragment --><h1><a class="anchor" id="audio_river_write_full_sample"></a>
+Full Sample:                                     </h1>
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#include &lt;audio/river/river.hpp&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;audio/river/Manager.hpp&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;audio/river/Interface.hpp&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;<a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/etk.tag:http://atria-soft.github.io/etk/" href="http://atria-soft.github.io/etk/etk__8hpp.html">etk/etk.hpp</a>&gt;</span></div><div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> std::string configurationRiver =</div><div class="line">        <span class="stringliteral">&quot;{\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   speaker:{\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       io:&#39;output&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       map-on:{\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;           interface:&#39;alsa&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;           name:&#39;hw:0,0&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       },\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       frequency:48000,\n&quot;</span></div><div class="line">        <span class="comment">//&quot;     channel-map:[&#39;front-left&#39;, &#39;front-right&#39;, &#39;rear-left&#39;, &#39;rear-right&#39;],\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       channel-map:[&#39;front-left&#39;, &#39;front-right&#39;],\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       type:&#39;int16&#39;,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       nb-chunk:1024,\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;       volume-name:&#39;MASTER&#39;\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   }\n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;}\n&quot;</span>;</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> int32_t nbChannelMax=8;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> onDataNeeded(<span class="keywordtype">void</span>* _data,</div><div class="line">                  <span class="keyword">const</span> audio::Time&amp; _time,</div><div class="line">                  <span class="keywordtype">size_t</span> _nbChunk,</div><div class="line">                  <span class="keyword">enum</span> <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/audio.tag:http://musicdsp.github.io/audio/" href="http://musicdsp.github.io/audio/namespaceaudio.html#a2e69fde0e376bc9b0b6fa91fb93105cb">audio::format</a> _format,</div><div class="line">                  uint32_t _frequency,</div><div class="line">                  <span class="keyword">const</span> std::vector&lt;audio::channel&gt;&amp; _map) {</div><div class="line">    <span class="keyword">static</span> <span class="keywordtype">double</span> phase[8] = {0,0,0,0,0,0,0,0};</div><div class="line">    </div><div class="line">    <span class="keywordflow">if</span> (_format != <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/audio.tag:http://musicdsp.github.io/audio/" href="http://musicdsp.github.io/audio/namespaceaudio.html#a2e69fde0e376bc9b0b6fa91fb93105cba7ed7669dfdfed5d7ec2626caafbad9d7">audio::format_int16</a>) {</div><div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;[ERROR] call wrong type ... (need int16_t)&quot;</span> &lt;&lt; std::endl;</div><div class="line">    }</div><div class="line">    <span class="comment">//std::cout &lt;&lt; &quot;Map &quot; &lt;&lt; _map &lt;&lt; std::endl;</span></div><div class="line">    int16_t* data = <span class="keyword">static_cast&lt;</span>int16_t*<span class="keyword">&gt;</span>(_data);</div><div class="line">    <span class="keywordtype">double</span> baseCycle = 2.0*M_PI/double(48000) * double(440);</div><div class="line">    <span class="keywordflow">for</span> (int32_t iii=0; iii&lt;_nbChunk; iii++) {</div><div class="line">        <span class="keywordflow">for</span> (int32_t jjj=0; jjj&lt;_map.size(); jjj++) {</div><div class="line">            data[_map.size()*iii+jjj] = cos(phase[jjj]) * 30000;</div><div class="line">            phase[jjj] += baseCycle*jjj;</div><div class="line">            <span class="keywordflow">if</span> (phase[jjj] &gt;= 2*M_PI) {</div><div class="line">                phase[jjj] -= 2*M_PI;</div><div class="line">            }</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> _argc, <span class="keyword">const</span> <span class="keywordtype">char</span> **_argv) {</div><div class="line">    <span class="comment">// the only one init for etk:</span></div><div class="line">    <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/etk.tag:http://atria-soft.github.io/etk/" href="http://atria-soft.github.io/etk/namespaceetk.html#aa87d94d7a27bd41c9982fe0ba83d6f88">etk::init</a>(_argc, _argv);</div><div class="line">    <span class="keywordflow">for</span> (int32_t iii=0; iii&lt;_argc ; ++iii) {</div><div class="line">        std::string data = _argv[iii];</div><div class="line">        <span class="keywordflow">if</span> (    data == <span class="stringliteral">&quot;-h&quot;</span></div><div class="line">             || data == <span class="stringliteral">&quot;--help&quot;</span>) {</div><div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;Help : &quot;</span> &lt;&lt; std::endl;</div><div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;    ./xxx ---&quot;</span> &lt;&lt; std::endl;</div><div class="line">            exit(0);</div><div class="line">        }</div><div class="line">    }</div><div class="line">    <span class="comment">// initialize river interface</span></div><div class="line">    audio::river::initString(configurationRiver);</div><div class="line">    <span class="comment">// Create the River manager for tha application or part of the application.</span></div><div class="line">    <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/ememory.tag:http://atria-soft.github.io/ememory/" href="http://atria-soft.github.io/ememory/classememory_1_1_shared_ptr.html">ememory::SharedPtr&lt;audio::river::Manager&gt;</a> manager = audio::river::Manager::create(<span class="stringliteral">&quot;river_sample_read&quot;</span>);</div><div class="line">    <span class="comment">// create interface:</span></div><div class="line">    <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/ememory.tag:http://atria-soft.github.io/ememory/" href="http://atria-soft.github.io/ememory/classememory_1_1_shared_ptr.html">ememory::SharedPtr&lt;audio::river::Interface&gt;</a> interface;</div><div class="line">    <span class="comment">//Get the generic input:</span></div><div class="line">    <span class="keyword">interface </span>= manager-&gt;createOutput(48000,</div><div class="line">                                      <a class="code" href="namespacestd.html">std</a>::vector&lt;audio::channel&gt;(),</div><div class="line">                                      <a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/audio.tag:http://musicdsp.github.io/audio/" href="http://musicdsp.github.io/audio/namespaceaudio.html#a2e69fde0e376bc9b0b6fa91fb93105cba7ed7669dfdfed5d7ec2626caafbad9d7">audio::format_int16</a>,</div><div class="line">                                      &quot;speaker&quot;);</div><div class="line">    if(interface == nullptr) {</div><div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;nullptr interface&quot;</span> &lt;&lt; std::endl;</div><div class="line">        <span class="keywordflow">return</span> -1;</div><div class="line">    }</div><div class="line">    <span class="comment">// set callback mode ...</span></div><div class="line">    interface-&gt;setOutputCallback(std::bind(&amp;onDataNeeded,</div><div class="line">                                             std::placeholders::_1,</div><div class="line">                                             std::placeholders::_2,</div><div class="line">                                             std::placeholders::_3,</div><div class="line">                                             std::placeholders::_4,</div><div class="line">                                             std::placeholders::_5,</div><div class="line">                                             std::placeholders::_6));</div><div class="line">    <span class="comment">// start the stream</span></div><div class="line">    interface-&gt;start();</div><div class="line">    <span class="comment">// wait 10 second ...</span></div><div class="line">    std::this_thread::sleep_for(std::chrono::seconds(10));</div><div class="line">    <span class="comment">// stop the stream</span></div><div class="line">    interface-&gt;stop();</div><div class="line">    <span class="comment">// remove interface and manager.</span></div><div class="line">    interface.<a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/ememory.tag:http://atria-soft.github.io/ememory/" href="http://atria-soft.github.io/ememory/classememory_1_1_shared_ptr.html#afa0eb096ccb28c0b229921bb6eb5fe58">reset</a>();</div><div class="line">    manager.<a class="codeRef" doxygen="/home/heero/dev/perso/out/doc/release/ememory.tag:http://atria-soft.github.io/ememory/" href="http://atria-soft.github.io/ememory/classememory_1_1_shared_ptr.html#afa0eb096ccb28c0b229921bb6eb5fe58">reset</a>();</div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line">}</div><div class="line"></div></div><!-- fragment --></div></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.8-->
+<!-- start footer part -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="footer"/><address class="footer"><small>
+Generated on Mon Oct 24 2016 14:06:01 for audio-river: Multi-nodal audio interface by &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.12
+</small></address>
+</body>
+</html>
