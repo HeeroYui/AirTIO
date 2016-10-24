@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include <test-debug/debug.hpp>
+
 namespace river_test_aec {
 	
 	class Linker {
@@ -201,7 +203,7 @@ namespace river_test_aec {
 		ememory::SharedPtr<Linker> processLink2 = ememory::makeShared<Linker>(manager, "microphone", "speaker-test");
 		processLink1->start();
 		processLink2->start();
-		sleep(30);
+		std::this_thread::sleep_for(std::chrono::seconds(20));
 		processLink1->stop();
 		processLink2->stop();
 		
