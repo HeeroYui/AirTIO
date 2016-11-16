@@ -32,9 +32,7 @@ namespace audio {
 					/**
 					 * @brief Destructor
 					 */
-					~Group() {
-						// TODO : ...
-					}
+					~Group() = default;
 				private: 
 					std::vector< ememory::SharedPtr<Node> > m_list; //!< List of all node in the group
 				public:

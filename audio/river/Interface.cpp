@@ -494,7 +494,7 @@ void audio::river::Interface::generateDot(etk::FSNode& _node, const std::string&
 	     || m_mode == audio::river::modeInterface_feedback) {
 		m_process.generateDot(_node, 3, 10000+m_uid, nameIn, nameOut, false);
 	} else {
-		m_process.generateDot(_node, 3, 10000+m_uid, nameIn, nameOut, true);
+		m_process.generateDot(_node, 3, 10000+m_uid, nameOut, nameIn, true);
 	}
 	
 	
