@@ -13,7 +13,7 @@ def get_desc():
 	return "Multi-nodal audio interface test"
 
 def get_licence():
-	return "APACHE-2"
+	return "MPL-2"
 
 def get_compagny_type():
 	return "com"

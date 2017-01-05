@@ -1,7 +1,7 @@
 /** @file
  * @author Edouard DUPIN 
  * @copyright 2015, Edouard DUPIN, all right reserved
- * @license APACHE v2.0 (see license file)
+ * @license MPL v2.0 (see license file)
  */
 
 //! [audio_river_sample_write_all]
@@ -39,7 +39,7 @@ void onDataNeeded(void* _data,
                   const audio::Time& _time,
                   size_t _nbChunk,
                   enum audio::format _format,
-                  uint32_t _frequency,
+                  uint32_t _sampleRate,
                   const std::vector<audio::channel>& _map) {
 	static double phase[8] = {0,0,0,0,0,0,0,0};
 	
