@@ -74,4 +74,46 @@ In every interface we need to define some Element:
   - "nb-chunk": Number of chunk to open the stream.
 
 
+Generic configuration file use
+==============================
+
+You can specify a generic configuration file foir a user in the path ```~/.local/share/audio-river/config.json```
+
+The default config file is:
+
+```{.json}
+{
+	microphone:{
+		io:"input",
+		map-on:{
+			interface:"auto",
+			name:"default",
+		},
+		frequency:0,
+		channel-map:[
+			"front-left", "front-right"
+		],
+		type:"auto",
+		nb-chunk:1024,
+		mux-demux-type:"float"
+	},
+	speaker:{
+		io:"output",
+		map-on:{
+			interface:"alsa",
+			name:"default",
+		},
+		frequency:0,
+		channel-map:[
+			"front-left", "front-right",
+		],
+		type:"auto",
+		nb-chunk:1024,
+		volume-name:"MASTER",
+		mux-demux-type:"float"
+	}
+}
+```
+
+If the pplication start with no name it try to load this file and if it fail it load the internalversion of a basic file
 

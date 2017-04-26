@@ -55,6 +55,7 @@ static std::string basicAutoConfig =
 	"}\n";
 
 
+static std::string pathToTheRiverConfigInHome("HOME:.local/share/audio-river/config.json");
 
 audio::river::io::Manager::Manager() {
 	#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
@@ -66,10 +67,15 @@ audio::river::io::Manager::Manager() {
 }
 
 void audio::river::io::Manager::init(const std::string& _filename) {
+	RIVER_ERROR("kjqsdhfkjqshdfkjqhsdskjdfhfkqjshqhskdjfhqsdfqsdqsdfqsdqsdfqsdfqsdfqsdfqsdfqsd");
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	if (_filename == "") {
-		RIVER_INFO("Load default config");
-		m_config.parse(basicAutoConfig);
+		if (m_config.load(pathToTheRiverConfigInHome) == false) {
+			RIVER_INFO("Load default config");
+			m_config.parse(basicAutoConfig);
+		} else {
+			RIVER_INFO("Load default user configuration: " << pathToTheRiverConfigInHome);
+		}
 	} else if (m_config.load(_filename) == false) {
 		RIVER_ERROR("you must set a basic configuration file for harware configuration: '" << _filename << "'");
 	}

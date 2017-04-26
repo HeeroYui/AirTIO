@@ -20,7 +20,7 @@ static const std::string configurationRiver =
 		"		io:'output',\n"
 		"		map-on:{\n"
 		"			interface:'alsa',\n"
-		"			name:'hw:0,0',\n"
+		"			name:'hw:0,3',\n"
 		"		},\n"
 		"		frequency:48000,\n"
 		//"		channel-map:['front-left', 'front-right', 'rear-left', 'rear-right'],\n"
