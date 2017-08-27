@@ -8,7 +8,7 @@
 #include <test-debug/debug.hpp>
 
 namespace river_test_record_callback {
-	static const std::string configurationRiver =
+	static const etk::String configurationRiver =
 		"{\n"
 		"	microphone:{\n"
 		"		io:'input',\n"
@@ -28,10 +28,10 @@ namespace river_test_record_callback {
 			ememory::SharedPtr<audio::river::Manager> m_manager;
 			ememory::SharedPtr<audio::river::Interface> m_interface;
 		public:
-			testInCallback(ememory::SharedPtr<audio::river::Manager> _manager, const std::string& _input="microphone") :
+			testInCallback(ememory::SharedPtr<audio::river::Manager> _manager, const etk::String& _input="microphone") :
 			  m_manager(_manager) {
 				//Set stereo output:
-				std::vector<audio::channel> channelMap;
+				etk::Vector<audio::channel> channelMap;
 				m_interface = m_manager->createInput(48000,
 				                                     channelMap,
 				                                     audio::format_int16,
@@ -55,7 +55,7 @@ namespace river_test_record_callback {
 			                    size_t _nbChunk,
 			                    enum audio::format _format,
 			                    uint32_t _frequency,
-			                    const std::vector<audio::channel>& _map) {
+			                    const etk::Vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}

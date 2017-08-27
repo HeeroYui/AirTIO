@@ -5,8 +5,8 @@
  */
 #pragma once
 
-#include <string>
-#include <vector>
+#include <etk/String.hpp>
+#include <etk/Vector.hpp>
 #include <list>
 #include <cstdint>
 #include <chrono>
@@ -39,7 +39,7 @@ namespace audio {
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					Node(const std::string& _name, const ejson::Object& _config);
+					Node(const etk::String& _name, const ejson::Object& _config);
 				public:
 					/**
 					 * @brief Destructor
@@ -84,8 +84,8 @@ namespace audio {
 				protected:
 					ememory::SharedPtr<audio::drain::VolumeElement> m_volume; //!< if a volume is set it is set here ... for hardware interface only.
 				protected:
-					std::vector<ememory::WeakPtr<audio::river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
-					std::vector<ememory::SharedPtr<audio::river::Interface> > m_list; //!< List of all connected interface at this node.
+					etk::Vector<ememory::WeakPtr<audio::river::Interface> > m_listAvaillable; //!< List of all interface that exist on this Node
+					etk::Vector<ememory::SharedPtr<audio::river::Interface> > m_list; //!< List of all connected interface at this node.
 					/**
 					 * @brief Get the number of interface with a specific type.
 					 * @param[in] _interfaceType Type of the interface.
@@ -124,13 +124,13 @@ namespace audio {
 					 */
 					void interfaceRemove(const ememory::SharedPtr<audio::river::Interface>& _interface);
 				protected:
-					std::string m_name; //!< Name of the interface
+					etk::String m_name; //!< Name of the interface
 				public:
 					/**
 					 * @brief Get the interface name.
 					 * @return Current name.
 					 */
-					const std::string& getName() {
+					const etk::String& getName() {
 						return m_name;
 					}
 				protected:

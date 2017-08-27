@@ -18,14 +18,14 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeAEC(const std::string& _name, const ejson::Object& _config);
+					NodeAEC(const etk::String& _name, const ejson::Object& _config);
 				public:
 					/**
 					 * @brief Factory of this Virtual Node.
 					 * @param[in] _name Name of the node.
 					 * @param[in] _config Configuration of the node.
 					 */
-					static ememory::SharedPtr<NodeAEC> create(const std::string& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeAEC> create(const etk::String& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -45,10 +45,10 @@ namespace audio {
 					 * @return Interfae Pointer.
 					 */
 					ememory::SharedPtr<audio::river::Interface> createInput(float _freq,
-					                                                const std::vector<audio::channel>& _map,
+					                                                const etk::Vector<audio::channel>& _map,
 					                                                audio::format _format,
-					                                                const std::string& _streamName,
-					                                                const std::string& _name);
+					                                                const etk::String& _streamName,
+					                                                const etk::String& _name);
 					/**
 					 * @brief Stream data input callback
 					 * @todo : copy doc ..
@@ -58,7 +58,7 @@ namespace audio {
 					                              size_t _nbChunk,
 					                              enum audio::format _format,
 					                              uint32_t _frequency,
-					                              const std::vector<audio::channel>& _map);
+					                              const etk::Vector<audio::channel>& _map);
 					/**
 					 * @brief Stream data input callback
 					 * @todo : copy doc ..
@@ -68,7 +68,7 @@ namespace audio {
 					                            size_t _nbChunk,
 					                            enum audio::format _format,
 					                            uint32_t _frequency,
-					                            const std::vector<audio::channel>& _map);
+					                            const etk::Vector<audio::channel>& _map);
 				protected:
 					audio::drain::CircularBuffer m_bufferMicrophone; //!< temporary buffer to synchronize data.
 					audio::drain::CircularBuffer m_bufferFeedBack; //!< temporary buffer to synchronize data.

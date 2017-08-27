@@ -5,9 +5,9 @@
  */
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map>
+#include <etk/String.hpp>
+#include <etk/Vector.hpp>
+#include <etk/Map.hpp>
 #include <list>
 #include <cstdint>
 #include <mutex>
@@ -46,56 +46,56 @@ namespace audio {
 					 * @brief Called by audio::river::init() to set the hardware configuration file.
 					 * @param[in] _filename Name of the file to initialize.
 					 */
-					void init(const std::string& _filename);
+					void init(const etk::String& _filename);
 					/**
 					 * @brief Called by audio::river::initString() to set the hardware configuration string.
 					 * @param[in] _data json configuration string.
 					 */
-					void initString(const std::string& _data);
+					void initString(const etk::String& _data);
 					/**
 					 * @brief Called by audio::river::inInit() to uninitialize all the low level interface.
 					 */
 					void unInit();
 				private:
 					ejson::Document m_config; //!< harware configuration
-					std::vector<ememory::SharedPtr<audio::river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone/all time
-					std::vector<ememory::WeakPtr<audio::river::io::Node> > m_list; //!< List of all IO node
+					etk::Vector<ememory::SharedPtr<audio::river::io::Node> > m_listKeepAlive; //!< list of all Node that might be keep alive sone/all time
+					etk::Vector<ememory::WeakPtr<audio::river::io::Node> > m_list; //!< List of all IO node
 				public:
 					/**
 					 * @brief Get a node with his name (the name is set in the description file.
 					 * @param[in] _name Name of the node
 					 * @return Pointer on the noe or a nullptr if the node does not exist in the file or an error occured.
 					 */
-					ememory::SharedPtr<audio::river::io::Node> getNode(const std::string& _name);
+					ememory::SharedPtr<audio::river::io::Node> getNode(const etk::String& _name);
 				private:
-					std::vector<ememory::SharedPtr<audio::drain::VolumeElement> > m_volumeGroup; //!< List of All global volume in the Low level interface.
+					etk::Vector<ememory::SharedPtr<audio::drain::VolumeElement> > m_volumeGroup; //!< List of All global volume in the Low level interface.
 				public:
 					/**
 					 * @brief Get a volume in the global list of vilume
 					 * @param[in] _name Name of the volume.
 					 * @return pointer on the requested volume (create it if does not exist). nullptr if the name is empty.
 					 */
-					ememory::SharedPtr<audio::drain::VolumeElement> getVolumeGroup(const std::string& _name);
+					ememory::SharedPtr<audio::drain::VolumeElement> getVolumeGroup(const etk::String& _name);
 					/**
 					 * @brief Get all input audio stream.
 					 * @return a list of all availlables input stream name
 					 */
-					std::vector<std::string> getListStreamInput();
+					etk::Vector<etk::String> getListStreamInput();
 					/**
 					 * @brief Get all output audio stream.
 					 * @return a list of all availlables output stream name
 					 */
-					std::vector<std::string> getListStreamOutput();
+					etk::Vector<etk::String> getListStreamOutput();
 					/**
 					 * @brief Get all audio virtual stream.
 					 * @return a list of all availlables virtual stream name
 					 */
-					std::vector<std::string> getListStreamVirtual();
+					etk::Vector<etk::String> getListStreamVirtual();
 					/**
 					 * @brief Get all audio stream.
 					 * @return a list of all availlables stream name
 					 */
-					std::vector<std::string> getListStream();
+					etk::Vector<etk::String> getListStream();
 					
 					/**
 					 * @brief Set a volume for a specific group
@@ -105,46 +105,46 @@ namespace audio {
 					 * @return false An error occured
 					 * @example : setVolume("MASTER", -3.0f);
 					 */
-					bool setVolume(const std::string& _volumeName, float _valuedB);
+					bool setVolume(const etk::String& _volumeName, float _valuedB);
 					/**
 					 * @brief Get a volume value
 					 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
 					 * @return The Volume value in dB.
 					 * @example ret = getVolume("MASTER"); can return something like ret = -3.0f
 					 */
-					float getVolume(const std::string& _volumeName);
+					float getVolume(const etk::String& _volumeName);
 					/**
 					 * @brief Get a parameter value
 					 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
 					 * @return The requested value Range.
 					 * @example ret = getVolumeRange("MASTER"); can return something like ret=(-120.0f,0.0f)
 					 */
-					std::pair<float,float> getVolumeRange(const std::string& _volumeName) const;
+					etk::Pair<float,float> getVolumeRange(const etk::String& _volumeName) const;
 					/**
 					 * @brief Set a Mute for a specific volume group
 					 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
 					 * @param[in] _mute Mute enable or disable.
 					 */
-					void setMute(const std::string& _volumeName, bool _mute);
+					void setMute(const etk::String& _volumeName, bool _mute);
 					/**
 					 * @brief Get a volume value
 					 * @param[in] _volumeName Name of the volume (MASTER, MATER_BT ...)
 					 * @return The Mute of the volume volume.
 					 */
-					bool getMute(const std::string& _volumeName);
+					bool getMute(const etk::String& _volumeName);
 					/**
 					 * @brief Generate the dot file corresponding at the actif nodes.
 					 * @param[in] _filename Name of the file to write data.
 					 */
-					void generateDot(const std::string& _filename);
+					void generateDot(const etk::String& _filename);
 				private:
-					std::map<std::string, ememory::SharedPtr<audio::river::io::Group> > m_listGroup; //!< List of all groups
+					etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> > m_listGroup; //!< List of all groups
 					/**
 					 * @brief get a low level interface group.
 					 * @param[in] _name Name of the group.
 					 * @return Pointer on the requested group or nullptr if the group does not existed.
 					 */
-					ememory::SharedPtr<audio::river::io::Group> getGroup(const std::string& _name);
+					ememory::SharedPtr<audio::river::io::Group> getGroup(const etk::String& _name);
 					
 			};
 		}

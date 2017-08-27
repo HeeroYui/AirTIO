@@ -22,7 +22,7 @@ namespace river_test_echo_delay {
 			audio::Time m_currentTick;
 			int32_t m_stateFB;
 			int32_t m_stateMic;
-			std::vector<uint64_t> m_delayListMic;
+			etk::Vector<uint64_t> m_delayListMic;
 			bool m_estimateVolumeInput;
 			int16_t m_volumeInputMax;
 			int16_t m_volumeInputMin;
@@ -39,7 +39,7 @@ namespace river_test_echo_delay {
 			  m_estimateVolumeInput(true),
 			  m_gain(-40) {
 				//Set stereo output:
-				std::vector<audio::channel> channelMap;
+				etk::Vector<audio::channel> channelMap;
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
 				                                         audio::format_int16,
@@ -58,7 +58,7 @@ namespace river_test_echo_delay {
 				                                              std::placeholders::_5,
 				                                              std::placeholders::_6));
 				m_interfaceOut->addVolumeGroup("FLOW");
-				m_interfaceOut->setParameter("volume", "FLOW", etk::to_string(m_gain) + "dB");
+				m_interfaceOut->setParameter("volume", "FLOW", etk::toString(m_gain) + "dB");
 				
 				m_interfaceIn = m_manager->createInput(48000,
 				                                       channelMap,
@@ -103,7 +103,7 @@ namespace river_test_echo_delay {
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
-			                  const std::vector<audio::channel>& _map) {
+			                  const etk::Vector<audio::channel>& _map) {
 				int16_t* data = static_cast<int16_t*>(_data);
 				double baseCycle = 2.0*M_PI/(double)48000 * m_freq;
 				if (m_estimateVolumeInput == true) {
@@ -186,7 +186,7 @@ namespace river_test_echo_delay {
 			                            size_t _nbChunk,
 			                            enum audio::format _format,
 			                            uint32_t _frequency,
-			                            const std::vector<audio::channel>& _map) {
+			                            const etk::Vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
@@ -241,7 +241,7 @@ namespace river_test_echo_delay {
 			                    size_t _nbChunk,
 			                    enum audio::format _format,
 			                    uint32_t _frequency,
-			                    const std::vector<audio::channel>& _map) {
+			                    const etk::Vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
@@ -253,8 +253,8 @@ namespace river_test_echo_delay {
 					if (m_stateMic <= 40) {
 						for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
 							//TEST_INFO("value=" << data[iii]);
-							m_volumeInputMax = std::max(int16_t(data[iii]), m_volumeInputMax);
-							m_volumeInputMin = std::min(int16_t(data[iii]), m_volumeInputMin);
+							m_volumeInputMax = etk::max(int16_t(data[iii]), m_volumeInputMax);
+							m_volumeInputMin = etk::min(int16_t(data[iii]), m_volumeInputMin);
 						}
 						if (m_stateMic == 40) {
 							m_volumeInputMax *= 2;
@@ -265,8 +265,8 @@ namespace river_test_echo_delay {
 						int16_t valueMin = 0;
 						for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
 							//TEST_INFO("value=" << data[iii]);
-							valueMax = std::max(int16_t(data[iii]), valueMax);
-							valueMin = std::min(int16_t(data[iii]), valueMin);
+							valueMax = etk::max(int16_t(data[iii]), valueMax);
+							valueMin = etk::min(int16_t(data[iii]), valueMin);
 						}
 						if (    valueMax > m_volumeInputMax
 						     && valueMin < m_volumeInputMin
@@ -277,8 +277,8 @@ namespace river_test_echo_delay {
 						         )
 						   ) {
 							m_gain += 3.0f;
-							m_gain = std::min(m_gain, 0.0f);
-							m_interfaceOut->setParameter("volume", "FLOW", etk::to_string(m_gain) + "dB");
+							m_gain = etk::min(m_gain, 0.0f);
+							m_interfaceOut->setParameter("volume", "FLOW", etk::toString(m_gain) + "dB");
 							TEST_INFO("Set detection volume : " << m_gain << " m_stateMic=" << m_stateMic);
 							m_stateMic = 3;
 							m_phase = -1;
@@ -291,8 +291,8 @@ namespace river_test_echo_delay {
 								}
 								// just update volume
 								m_gain += 1.0f;
-								m_gain = std::min(m_gain, 0.0f);
-								m_interfaceOut->setParameter("volume", "FLOW", etk::to_string(m_gain) + "dB");
+								m_gain = etk::min(m_gain, 0.0f);
+								m_interfaceOut->setParameter("volume", "FLOW", etk::toString(m_gain) + "dB");
 							}
 						}
 					}
@@ -320,7 +320,7 @@ namespace river_test_echo_delay {
 									audio::Duration delay = time-m_currentTick;
 									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
 									TEST_WARNING("MIC: 1 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
-									m_delayListMic.push_back(delay.count());
+									m_delayListMic.pushBack(delay.count());
 								}
 							} else if (m_stateMic == 2) {
 								// inverse phase
@@ -333,7 +333,7 @@ namespace river_test_echo_delay {
 									audio::Duration delay = time-m_currentTick;
 									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
 									TEST_WARNING("MIC: 2 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
-									m_delayListMic.push_back(delay.count());
+									m_delayListMic.pushBack(delay.count());
 								}
 							} else if (m_stateMic == 3) {
 								// TODO : Detect the pic ...
@@ -379,7 +379,7 @@ namespace river_test_echo_delay {
 			}
 	};
 	
-	static const std::string configurationRiver =
+	static const etk::String configurationRiver =
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"

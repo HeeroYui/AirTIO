@@ -16,7 +16,7 @@
 #include <ewol/context/Context.hpp>
 #include <audio/river/widget/TemporalViewer.hpp>
 
-static const std::string configurationRiver =
+static const etk::String configurationRiver =
 	"{\n"
 	"	microphone:{\n"
 	"		io:'input',\n"

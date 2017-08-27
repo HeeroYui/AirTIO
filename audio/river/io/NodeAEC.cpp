@@ -10,26 +10,26 @@
 #include <ememory/memory.hpp>
 #include <functional>
 
-ememory::SharedPtr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const std::string& _name, const ejson::Object& _config) {
+ememory::SharedPtr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const etk::String& _name, const ejson::Object& _config) {
 	return ememory::SharedPtr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,
-                                                                    const std::vector<audio::channel>& _map,
+                                                                    const etk::Vector<audio::channel>& _map,
                                                                     audio::format _format,
-                                                                    const std::string& _objectName,
-                                                                    const std::string& _name) {
+                                                                    const etk::String& _objectName,
+                                                                    const etk::String& _name) {
 	// check if the output exist
 	const ejson::Object tmppp = m_config[_objectName].toObject();
 	if (tmppp.exist() == false) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config.getKeys());
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
-	std::string streamName = tmppp["map-on"].toString().get("error");
+	etk::String streamName = tmppp["map-on"].toString().get("error");
 	
 	m_nbChunk = m_config["nb-chunk"].toNumber().get(1024);
 	// check if it is an Output:
-	std::string type = tmppp["io"].toString().get("error");
+	etk::String type = tmppp["io"].toString().get("error");
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
@@ -49,7 +49,7 @@ ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeAEC::createInp
 }
 
 
-audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const ejson::Object& _config) :
+audio::river::io::NodeAEC::NodeAEC(const etk::String& _name, const ejson::Object& _config) :
   Node(_name, _config),
   m_P_attaqueTime(1),
   m_P_releaseTime(100),
@@ -79,8 +79,8 @@ audio::river::io::NodeAEC::NodeAEC(const std::string& _name, const ejson::Object
 		algo:"river-remover",
 		algo-mode:"cutter",
 	*/
-	std::vector<audio::channel> feedbackMap;
-	feedbackMap.push_back(audio::channel_frontCenter);
+	etk::Vector<audio::channel> feedbackMap;
+	feedbackMap.pushBack(audio::channel_frontCenter);
 	RIVER_INFO("Create FEEDBACK : ");
 	m_interfaceFeedBack = createInput(hardwareFormat.getFrequency(),
 	                                  feedbackMap,
@@ -167,7 +167,7 @@ void audio::river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
                                                   size_t _nbChunk,
                                                   enum audio::format _format,
                                                   uint32_t _frequency,
-                                                  const std::vector<audio::channel>& _map) {
+                                                  const etk::Vector<audio::channel>& _map) {
 	RIVER_DEBUG("Microphone Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
 	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
@@ -185,7 +185,7 @@ void audio::river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
                                                 size_t _nbChunk,
                                                 enum audio::format _format,
                                                 uint32_t _frequency,
-                                                const std::vector<audio::channel>& _map) {
+                                                const etk::Vector<audio::channel>& _map) {
 	RIVER_DEBUG("FeedBack   Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
 	RIVER_DEBUG("           next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	if (_format != audio::format_int16) {
@@ -241,8 +241,8 @@ void audio::river::io::NodeAEC::process() {
 		RIVER_ERROR("Can not synchronize flow ... : " << MicTime << " != " << fbTime << "  delta = " << (MicTime-fbTime).count()/1000 << " µs");
 		return;
 	}
-	std::vector<uint8_t> dataMic;
-	std::vector<uint8_t> dataFB;
+	etk::Vector<uint8_t> dataMic;
+	etk::Vector<uint8_t> dataFB;
 	dataMic.resize(m_nbChunk*sizeof(int16_t)*2, 0);
 	dataFB.resize(m_nbChunk*sizeof(int16_t), 0);
 	while (true) {
@@ -266,12 +266,12 @@ void audio::river::io::NodeAEC::process() {
 void audio::river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time) {
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	// TODO : Set all these parameter in the parameter configuration section ...
-	int32_t attaqueTime = std::min(std::max(0,m_P_attaqueTime),1000);
-	int32_t releaseTime = std::min(std::max(0,m_P_releaseTime),1000);
-	int32_t min_gain = 32767 * std::min(std::max(0,m_P_minimumGain),1000) / 1000;
-	int32_t threshold = 32767 * std::min(std::max(0,m_P_threshold),1000) / 1000;
+	int32_t attaqueTime = etk::min(etk::max(0,m_P_attaqueTime),1000);
+	int32_t releaseTime = etk::min(etk::max(0,m_P_releaseTime),1000);
+	int32_t min_gain = 32767 * etk::min(etk::max(0,m_P_minimumGain),1000) / 1000;
+	int32_t threshold = 32767 * etk::min(etk::max(0,m_P_threshold),1000) / 1000;
 	
-	int32_t latencyTime = std::min(std::max(0,m_P_latencyTime),1000);
+	int32_t latencyTime = etk::min(etk::max(0,m_P_latencyTime),1000);
 	int32_t nb_sample_latency = (hardwareFormat.getFrequency()/1000)*latencyTime;
 	
 	int32_t increaseSample = 32767;
@@ -321,12 +321,12 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 	_node << "	subgraph clusterNode_" << m_uid << " {\n";
 	_node << "		color=blue;\n";
 	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
-		_node << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\\n channelMap=" << etk::to_string(getInterfaceFormat().getMap()) << "\" ];\n";
-		std::string nameIn;
-		std::string nameOut;
+		_node << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\\n channelMap=" << etk::toString(getInterfaceFormat().getMap()) << "\" ];\n";
+		etk::String nameIn;
+		etk::String nameOut;
 		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
 		_node << "		node [shape=square];\n";
-		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
+		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::toString(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
 		_node << "			NODE_" << m_uid << "_HW_AEC -> " << nameIn << ";\n";
 		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
@@ -355,11 +355,11 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 		}
 		if (element != nullptr) {
 			if (element->getMode() == modeInterface_input) {
-				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else if (element->getMode() == modeInterface_output) {
-				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer", isLink);
+				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_muxer", isLink);
 			} else if (element->getMode() == modeInterface_feedback) {
-				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else {
 				
 			}

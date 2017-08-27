@@ -18,9 +18,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeMuxer(const std::string& _name, const ejson::Object& _config);
+					NodeMuxer(const etk::String& _name, const ejson::Object& _config);
 				public:
-					static ememory::SharedPtr<NodeMuxer> create(const std::string& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeMuxer> create(const etk::String& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -31,34 +31,34 @@ namespace audio {
 					ememory::SharedPtr<audio::river::Interface> m_interfaceInput1;
 					ememory::SharedPtr<audio::river::Interface> m_interfaceInput2;
 					ememory::SharedPtr<audio::river::Interface> createInput(float _freq,
-					                                              const std::vector<audio::channel>& _map,
+					                                              const etk::Vector<audio::channel>& _map,
 					                                              audio::format _format,
-					                                              const std::string& _streamName,
-					                                              const std::string& _name);
+					                                              const etk::String& _streamName,
+					                                              const etk::String& _name);
 					void onDataReceivedInput1(const void* _data,
 					                          const audio::Time& _time,
 					                          size_t _nbChunk,
 					                          enum audio::format _format,
 					                          uint32_t _frequency,
-					                          const std::vector<audio::channel>& _map);
+					                          const etk::Vector<audio::channel>& _map);
 					void onDataReceivedInput2(const void* _data,
 					                          const audio::Time& _time,
 					                          size_t _nbChunk,
 					                          enum audio::format _format,
 					                          uint32_t _frequency,
-					                          const std::vector<audio::channel>& _map);
-					std::vector<audio::channel> m_mapInput1;
-					std::vector<audio::channel> m_mapInput2;
+					                          const etk::Vector<audio::channel>& _map);
+					etk::Vector<audio::channel> m_mapInput1;
+					etk::Vector<audio::channel> m_mapInput2;
 					audio::drain::CircularBuffer m_bufferInput1;
 					audio::drain::CircularBuffer m_bufferInput2;
 					audio::Duration m_sampleTime; //!< represent the sample time at the specify frequency.
 					void process();
 					void processMuxer(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time);
-					std::vector<uint8_t> m_data;
+					etk::Vector<uint8_t> m_data;
 				public:
 					virtual void generateDot(etk::FSNode& _node);
 				private:
-					void reorder(void* _output, uint32_t _nbChunk, void* _input, const std::vector<audio::channel>& _mapInput);
+					void reorder(void* _output, uint32_t _nbChunk, void* _input, const etk::Vector<audio::channel>& _mapInput);
 			};
 		}
 	}

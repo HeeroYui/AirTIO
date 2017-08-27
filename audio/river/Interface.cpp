@@ -21,17 +21,17 @@ audio::river::Interface::Interface(void) :
 }
 
 bool audio::river::Interface::init(float _freq,
-                                   const std::vector<audio::channel>& _map,
+                                   const etk::Vector<audio::channel>& _map,
                                    audio::format _format,
                                    ememory::SharedPtr<audio::river::io::Node> _node,
                                    const ejson::Object& _config) {
-	std::vector<audio::channel> map(_map);
+	etk::Vector<audio::channel> map(_map);
 	m_node = _node;
 	m_config = _config;
 	m_mode = audio::river::modeInterface_unknow;
-	std::string type = m_config["io"].toString().get("error");
+	etk::String type = m_config["io"].toString().get("error");
 	static int32_t uid=0;
-	m_name = _node->getName() + "__" + (_node->isInput()==true?"input":"output") + "__" + type + "__" + etk::to_string(uid++);
+	m_name = _node->getName() + "__" + (_node->isInput()==true?"input":"output") + "__" + type + "__" + etk::toString(uid++);
 	if (type == "output") {
 		m_mode = audio::river::modeInterface_output;
 	} else if (type == "input") {
@@ -92,7 +92,7 @@ bool audio::river::Interface::init(float _freq,
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::Interface::create(float _freq,
-                                                             const std::vector<audio::channel>& _map,
+                                                             const etk::Vector<audio::channel>& _map,
                                                              audio::format _format,
                                                              const ememory::SharedPtr<audio::river::io::Node>& _node,
                                                              const ejson::Object& _config) {
@@ -189,7 +189,7 @@ void audio::river::Interface::abort() {
 	RIVER_DEBUG("abort [ END ]");
 }
 
-bool audio::river::Interface::setParameter(const std::string& _filter, const std::string& _parameter, const std::string& _value) {
+bool audio::river::Interface::setParameter(const etk::String& _filter, const etk::String& _parameter, const std::string& _value) {
 	RIVER_DEBUG("setParameter [BEGIN] : '" << _filter << "':'" << _parameter << "':'" << _value << "'");
 	bool out = false;
 	if (    _filter == "volume"
@@ -206,9 +206,9 @@ bool audio::river::Interface::setParameter(const std::string& _filter, const std
 	RIVER_DEBUG("setParameter [ END ] : '" << out << "'");
 	return out;
 }
-std::string audio::river::Interface::getParameter(const std::string& _filter, const std::string& _parameter) const {
+etk::String audio::river::Interface::getParameter(const etk::String& _filter, const std::string& _parameter) const {
 	RIVER_DEBUG("getParameter [BEGIN] : '" << _filter << "':'" << _parameter << "'");
-	std::string out;
+	etk::String out;
 	ememory::SharedPtr<const audio::drain::Algo> algo = m_process.get<const audio::drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
@@ -218,9 +218,9 @@ std::string audio::river::Interface::getParameter(const std::string& _filter, co
 	RIVER_DEBUG("getParameter [ END ] : '" << out << "'");
 	return out;
 }
-std::string audio::river::Interface::getParameterProperty(const std::string& _filter, const std::string& _parameter) const {
+etk::String audio::river::Interface::getParameterProperty(const etk::String& _filter, const std::string& _parameter) const {
 	RIVER_DEBUG("getParameterProperty [BEGIN] : '" << _filter << "':'" << _parameter << "'");
-	std::string out;
+	etk::String out;
 	ememory::SharedPtr<const audio::drain::Algo> algo = m_process.get<const audio::drain::Algo>(_filter);
 	if (algo == nullptr) {
 		RIVER_ERROR("setParameter(" << _filter << ") ==> no filter named like this ...");
@@ -243,9 +243,9 @@ void audio::river::Interface::write(const void* _value, size_t _nbChunk) {
 
 #if 0
 // TODO : add API aCCess mutex for Read and write...
-std::vector<int16_t> audio::river::Interface::read(size_t _nbChunk) {
+etk::Vector<int16_t> audio::river::Interface::read(size_t _nbChunk) {
 	// TODO :...
-	std::vector<int16_t> data;
+	etk::Vector<int16_t> data;
 	/*
 	data.resize(_nbChunk*m_map.size(), 0);
 	m_mutex.lock();
@@ -410,7 +410,7 @@ audio::Time audio::river::Interface::getCurrentTime() const {
 	return audio::Time::now();
 }
 
-void audio::river::Interface::addVolumeGroup(const std::string& _name) {
+void audio::river::Interface::addVolumeGroup(const etk::String& _name) {
 	std::unique_lock<std::recursive_mutex> lock(m_mutex);
 	RIVER_DEBUG("addVolumeGroup(" << _name << ")");
 	ememory::SharedPtr<audio::drain::Volume> algo = m_process.get<audio::drain::Volume>("volume");
@@ -456,7 +456,7 @@ void audio::river::Interface::systemVolumeChange() {
 	algo->volumeChange();
 }
 
-static void link(etk::FSNode& _node, const std::string& _first, const std::string& _op, const std::string& _second, bool _isLink=true) {
+static void link(etk::FSNode& _node, const etk::String& _first, const etk::String& _op, const std::string& _second, bool _isLink=true) {
 	if (_op == "->") {
 		if (_isLink) {
 			_node << "			" << _first << " -> " << _second << ";\n";
@@ -473,23 +473,23 @@ static void link(etk::FSNode& _node, const std::string& _first, const std::strin
 	}
 }
 
-std::string audio::river::Interface::getDotNodeName() const {
+etk::String audio::river::Interface::getDotNodeName() const {
 	if (m_mode == audio::river::modeInterface_input) {
-		return "API_" + etk::to_string(m_uid) + "_input";
+		return "API_" + etk::toString(m_uid) + "_input";
 	} else if (m_mode == audio::river::modeInterface_feedback) {
-		return "API_" + etk::to_string(m_uid) + "_feedback";
+		return "API_" + etk::toString(m_uid) + "_feedback";
 	} else if (m_mode == audio::river::modeInterface_output) {
-		return "API_" + etk::to_string(m_uid) + "_output";
+		return "API_" + etk::toString(m_uid) + "_output";
 	}
 	return "error";
 }
 
-void audio::river::Interface::generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink) {
+void audio::river::Interface::generateDot(etk::FSNode& _node, const etk::String& _nameIO, bool _isLink) {
 	_node << "	subgraph clusterInterface_" << m_uid << " {\n";
 	_node << "		color=orange;\n";
 	_node << "		label=\"[" << m_uid << "] Interface : " << m_name << "\";\n";
-	std::string nameIn;
-	std::string nameOut;
+	etk::String nameIn;
+	etk::String nameOut;
 	if (    m_mode == audio::river::modeInterface_input
 	     || m_mode == audio::river::modeInterface_feedback) {
 		m_process.generateDot(_node, 3, 10000+m_uid, nameIn, nameOut, false);

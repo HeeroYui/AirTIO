@@ -9,11 +9,11 @@
 #include <audio/river/io/Manager.hpp>
 
 static bool river_isInit = false;
-static std::string river_configFile = "";
+static etk::String river_configFile = "";
 
 
 
-void audio::river::init(const std::string& _filename) {
+void audio::river::init(const etk::String& _filename) {
 	if (river_isInit == false) {
 		river_isInit = true;
 		river_configFile = _filename;
@@ -27,7 +27,7 @@ void audio::river::init(const std::string& _filename) {
 	}
 }
 
-void audio::river::initString(const std::string& _config) {
+void audio::river::initString(const etk::String& _config) {
 	if (river_isInit == false) {
 		river_isInit = true;
 		river_configFile = _config;

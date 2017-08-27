@@ -24,9 +24,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeOrchestra(const std::string& _name, const ejson::Object& _config);
+					NodeOrchestra(const etk::String& _name, const ejson::Object& _config);
 				public:
-					static ememory::SharedPtr<NodeOrchestra> create(const std::string& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeOrchestra> create(const etk::String& _name, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -50,7 +50,7 @@ namespace audio {
 					int32_t recordCallback(const void* _inputBuffer,
 					                       const audio::Time& _timeInput,
 					                       uint32_t _nbChunk,
-					                       const std::vector<audio::orchestra::status>& _status);
+					                       const etk::Vector<audio::orchestra::status>& _status);
 					/**
 					 * @brief Playback callback. Request new data on output
 					 * @param[in,out] _outputBuffer Pointer on the buffer to fill data.
@@ -62,7 +62,7 @@ namespace audio {
 					int32_t playbackCallback(void* _outputBuffer,
 					                         const audio::Time& _timeOutput,
 					                         uint32_t _nbChunk,
-					                         const std::vector<audio::orchestra::status>& _status);
+					                         const etk::Vector<audio::orchestra::status>& _status);
 				protected:
 					virtual void start();
 					virtual void stop();

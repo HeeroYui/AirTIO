@@ -34,7 +34,7 @@ namespace audio {
 						// ...
 					}
 				private:
-					std::vector<float> m_data;
+					etk::Vector<float> m_data;
 				private:
 					float m_minVal; //!< display minimum value
 					float m_maxVal; //!< display maximum value
@@ -50,7 +50,7 @@ namespace audio {
 					                    size_t _nbChunk,
 					                    enum audio::format _format,
 					                    uint32_t _frequency,
-					                    const std::vector<audio::channel>& _map);
+					                    const etk::Vector<audio::channel>& _map);
 					int32_t m_sampleRate;
 			};
 		}

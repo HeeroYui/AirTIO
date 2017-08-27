@@ -12,24 +12,24 @@
 #include "NodePortAudio.hpp"
 #include "Node.hpp"
 
-void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std::string& _name) {
+void audio::river::io::Group::createFrom(const ejson::Document& _obj, const etk::String& _name) {
 	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");
 	for (size_t iii=0; iii<_obj.size(); ++iii) {
 		const ejson::Object tmpObject = _obj[iii].toObject();
 		if (tmpObject.exist() == false) {
 			continue;
 		}
-		std::string groupName = tmpObject["group"].toString().get();
+		etk::String groupName = tmpObject["group"].toString().get();
 		if (groupName == _name) {
 			RIVER_INFO("Add element in Group[" << _name << "]: " << _obj.getKey(iii));
 			// get type : io
-			std::string ioType = tmpObject["io"].toString().get("error");
+			etk::String ioType = tmpObject["io"].toString().get("error");
 			#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 				if (    ioType == "input"
 				     || ioType == "output") {
 					ememory::SharedPtr<audio::river::io::Node> tmp = audio::river::io::NodeOrchestra::create(_obj.getKey(iii), tmpObject);
 					tmp->setGroup(sharedFromThis());
-					m_list.push_back(tmp);
+					m_list.pushBack(tmp);
 				}
 			#endif
 			#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
@@ -37,7 +37,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 				     || ioType == "PAoutput") {
 					ememory::SharedPtr<audio::river::io::Node> tmp = audio::river::io::NodePortAudio::create(_obj.getKey(iii), tmpObject);
 					tmp->setGroup(sharedFromThis());
-					m_list.push_back(tmp);
+					m_list.pushBack(tmp);
 				}
 			#endif
 		}
@@ -79,7 +79,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const std:
 }
 
 
-ememory::SharedPtr<audio::river::io::Node> audio::river::io::Group::getNode(const std::string& _name) {
+ememory::SharedPtr<audio::river::io::Node> audio::river::io::Group::getNode(const etk::String& _name) {
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] != nullptr) {
 			if (m_list[iii]->getName() == _name) {

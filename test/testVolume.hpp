@@ -6,7 +6,7 @@
 #pragma once
 
 namespace river_test_volume {
-	static const std::string configurationRiver =
+	static const etk::String configurationRiver =
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"
@@ -32,9 +32,9 @@ namespace river_test_volume {
 			  m_manager(_manager),
 			  m_phase(0) {
 				//Set stereo output:
-				std::vector<audio::channel> channelMap;
-				channelMap.push_back(audio::channel_frontLeft);
-				channelMap.push_back(audio::channel_frontRight);
+				etk::Vector<audio::channel> channelMap;
+				channelMap.pushBack(audio::channel_frontLeft);
+				channelMap.pushBack(audio::channel_frontRight);
 				m_interface = m_manager->createOutput(48000,
 				                                      channelMap,
 				                                      audio::format_int16,
@@ -60,7 +60,7 @@ namespace river_test_volume {
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
-			                  const std::vector<audio::channel>& _map) {
+			                  const etk::Vector<audio::channel>& _map) {
 				int16_t* data = static_cast<int16_t*>(_data);
 				double baseCycle = 2.0*M_PI/(double)48000 * (double)550;
 				for (int32_t iii=0; iii<_nbChunk; iii++) {

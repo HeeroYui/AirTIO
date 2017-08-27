@@ -13,7 +13,7 @@
 int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer,
                                                         const audio::Time& _timeInput,
                                                         uint32_t _nbChunk,
-                                                        const std::vector<audio::orchestra::status>& _status) {
+                                                        const etk::Vector<audio::orchestra::status>& _status) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
@@ -24,7 +24,7 @@ int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer
 int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
                                                           const audio::Time& _timeOutput,
                                                           uint32_t _nbChunk,
-                                                          const std::vector<audio::orchestra::status>& _status) {
+                                                          const etk::Vector<audio::orchestra::status>& _status) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size() << "  data=" << uint64_t(_outputBuffer));
@@ -34,11 +34,11 @@ int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
 
 
 
-ememory::SharedPtr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const std::string& _name, const ejson::Object& _config) {
+ememory::SharedPtr<audio::river::io::NodeOrchestra> audio::river::io::NodeOrchestra::create(const etk::String& _name, const ejson::Object& _config) {
 	return ememory::SharedPtr<audio::river::io::NodeOrchestra>(new audio::river::io::NodeOrchestra(_name, _config));
 }
 
-audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const ejson::Object& _config) :
+audio::river::io::NodeOrchestra::NodeOrchestra(const etk::String& _name, const ejson::Object& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -49,8 +49,8 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 		},
 		nb-chunk:1024 # number of chunk to open device (create the latency anf the frequency to call user)
 	*/
-	std::string typeInterface = audio::orchestra::typeUndefined;
-	std::string streamName = "default";
+	etk::String typeInterface = audio::orchestra::typeUndefined;
+	etk::String streamName = "default";
 	const ejson::Object tmpObject = m_config["map-on"].toObject();
 	if (tmpObject.exist() == false) {
 		RIVER_WARNING("missing node : 'map-on' ==> auto map : 'auto:default'");
@@ -67,7 +67,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const std::string& _name, const e
 	m_interface.instanciate(typeInterface);
 	m_interface.setName(_name);
 	// TODO : Check return ...
-	std::string type = m_config["type"].toString().get("int16");
+	etk::String type = m_config["type"].toString().get("int16");
 	if (streamName == "") {
 		streamName = "default";
 	}

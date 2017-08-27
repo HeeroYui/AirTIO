@@ -6,7 +6,7 @@
 #pragma once
 
 namespace river_test_playback_write {
-	static const std::string configurationRiver =
+	static const etk::String configurationRiver =
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"
@@ -24,15 +24,15 @@ namespace river_test_playback_write {
 	
 	class testOutWrite {
 		public:
-			std::vector<audio::channel> m_channelMap;
+			etk::Vector<audio::channel> m_channelMap;
 			ememory::SharedPtr<audio::river::Manager> m_manager;
 			ememory::SharedPtr<audio::river::Interface> m_interface;
 		public:
 			testOutWrite(ememory::SharedPtr<audio::river::Manager> _manager) :
 			  m_manager(_manager) {
 				//Set stereo output:
-				m_channelMap.push_back(audio::channel_frontLeft);
-				m_channelMap.push_back(audio::channel_frontRight);
+				m_channelMap.pushBack(audio::channel_frontLeft);
+				m_channelMap.pushBack(audio::channel_frontRight);
 				m_interface = m_manager->createOutput(48000,
 				                                      m_channelMap,
 				                                      audio::format_int16,
@@ -49,7 +49,7 @@ namespace river_test_playback_write {
 					return;
 				}
 				double phase=0;
-				std::vector<int16_t> data;
+				etk::Vector<int16_t> data;
 				data.resize(1024*m_channelMap.size());
 				double baseCycle = 2.0*M_PI/48000.0 * 440.0;
 				// start fill buffer
@@ -106,10 +106,10 @@ namespace river_test_playback_write {
 			testOutWriteCallback(ememory::SharedPtr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
-				std::vector<audio::channel> channelMap;
+				etk::Vector<audio::channel> channelMap;
 				//Set stereo output:
-				channelMap.push_back(audio::channel_frontLeft);
-				channelMap.push_back(audio::channel_frontRight);
+				channelMap.pushBack(audio::channel_frontLeft);
+				channelMap.pushBack(audio::channel_frontRight);
 				m_interface = m_manager->createOutput(48000,
 				                                      channelMap,
 				                                      audio::format_int16,
@@ -131,11 +131,11 @@ namespace river_test_playback_write {
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
-			                  const std::vector<audio::channel>& _map) {
+			                  const etk::Vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				std::vector<int16_t> data;
+				etk::Vector<int16_t> data;
 				data.resize(1024*_map.size());
 				double baseCycle = 2.0*M_PI/48000.0 * 440.0;
 				// start fill buffer

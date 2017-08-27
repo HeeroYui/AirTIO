@@ -10,26 +10,26 @@
 #include <ememory/memory.hpp>
 #include <functional>
 
-ememory::SharedPtr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const std::string& _name, const ejson::Object& _config) {
+ememory::SharedPtr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const etk::String& _name, const ejson::Object& _config) {
 	return ememory::SharedPtr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeMuxer::createInput(float _freq,
-                                                                                     const std::vector<audio::channel>& _map,
+                                                                                     const etk::Vector<audio::channel>& _map,
                                                                                      audio::format _format,
-                                                                                     const std::string& _objectName,
-                                                                                     const std::string& _name) {
+                                                                                     const etk::String& _objectName,
+                                                                                     const etk::String& _name) {
 	// check if the output exist
 	const ejson::Object tmppp = m_config[_objectName].toObject();
 	if (tmppp.exist() == false) {
 		RIVER_ERROR("can not open a non existance virtual interface: '" << _objectName << "' not present in : " << m_config.getKeys());
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
-	std::string streamName = tmppp["map-on"].toString().get("error");
+	etk::String streamName = tmppp["map-on"].toString().get("error");
 	
 	
 	// check if it is an Output:
-	std::string type = tmppp["io"].toString().get("error");
+	etk::String type = tmppp["io"].toString().get("error");
 	if (    type != "input"
 	     && type != "feedback") {
 		RIVER_ERROR("can not open in output a virtual interface: '" << streamName << "' configured has : " << type);
@@ -49,7 +49,7 @@ ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeMuxer::createI
 }
 
 
-audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const ejson::Object& _config) :
+audio::river::io::NodeMuxer::NodeMuxer(const etk::String& _name, const ejson::Object& _config) :
   Node(_name, _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
@@ -77,7 +77,7 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const ejson::Ob
 	*/
 	RIVER_INFO("Create IN 1 : ");
 	m_interfaceInput1 = createInput(hardwareFormat.getFrequency(),
-	                                std::vector<audio::channel>(),
+	                                etk::Vector<audio::channel>(),
 	                                hardwareFormat.getFormat(),
 	                                "map-on-input-1",
 	                                _name + "-muxer-in1");
@@ -92,8 +92,8 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const ejson::Ob
 	} else {
 		m_mapInput1.clear();
 		for (const auto it : listChannelMap) {
-			std::string value = it.toString().get();
-			m_mapInput1.push_back(audio::getChannelFromString(value));
+			etk::String value = it.toString().get();
+			m_mapInput1.pushBack(audio::getChannelFromString(value));
 		}
 		if (m_mapInput1.size() != m_interfaceInput1->getInterfaceFormat().getMap().size()) {
 			RIVER_ERROR("Request remap of the Input 1 the 2 size is wrong ... request=");
@@ -103,7 +103,7 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const ejson::Ob
 	
 	RIVER_INFO("Create IN 2 : ");
 	m_interfaceInput2 = createInput(hardwareFormat.getFrequency(),
-	                                std::vector<audio::channel>(),
+	                                etk::Vector<audio::channel>(),
 	                                hardwareFormat.getFormat(),
 	                                "map-on-input-2",
 	                                _name + "-muxer-in2");
@@ -118,8 +118,8 @@ audio::river::io::NodeMuxer::NodeMuxer(const std::string& _name, const ejson::Ob
 	} else {
 		m_mapInput2.clear();
 		for (const auto it : listChannelMap2) {
-			std::string value = it.toString().get();
-			m_mapInput2.push_back(audio::getChannelFromString(value));
+			etk::String value = it.toString().get();
+			m_mapInput2.pushBack(audio::getChannelFromString(value));
 		}
 		if (m_mapInput2.size() != m_interfaceInput2->getInterfaceFormat().getMap().size()) {
 			RIVER_ERROR("Request remap of the Input 2 the 2 size is wrong ... request=");
@@ -192,7 +192,7 @@ void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
                                                        size_t _nbChunk,
                                                        enum audio::format _format,
                                                        uint32_t _frequency,
-                                                       const std::vector<audio::channel>& _map) {
+                                                       const etk::Vector<audio::channel>& _map) {
 	RIVER_PRINT("Input-1 Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
 	RIVER_DEBUG("        next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	/*
@@ -212,7 +212,7 @@ void audio::river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
                                                        size_t _nbChunk,
                                                        enum audio::format _format,
                                                        uint32_t _frequency,
-                                                       const std::vector<audio::channel>& _map) {
+                                                       const etk::Vector<audio::channel>& _map) {
 	RIVER_PRINT("Input-2 Time=" << _time << " _nbChunk=" << _nbChunk << " _map=" << _map << " _format=" << _format << " freq=" << _frequency);
 	RIVER_DEBUG("        next=" << _time + audio::Duration(0, _nbChunk*1000000000LL/int64_t(_frequency)) );
 	/*
@@ -274,8 +274,8 @@ void audio::river::io::NodeMuxer::process() {
 		RIVER_ERROR("Can not synchronize flow ... : " << in1Time << " != " << in2Time << "  delta = " << (in1Time-in2Time).count()/1000 << " µs");
 		return;
 	}
-	std::vector<uint8_t> dataIn1;
-	std::vector<uint8_t> dataIn2;
+	etk::Vector<uint8_t> dataIn1;
+	etk::Vector<uint8_t> dataIn2;
 	dataIn1.resize(256*audio::getFormatBytes(getInterfaceFormat().getFormat())*m_mapInput1.size(), 0);
 	dataIn2.resize(256*audio::getFormatBytes(getInterfaceFormat().getFormat())*m_mapInput2.size(), 0);
 	m_data.resize(256*audio::getFormatBytes(getInterfaceFormat().getFormat())*getInterfaceFormat().getMap().size(), 0);
@@ -297,7 +297,7 @@ void audio::river::io::NodeMuxer::process() {
 }
 
 
-void audio::river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _input, const std::vector<audio::channel>& _mapInput) {
+void audio::river::io::NodeMuxer::reorder(void* _output, uint32_t _nbChunk, void* _input, const etk::Vector<audio::channel>& _mapInput) {
 	// real process: (only depend of data size):
 	switch (getInterfaceFormat().getFormat()) {
 		case audio::format_int8:
@@ -440,12 +440,12 @@ void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 
 		_node << "		node [shape=box];\n";
 		// TODO : Create a structure ...
-		_node << "			NODE_" << m_uid << "_HW_MUXER [ label=\"Muxer\\n channelMap=" << etk::to_string(getInterfaceFormat().getMap()) << "\" ];\n";
-		std::string nameIn;
-		std::string nameOut;
+		_node << "			NODE_" << m_uid << "_HW_MUXER [ label=\"Muxer\\n channelMap=" << etk::toString(getInterfaceFormat().getMap()) << "\" ];\n";
+		etk::String nameIn;
+		etk::String nameOut;
 		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
 		_node << "		node [shape=square];\n";
-		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::to_string(m_process.getOutputConfig().getFormat()) << "\" ];\n";
+		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::toString(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
 		_node << "			NODE_" << m_uid << "_HW_MUXER -> " << nameIn << ";\n";
 		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
@@ -473,11 +473,11 @@ void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 		}
 		if (element != nullptr) {
 			if (element->getMode() == modeInterface_input) {
-				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else if (element->getMode() == modeInterface_output) {
-				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_muxer", isLink);
+				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_muxer", isLink);
 			} else if (element->getMode() == modeInterface_feedback) {
-				element->generateDot(_node, "NODE_" + etk::to_string(m_uid) + "_demuxer", isLink);
+				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else {
 				
 			}

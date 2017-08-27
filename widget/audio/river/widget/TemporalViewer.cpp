@@ -37,7 +37,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
                                                           size_t _nbChunk,
                                                           enum audio::format _format,
                                                           uint32_t _frequency,
-                                                          const std::vector<audio::channel>& _map) {
+                                                          const etk::Vector<audio::channel>& _map) {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (_format != audio::format_float) {
 		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
@@ -45,7 +45,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
 	// get the curent power of the signal.
 	const float* data = static_cast<const float*>(_data);
 	for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-		m_data.push_back(data[iii]);
+		m_data.pushBack(data[iii]);
 	}
 	/*
 	if (m_data.size()>m_sampleRate*nbSecond*10) {
@@ -59,8 +59,8 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_interface == nullptr) {
 		//Get the generic input:
-		std::vector<audio::channel> channel;
-		channel.push_back(audio::channel_frontLeft);
+		etk::Vector<audio::channel> channel;
+		channel.pushBack(audio::channel_frontLeft);
 		m_interface = m_manager->createInput(m_sampleRate,
 		                                     channel,
 		                                     audio::format_float,
@@ -111,7 +111,7 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 	// create n section for display:
 	int32_t nbSlot = m_size.x();
 	int32_t sizeSlot = m_size.x()/nbSlot;
-	std::vector<float> list;
+	etk::Vector<float> list;
 	//ARW_INFO("nbSlot : " << nbSlot << " sizeSlot=" << sizeSlot << " m_size=" << m_size);
 	list.resize(nbSlot,0.0f);
 	int32_t step = m_sampleRate*nbSecond/nbSlot;
@@ -119,7 +119,7 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 		int32_t id = kkk/step;
 		if (id < list.size()) {
 			if (kkk < m_data.size()) {
-				list[id] = std::max(list[id],m_data[kkk]);
+				list[id] = etk::max(list[id],m_data[kkk]);
 			}
 		}
 	}

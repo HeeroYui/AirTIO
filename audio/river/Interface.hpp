@@ -5,8 +5,8 @@
  */
 #pragma once
 
-#include <string>
-#include <vector>
+#include <etk/String.hpp>
+#include <etk/Vector.hpp>
 #include <cstdint>
 #include <mutex>
 #include <chrono>
@@ -63,7 +63,7 @@ namespace audio {
 				 * @return false the configuration has an error.
 				 */
 				bool init(float _freq,
-				          const std::vector<audio::channel>& _map,
+				          const etk::Vector<audio::channel>& _map,
 				          audio::format _format,
 				          ememory::SharedPtr<audio::river::io::Node> _node,
 				          const ejson::Object& _config);
@@ -78,7 +78,7 @@ namespace audio {
 				 * @return pointer The interface has been corectly created.
 				 */
 				static ememory::SharedPtr<Interface> create(float _freq,
-				                                           const std::vector<audio::channel>& _map,
+				                                           const etk::Vector<audio::channel>& _map,
 				                                           audio::format _format,
 				                                           const ememory::SharedPtr<audio::river::io::Node>& _node,
 				                                           const ejson::Object& _config);
@@ -118,20 +118,20 @@ namespace audio {
 			protected:
 				ememory::SharedPtr<audio::river::io::Node> m_node; //!< Hardware interface to/from stream audio flow.
 			protected:
-				std::string m_name; //!< Name of the interface.
+				etk::String m_name; //!< Name of the interface.
 			public:
 				/**
 				 * @brief Get interface name.
 				 * @return The current name.
 				 */
-				virtual std::string getName() {
+				virtual etk::String getName() {
 					return m_name;
 				};
 				/**
 				 * @brief Set the interface name
 				 * @param[in] _name new name of the interface
 				 */
-				virtual void setName(const std::string& _name) {
+				virtual void setName(const etk::String& _name) {
 					m_name = _name;
 				};
 				/**
@@ -169,7 +169,7 @@ namespace audio {
 				 *                      - NOTIFICATION for urgent notification volume control.
 				 *                      - NOISE for small noise volume control.
 				 */
-				virtual void addVolumeGroup(const std::string& _name);
+				virtual void addVolumeGroup(const etk::String& _name);
 			public:
 				/**
 				 * @brief Start the Audio interface flow.
@@ -198,7 +198,7 @@ namespace audio {
 				 * @example : setParameter("volume", "FLOW", "-3dB");
 				 * @example : setParameter("LowPassFilter", "cutFrequency", "1000Hz");
 				 */
-				virtual bool setParameter(const std::string& _filter, const std::string& _parameter, const std::string& _value);
+				virtual bool setParameter(const etk::String& _filter, const etk::String& _parameter, const std::string& _value);
 				/**
 				 * @brief Get a parameter value
 				 * @param[in] _filter name of the filter (if you added some personels)
@@ -207,7 +207,7 @@ namespace audio {
 				 * @example : getParameter("volume", "FLOW"); can return something like "-3dB"
 				 * @example : getParameter("LowPassFilter", "cutFrequency"); can return something like "[-120..0]dB"
 				 */
-				virtual std::string getParameter(const std::string& _filter, const std::string& _parameter) const;
+				virtual etk::String getParameter(const etk::String& _filter, const std::string& _parameter) const;
 				/**
 				 * @brief Get a parameter value
 				 * @param[in] _filter name of the filter (if you added some personels)
@@ -216,7 +216,7 @@ namespace audio {
 				 * @example : getParameter("volume", "FLOW"); can return something like "[-120..0]dB"
 				 * @example : getParameter("LowPassFilter", "cutFreqiency"); can return something like "]100..10000]Hz"
 				 */
-				virtual std::string getParameterProperty(const std::string& _filter, const std::string& _parameter) const;
+				virtual etk::String getParameterProperty(const etk::String& _filter, const std::string& _parameter) const;
 				/**
 				 * @brief write some audio sample in the speakers
 				 * @param[in] _value Data To write on output
@@ -302,19 +302,19 @@ namespace audio {
 				 * @param[in] _nameIO Name to link the interface node
 				 * @param[in] _isLink True if the node is connected on the current interface.
 				 */
-				virtual void generateDot(etk::FSNode& _node, const std::string& _nameIO, bool _isLink=true);
+				virtual void generateDot(etk::FSNode& _node, const etk::String& _nameIO, bool _isLink=true);
 				/**
 				 * @brief Get the current 'dot' name of the interface
 				 * @return The anme requested.
 				 */
-				virtual std::string getDotNodeName() const;
+				virtual etk::String getDotNodeName() const;
 			protected:
 				/**
 				 * @brief Interfanel generate of status
 				 * @param[in] _origin status source
 				 * @param[in] _status Event status
 				 */
-				void generateStatus(const std::string& _origin, const std::string& _status) {
+				void generateStatus(const etk::String& _origin, const etk::String& _status) {
 					m_process.generateStatus(_origin, _status);
 				}
 			public:

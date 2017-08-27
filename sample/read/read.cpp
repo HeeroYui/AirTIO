@@ -17,7 +17,7 @@
 
 
 //! [audio_river_sample_read_config_file]
-static const std::string configurationRiver =
+static const etk::String configurationRiver =
 	"{\n"
 	"	microphone:{\n"
 	"		io:'input',\n"
@@ -41,7 +41,7 @@ void onDataReceived(const void* _data,
                     size_t _nbChunk,
                     enum audio::format _format,
                     uint32_t _frequency,
-                    const std::vector<audio::channel>& _map,
+                    const etk::Vector<audio::channel>& _map,
                     etk::FSNode* _outputNode) {
 	if (    _format != audio::format_int16
 	     && _format != audio::format_float) {
@@ -82,11 +82,11 @@ int main(int _argc, const char **_argv) {
 	etk::init(_argc, _argv);
 	//! [audio_river_sample_init]
 	// local parameter:
-	std::string configFile;
-	std::string ioName="microphone";
-	std::string outputFileName = "";
+	etk::String configFile;
+	etk::String ioName="microphone";
+	etk::String outputFileName = "";
 	for (int32_t iii=0; iii<_argc ; ++iii) {
-		std::string data = _argv[iii];
+		etk::String data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
 			std::cout << "Help : " << std::endl;
@@ -95,13 +95,13 @@ int main(int _argc, const char **_argv) {
 			std::cout << "    --file=yyy.raw  File name to store data" << std::endl;
 			exit(0);
 		} else if (etk::start_with(data, "--conf=") == true) {
-			configFile = std::string(data.begin()+7, data.end());
+			configFile = etk::String(data.begin()+7, data.end());
 			std::cout << "Select config: " << configFile << std::endl;
 		} else if (etk::start_with(data, "--io=") == true) {
-			ioName = std::string(data.begin()+5, data.end());
+			ioName = etk::String(data.begin()+5, data.end());
 			std::cout << "Select io: " << ioName << std::endl;
 		} else if (etk::start_with(data, "--file=") == true) {
-			outputFileName = std::string(data.begin()+7, data.end());
+			outputFileName = etk::String(data.begin()+7, data.end());
 			std::cout << "Select output file name: " << outputFileName << std::endl;
 		}
 	}
@@ -120,7 +120,7 @@ int main(int _argc, const char **_argv) {
 	ememory::SharedPtr<audio::river::Interface> interface;
 	//Get the generic input:
 	interface = manager->createInput(48000,
-	                                 std::vector<audio::channel>(),
+	                                 etk::Vector<audio::channel>(),
 	                                 audio::format_int16,
 	                                 ioName);
 	if(interface == nullptr) {

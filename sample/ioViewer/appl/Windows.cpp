@@ -20,7 +20,7 @@ appl::Windows::Windows() :
 
 void appl::Windows::init() {
 	ewol::widget::Windows::init();
-	std::string composition = std::string("");
+	etk::String composition = etk::String("");
 	composition += "<sizer mode='vert'>\n";
 	composition += "	<sizer mode='hori' lock='true' min-size='10,10%'>\n";
 	composition += "		<button name='bt-record' expend='true' fill='true'>\n";

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include <etk/String.hpp>
+#include <etk/Vector.hpp>
 #include <ejson/ejson.hpp>
 #include <etk/os/FSNode.hpp>
 
@@ -34,21 +34,21 @@ namespace audio {
 					 */
 					~Group() = default;
 				private: 
-					std::vector< ememory::SharedPtr<Node> > m_list; //!< List of all node in the group
+					etk::Vector< ememory::SharedPtr<Node> > m_list; //!< List of all node in the group
 				public:
 					/**
 					 * @brief Create a group with all node needed to syncronize together
 					 * @param[in] _obj json document to create all the node in the group named _name
 					 * @param[in] _name Name of the group to create
 					 */
-					void createFrom(const ejson::Document& _obj, const std::string& _name);
+					void createFrom(const ejson::Document& _obj, const etk::String& _name);
 					/**
 					 * @brief Get a node in the group (if the node is not in the group nothing append).
 					 * @param[in] _name Name of the node requested.
 					 * @return nullptr The node named _name was not found.
 					 * @return pointer The node was find in this group.
 					 */
-					ememory::SharedPtr<audio::river::io::Node> getNode(const std::string& _name);
+					ememory::SharedPtr<audio::river::io::Node> getNode(const etk::String& _name);
 					/**
 					 * @brief Start the group.
 					 * @note all sub-node will be started.

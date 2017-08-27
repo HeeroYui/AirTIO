@@ -6,7 +6,7 @@
 #pragma once
 
 namespace river_test_format {
-	static const std::string configurationRiver =
+	static const etk::String configurationRiver =
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"
@@ -41,17 +41,17 @@ namespace river_test_format {
 			  m_nbChannels(_nbChannels),
 			  m_generateFreq(550.0f) {
 				//Set stereo output:
-				std::vector<audio::channel> channelMap;
+				etk::Vector<audio::channel> channelMap;
 				if (m_nbChannels == 1) {
-					channelMap.push_back(audio::channel_frontCenter);
+					channelMap.pushBack(audio::channel_frontCenter);
 				} else if (m_nbChannels == 2) {
-					channelMap.push_back(audio::channel_frontLeft);
-					channelMap.push_back(audio::channel_frontRight);
+					channelMap.pushBack(audio::channel_frontLeft);
+					channelMap.pushBack(audio::channel_frontRight);
 				} else if (m_nbChannels == 4) {
-					channelMap.push_back(audio::channel_frontLeft);
-					channelMap.push_back(audio::channel_frontRight);
-					channelMap.push_back(audio::channel_rearLeft);
-					channelMap.push_back(audio::channel_rearRight);
+					channelMap.pushBack(audio::channel_frontLeft);
+					channelMap.pushBack(audio::channel_frontRight);
+					channelMap.pushBack(audio::channel_rearLeft);
+					channelMap.pushBack(audio::channel_rearRight);
 				} else {
 					TEST_ERROR("Can not generate with channel != 1,2,4");
 					return;
@@ -80,7 +80,7 @@ namespace river_test_format {
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
-			                  const std::vector<audio::channel>& _map) {
+			                  const etk::Vector<audio::channel>& _map) {
 				//TEST_DEBUG("Get data ... " << _format << " map=" << _map << " chunk=" << _nbChunk);
 				double baseCycle = 2.0*M_PI/double(m_freq) * double(m_generateFreq);
 				if (_format == audio::format_int16) {
@@ -197,28 +197,28 @@ namespace river_test_format {
 		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		TEST_INFO("test convert flaot to output (callback mode)");
-		std::vector<float> listFreq;
-		listFreq.push_back(4000);
-		listFreq.push_back(8000);
-		listFreq.push_back(16000);
-		listFreq.push_back(32000);
-		listFreq.push_back(48000);
-		listFreq.push_back(48001);
-		listFreq.push_back(64000);
-		listFreq.push_back(96000);
-		listFreq.push_back(11250);
-		listFreq.push_back(2250);
-		listFreq.push_back(44100);
-		listFreq.push_back(88200);
-		std::vector<int32_t> listChannel;
-		listChannel.push_back(1);
-		listChannel.push_back(2);
-		listChannel.push_back(4);
-		std::vector<audio::format> listFormat;
-		listFormat.push_back(audio::format_int16);
-		listFormat.push_back(audio::format_int16_on_int32);
-		listFormat.push_back(audio::format_int32);
-		listFormat.push_back(audio::format_float);
+		etk::Vector<float> listFreq;
+		listFreq.pushBack(4000);
+		listFreq.pushBack(8000);
+		listFreq.pushBack(16000);
+		listFreq.pushBack(32000);
+		listFreq.pushBack(48000);
+		listFreq.pushBack(48001);
+		listFreq.pushBack(64000);
+		listFreq.pushBack(96000);
+		listFreq.pushBack(11250);
+		listFreq.pushBack(2250);
+		listFreq.pushBack(44100);
+		listFreq.pushBack(88200);
+		etk::Vector<int32_t> listChannel;
+		listChannel.pushBack(1);
+		listChannel.pushBack(2);
+		listChannel.pushBack(4);
+		etk::Vector<audio::format> listFormat;
+		listFormat.pushBack(audio::format_int16);
+		listFormat.pushBack(audio::format_int16_on_int32);
+		listFormat.pushBack(audio::format_int32);
+		listFormat.pushBack(audio::format_float);
 		for (size_t fff=0; fff<listFreq.size(); ++fff) {
 			for (size_t ccc=0; ccc<listChannel.size(); ++ccc) {
 				for (size_t iii=0; iii<listFormat.size(); ++iii) {

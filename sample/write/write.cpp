@@ -14,7 +14,7 @@
 
 
 //! [audio_river_sample_write_config_file]
-static const std::string configurationRiver =
+static const etk::String configurationRiver =
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"
@@ -40,7 +40,7 @@ void onDataNeeded(void* _data,
                   size_t _nbChunk,
                   enum audio::format _format,
                   uint32_t _sampleRate,
-                  const std::vector<audio::channel>& _map) {
+                  const etk::Vector<audio::channel>& _map) {
 	static double phase[8] = {0,0,0,0,0,0,0,0};
 	
 	if (_format != audio::format_int16) {
@@ -65,7 +65,7 @@ int main(int _argc, const char **_argv) {
 	// the only one init for etk:
 	etk::init(_argc, _argv);
 	for (int32_t iii=0; iii<_argc ; ++iii) {
-		std::string data = _argv[iii];
+		etk::String data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
 			std::cout << "Help : " << std::endl;
@@ -82,7 +82,7 @@ int main(int _argc, const char **_argv) {
 	ememory::SharedPtr<audio::river::Interface> interface;
 	//Get the generic input:
 	interface = manager->createOutput(48000,
-	                                  std::vector<audio::channel>(),
+	                                  etk::Vector<audio::channel>(),
 	                                  audio::format_int16,
 	                                  "speaker");
 	if(interface == nullptr) {

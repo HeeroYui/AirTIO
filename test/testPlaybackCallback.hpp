@@ -13,13 +13,13 @@ namespace river_test_playback_callback {
 			ememory::SharedPtr<audio::river::Interface> m_interface;
 			double m_phase;
 		public:
-			testOutCallback(ememory::SharedPtr<audio::river::Manager> _manager, const std::string& _io="speaker") :
+			testOutCallback(ememory::SharedPtr<audio::river::Manager> _manager, const etk::String& _io="speaker") :
 			  m_manager(_manager),
 			  m_phase(0) {
 				//Set stereo output:
-				std::vector<audio::channel> channelMap;
-				channelMap.push_back(audio::channel_frontLeft);
-				channelMap.push_back(audio::channel_frontRight);
+				etk::Vector<audio::channel> channelMap;
+				channelMap.pushBack(audio::channel_frontLeft);
+				channelMap.pushBack(audio::channel_frontRight);
 				m_interface = m_manager->createOutput(48000,
 				                                      channelMap,
 				                                      audio::format_int16,
@@ -43,7 +43,7 @@ namespace river_test_playback_callback {
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
-			                  const std::vector<audio::channel>& _map) {
+			                  const etk::Vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
@@ -71,7 +71,7 @@ namespace river_test_playback_callback {
 			}
 	};
 	
-	static const std::string configurationRiver =
+	static const etk::String configurationRiver =
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"

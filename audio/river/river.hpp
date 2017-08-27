@@ -18,12 +18,12 @@ namespace audio {
 		 * @brief Initialize the River Library
 		 * @param[in] _filename Name of the configuration file (if "" ==> default config file)
 		 */
-		void init(const std::string& _filename = "");
+		void init(const etk::String& _filename = "");
 		/**
 		 * @brief Initialize the River Library with a json data string
 		 * @param[in] _config json sting data
 		 */
-		void initString(const std::string& _config);
+		void initString(const etk::String& _config);
 		/**
 		 * @brief Un-initialize the River Library
 		 * @note this close all stream of all interfaces.

@@ -18,9 +18,9 @@ namespace river_test_muxer {
 			TestClass(ememory::SharedPtr<audio::river::Manager> _manager) :
 			  m_manager(_manager),
 			  m_phase(0) {
-				std::vector<audio::channel> channelMap;
-				channelMap.push_back(audio::channel_frontLeft);
-				channelMap.push_back(audio::channel_frontRight);
+				etk::Vector<audio::channel> channelMap;
+				channelMap.pushBack(audio::channel_frontLeft);
+				channelMap.pushBack(audio::channel_frontRight);
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
 				                                         audio::format_int16,
@@ -43,7 +43,7 @@ namespace river_test_muxer {
 				
 				//Set stereo output:
 				m_interfaceIn = m_manager->createInput(48000,
-				                                       std::vector<audio::channel>(),
+				                                       etk::Vector<audio::channel>(),
 				                                       audio::format_int16,
 				                                       "microphone-muxed");
 				if(m_interfaceIn == nullptr) {
@@ -67,7 +67,7 @@ namespace river_test_muxer {
 			                  size_t _nbChunk,
 			                  enum audio::format _format,
 			                  uint32_t _frequency,
-			                  const std::vector<audio::channel>& _map) {
+			                  const etk::Vector<audio::channel>& _map) {
 				int16_t* data = static_cast<int16_t*>(_data);
 				double baseCycle = 2.0*M_PI/(double)48000 * 440;
 				for (int32_t iii=0; iii<_nbChunk; iii++) {
@@ -85,7 +85,7 @@ namespace river_test_muxer {
 			                    size_t _nbChunk,
 			                    enum audio::format _format,
 			                    uint32_t _frequency,
-			                    const std::vector<audio::channel>& _map) {
+			                    const etk::Vector<audio::channel>& _map) {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
@@ -109,7 +109,7 @@ namespace river_test_muxer {
 			}
 	};
 	
-	static const std::string configurationRiver = 
+	static const etk::String configurationRiver = 
 		"{\n"
 		"	speaker:{\n"
 		"		io:'output',\n"
