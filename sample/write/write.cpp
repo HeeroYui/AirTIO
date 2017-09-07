@@ -10,7 +10,7 @@
 #include <audio/river/Manager.hpp>
 #include <audio/river/Interface.hpp>
 #include <etk/etk.hpp>
-#include <thread>
+#include <ethread/Thread.hpp>
 
 
 //! [audio_river_sample_write_config_file]

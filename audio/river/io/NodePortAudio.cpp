@@ -39,7 +39,7 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
                                                  const audio::Time& _timeOutput,
                                                  uint32_t _nbChunk,
                                                  PaStreamCallbackFlags _status) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	if (_inputBuffer != nullptr) {
 		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
@@ -105,7 +105,7 @@ audio::river::io::NodePortAudio::NodePortAudio(const etk::String& _name, const e
 }
 
 audio::river::io::NodePortAudio::~NodePortAudio() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
 	PaError err = Pa_CloseStream( m_stream );
 	if( err != paNoError ) {
@@ -114,7 +114,7 @@ audio::river::io::NodePortAudio::~NodePortAudio() {
 };
 
 void audio::river::io::NodePortAudio::start() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	PaError err = Pa_StartStream(m_stream);
 	if( err != paNoError ) {
@@ -123,7 +123,7 @@ void audio::river::io::NodePortAudio::start() {
 }
 
 void audio::river::io::NodePortAudio::stop() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	PaError err = Pa_StopStream(m_stream);
 	if( err != paNoError ) {

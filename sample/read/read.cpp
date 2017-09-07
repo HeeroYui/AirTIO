@@ -12,7 +12,7 @@
 //! [audio_river_sample_include]
 #include <etk/os/FSNode.hpp>
 #include <etk/etk.hpp>
-#include <thread>
+#include <ethread/Thread.hpp>
 
 
 

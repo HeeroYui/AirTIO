@@ -10,7 +10,7 @@
 #include <etk/Map.hpp>
 #include <list>
 #include <cstdint>
-#include <mutex>
+#include <ethread/Mutex.hpp>
 #include <chrono>
 #include <functional>
 #include <ememory/memory.hpp>

@@ -10,14 +10,14 @@
 #include <audio/river/river.hpp>
 #include <audio/river/Manager.hpp>
 #include <audio/river/Interface.hpp>
-#include <mutex>
+#include <ethread/Mutex.hpp>
 
 namespace audio {
 	namespace river {
 		namespace widget {
 			class TemporalViewer : public ewol::Widget {
 				private:
-					mutable std::mutex m_mutex;
+					mutable ethread::Mutex m_mutex;
 				private:
 					ewol::compositing::Drawing m_draw; //!< drawing instance
 				protected:

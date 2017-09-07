@@ -54,7 +54,7 @@ namespace audio {
 						return false;
 					};
 				protected:
-					mutable std::mutex m_mutex; //!< prevent open/close/write/read access that is multi-threaded.
+					mutable ethread::Mutex m_mutex; //!< prevent open/close/write/read access that is multi-threaded.
 					const ejson::Object m_config; //!< configuration description.
 				protected:
 					audio::drain::Process m_process; //!< Low level algorithms

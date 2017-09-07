@@ -8,7 +8,7 @@
 #include <etk/String.hpp>
 #include <etk/Vector.hpp>
 #include <cstdint>
-#include <mutex>
+#include <ethread/Mutex.hpp>
 #include <chrono>
 #include <functional>
 #include <ememory/memory.hpp>

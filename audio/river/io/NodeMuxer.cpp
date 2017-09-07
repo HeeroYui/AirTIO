@@ -164,7 +164,7 @@ audio::river::io::NodeMuxer::~NodeMuxer() {
 };
 
 void audio::river::io::NodeMuxer::start() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceInput1 != nullptr) {
 		RIVER_INFO("Start FEEDBACK : ");
@@ -177,7 +177,7 @@ void audio::river::io::NodeMuxer::start() {
 }
 
 void audio::river::io::NodeMuxer::stop() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	if (m_interfaceInput1 != nullptr) {
 		m_interfaceInput1->stop();
 	}
@@ -201,7 +201,7 @@ void audio::river::io::NodeMuxer::onDataReceivedInput1(const void* _data,
 	}
 	*/
 	// push data synchronize
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	m_bufferInput1.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_input_1.raw", _data, _nbChunk*_map.size());
 	process();
@@ -221,7 +221,7 @@ void audio::river::io::NodeMuxer::onDataReceivedInput2(const void* _data,
 	}
 	*/
 	// push data synchronize
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	m_bufferInput2.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_input_2.raw", _data, _nbChunk*_map.size());
 	process();

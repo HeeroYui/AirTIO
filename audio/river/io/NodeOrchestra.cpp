@@ -14,7 +14,7 @@ int32_t audio::river::io::NodeOrchestra::recordCallback(const void* _inputBuffer
                                                         const audio::Time& _timeInput,
                                                         uint32_t _nbChunk,
                                                         const etk::Vector<audio::orchestra::status>& _status) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 	newInput(_inputBuffer, _nbChunk, _timeInput);
@@ -25,7 +25,7 @@ int32_t audio::river::io::NodeOrchestra::playbackCallback(void* _outputBuffer,
                                                           const audio::Time& _timeOutput,
                                                           uint32_t _nbChunk,
                                                           const etk::Vector<audio::orchestra::status>& _status) {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size() << "  data=" << uint64_t(_outputBuffer));
 	newOutput(_outputBuffer, _nbChunk, _timeOutput);
@@ -229,7 +229,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const etk::String& _name, const e
 }
 
 audio::river::io::NodeOrchestra::~NodeOrchestra() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("close input stream");
 	if (m_interface.isStreamOpen() ) {
 		m_interface.closeStream();
@@ -237,7 +237,7 @@ audio::river::io::NodeOrchestra::~NodeOrchestra() {
 };
 
 void audio::river::io::NodeOrchestra::start() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum audio::orchestra::error err = m_interface.startStream();
 	if (err != audio::orchestra::error_none) {
@@ -246,7 +246,7 @@ void audio::river::io::NodeOrchestra::start() {
 }
 
 void audio::river::io::NodeOrchestra::stop() {
-	std::unique_lock<std::mutex> lock(m_mutex);
+	std::unique_lock<ethread::Mutex> lock(m_mutex);
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	enum audio::orchestra::error err = m_interface.stopStream();
 	if (err != audio::orchestra::error_none) {

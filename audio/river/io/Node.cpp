@@ -147,7 +147,7 @@ void audio::river::io::Node::registerAsRemote(const ememory::SharedPtr<audio::ri
 
 void audio::river::io::Node::interfaceAdd(const ememory::SharedPtr<audio::river::Interface>& _interface) {
 	{
-		std::unique_lock<std::mutex> lock(m_mutex);
+		std::unique_lock<ethread::Mutex> lock(m_mutex);
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				return;
@@ -163,7 +163,7 @@ void audio::river::io::Node::interfaceAdd(const ememory::SharedPtr<audio::river:
 
 void audio::river::io::Node::interfaceRemove(const ememory::SharedPtr<audio::river::Interface>& _interface) {
 	{
-		std::unique_lock<std::mutex> lock(m_mutex);
+		std::unique_lock<ethread::Mutex> lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				m_list.erase(m_list.begin()+iii);

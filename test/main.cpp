@@ -30,13 +30,13 @@
 #include <audio/river/river.hpp>
 #include <audio/river/Manager.hpp>
 #include <audio/river/Interface.hpp>
-#include <gtest/gtest.h>
+#include <etest/etest.hpp>
 #include <etk/etk.hpp>
 #include <etk/os/FSNode.hpp>
 #include <cmath>
 #include <sstream>
 
-#include <thread>
+#include <ethread/Thread.hpp>
 #include "testAEC.hpp"
 #include "testEchoDelay.hpp"
 #include "testFormat.hpp"
