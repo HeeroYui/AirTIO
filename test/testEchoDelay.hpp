@@ -360,9 +360,9 @@ namespace river_test_echo_delay {
 				m_interfaceIn->start();
 				//m_interfaceFB->start();
 				while (m_estimateVolumeInput == true) {
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					ethread::sleepMilliSeconds((10));
 				}
-				std::this_thread::sleep_for(std::chrono::seconds(10));
+				ethread::sleepMilliSeconds(std::chrono::seconds(10));
 				//m_interfaceFB->stop();
 				m_interfaceIn->stop();
 				m_interfaceOut->stop();
@@ -418,7 +418,7 @@ namespace river_test_echo_delay {
 		ememory::SharedPtr<TestClass> process = ememory::makeShared<TestClass>(manager);
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 };

@@ -38,7 +38,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
                                                           enum audio::format _format,
                                                           uint32_t _frequency,
                                                           const etk::Vector<audio::channel>& _map) {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	if (_format != audio::format_float) {
 		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
 	}
@@ -56,7 +56,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
 }
 
 void audio::river::widget::TemporalViewer::recordToggle() {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	if (m_interface == nullptr) {
 		//Get the generic input:
 		etk::Vector<audio::channel> channel;
@@ -104,7 +104,7 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 	m_draw.setColor(etk::color::black);
 	m_draw.setPos(vec2(0,0));
 	m_draw.rectangleWidth(m_size);
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	if (m_data.size() == 0) {
 		return;
 	}
@@ -143,7 +143,7 @@ void audio::river::widget::TemporalViewer::onRegenerateDisplay() {
 
 
 void audio::river::widget::TemporalViewer::periodicCall(const ewol::event::Time& _event) {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	int32_t nbSampleDelta = _event.getDeltaCall() * float(m_sampleRate);
 	if (m_data.size()>m_sampleRate*nbSecond) {
 		if (nbSampleDelta < m_data.size()) {

@@ -79,40 +79,40 @@ namespace river_test_volume {
 					return;
 				}
 				m_interface->start();
-				std::this_thread::sleep_for(std::chrono::seconds(1));
+				ethread::sleepMilliSeconds(std::chrono::seconds(1));
 				m_interface->setParameter("volume", "FLOW", "-3dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "-6dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "-9dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "-12dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "-3dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "3dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "6dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "9dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_interface->setParameter("volume", "FLOW", "0dB");
 				TEST_INFO(" get volume : " << m_interface->getParameter("volume", "FLOW") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_manager->setVolume("MASTER", -3.0f);
 				TEST_INFO("get volume MASTER: " << m_manager->getVolume("MASTER") );
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				ethread::sleepMilliSeconds((500));
 				m_manager->setVolume("MEDIA", -3.0f);
 				TEST_INFO("get volume MEDIA: " << m_manager->getVolume("MEDIA") );
-				std::this_thread::sleep_for(std::chrono::seconds(1));
+				ethread::sleepMilliSeconds(std::chrono::seconds(1));
 				m_interface->stop();
 			}
 	};
@@ -124,7 +124,7 @@ namespace river_test_volume {
 		ememory::SharedPtr<testCallbackVolume> process = ememory::makeShared<testCallbackVolume>(manager);
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 

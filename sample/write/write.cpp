@@ -103,7 +103,7 @@ int main(int _argc, const char **_argv) {
 	// start the stream
 	interface->start();
 	// wait 10 second ...
-	std::this_thread::sleep_for(std::chrono::seconds(10));
+	ethread::sleepMilliSeconds(std::chrono::seconds(10));
 	// stop the stream
 	interface->stop();
 	// remove interface and manager.

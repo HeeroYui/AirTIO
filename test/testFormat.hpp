@@ -136,9 +136,9 @@ namespace river_test_format {
 				}
 				m_interface->start();
 				// wait 2 second ...
-				std::this_thread::sleep_for(std::chrono::seconds(1));
+				ethread::sleepMilliSeconds(std::chrono::seconds(1));
 				m_interface->stop();
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				ethread::sleepMilliSeconds((100));
 			}
 	};
 	
@@ -151,7 +151,7 @@ namespace river_test_format {
 		ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 	
@@ -168,7 +168,7 @@ namespace river_test_format {
 		ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, 48000, 2, GetParam());
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
@@ -184,7 +184,7 @@ namespace river_test_format {
 		ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 	INSTANTIATE_TEST_CASE_P(InstantiationName,
@@ -226,7 +226,7 @@ namespace river_test_format {
 					ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, listFreq[fff], listChannel[ccc], listFormat[iii]);
 					process->run();
 					process.reset();
-					std::this_thread::sleep_for(std::chrono::milliseconds(500));
+					ethread::sleepMilliSeconds((500));
 				}
 			}
 		}

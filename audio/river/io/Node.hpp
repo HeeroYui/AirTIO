@@ -10,7 +10,7 @@
 #include <list>
 #include <cstdint>
 #include <chrono>
-#include <functional>
+#include <etk/Function.hpp>
 #include <ememory/memory.hpp>
 #include <audio/format.hpp>
 #include <audio/channel.hpp>

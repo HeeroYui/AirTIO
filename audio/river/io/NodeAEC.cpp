@@ -8,7 +8,7 @@
 #include <audio/river/debug.hpp>
 #include <etk/types.hpp>
 #include <ememory/memory.hpp>
-#include <functional>
+#include <etk/Function.hpp>
 
 ememory::SharedPtr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const etk::String& _name, const ejson::Object& _config) {
 	return ememory::SharedPtr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
@@ -139,7 +139,7 @@ audio::river::io::NodeAEC::~NodeAEC() {
 };
 
 void audio::river::io::NodeAEC::start() {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
 	if (m_interfaceFeedBack != nullptr) {
 		RIVER_INFO("Start FEEDBACK : ");
@@ -152,7 +152,7 @@ void audio::river::io::NodeAEC::start() {
 }
 
 void audio::river::io::NodeAEC::stop() {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	if (m_interfaceFeedBack != nullptr) {
 		m_interfaceFeedBack->stop();
 	}
@@ -174,7 +174,7 @@ void audio::river::io::NodeAEC::onDataReceivedMicrophone(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	m_bufferMicrophone.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 	process();
@@ -192,7 +192,7 @@ void audio::river::io::NodeAEC::onDataReceivedFeedBack(const void* _data,
 		RIVER_ERROR("call wrong type ... (need int16_t)");
 	}
 	// push data synchronize
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	m_bufferFeedBack.write(_data, _nbChunk, _time);
 	//RIVER_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 	process();

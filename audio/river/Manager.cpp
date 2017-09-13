@@ -17,7 +17,7 @@ static ethread::Mutex g_mutex;
 static etk::Vector<ememory::WeakPtr<audio::river::Manager> > g_listOfAllManager;
 
 ememory::SharedPtr<audio::river::Manager> audio::river::Manager::create(const etk::String& _applicationUniqueId) {
-	std::unique_lock<ethread::Mutex> lock(g_mutex);
+	ethread::UniqueLock lock(g_mutex);
 	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
 		ememory::SharedPtr<audio::river::Manager> tmp = g_listOfAllManager[iii].lock();
 		if (tmp == nullptr) {

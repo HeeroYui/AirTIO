@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <ethread/Mutex.hpp>
 #include <chrono>
-#include <functional>
+#include <etk/Function.hpp>
 #include <ememory/memory.hpp>
 #include <audio/format.hpp>
 #include <audio/channel.hpp>
@@ -198,7 +198,7 @@ namespace audio {
 				 * @example : setParameter("volume", "FLOW", "-3dB");
 				 * @example : setParameter("LowPassFilter", "cutFrequency", "1000Hz");
 				 */
-				virtual bool setParameter(const etk::String& _filter, const etk::String& _parameter, const std::string& _value);
+				virtual bool setParameter(const etk::String& _filter, const etk::String& _parameter, const etk::String& _value);
 				/**
 				 * @brief Get a parameter value
 				 * @param[in] _filter name of the filter (if you added some personels)
@@ -207,7 +207,7 @@ namespace audio {
 				 * @example : getParameter("volume", "FLOW"); can return something like "-3dB"
 				 * @example : getParameter("LowPassFilter", "cutFrequency"); can return something like "[-120..0]dB"
 				 */
-				virtual etk::String getParameter(const etk::String& _filter, const std::string& _parameter) const;
+				virtual etk::String getParameter(const etk::String& _filter, const etk::String& _parameter) const;
 				/**
 				 * @brief Get a parameter value
 				 * @param[in] _filter name of the filter (if you added some personels)
@@ -216,7 +216,7 @@ namespace audio {
 				 * @example : getParameter("volume", "FLOW"); can return something like "[-120..0]dB"
 				 * @example : getParameter("LowPassFilter", "cutFreqiency"); can return something like "]100..10000]Hz"
 				 */
-				virtual etk::String getParameterProperty(const etk::String& _filter, const std::string& _parameter) const;
+				virtual etk::String getParameterProperty(const etk::String& _filter, const etk::String& _parameter) const;
 				/**
 				 * @brief write some audio sample in the speakers
 				 * @param[in] _value Data To write on output

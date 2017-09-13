@@ -55,7 +55,7 @@ void onDataReceived(const void* _data,
 			const int16_t* data = static_cast<const int16_t*>(_data);
 			int64_t value = 0;
 			for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-				value += std::abs(data[iii]);
+				value += etk::abs(data[iii]);
 			}
 			value /= (_nbChunk*_map.size());
 			std::cout << "Get data ... average=" << int32_t(value) << std::endl;
@@ -64,7 +64,7 @@ void onDataReceived(const void* _data,
 			const float* data = static_cast<const float*>(_data);
 			float value = 0;
 			for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-				value += std::abs(data[iii]);
+				value += etk::abs(data[iii]);
 			}
 			value /= (_nbChunk*_map.size());
 			std::cout << "Get data ... average=" << float(value) << std::endl;
@@ -149,7 +149,7 @@ int main(int _argc, const char **_argv) {
 	// start the stream
 	interface->start();
 	// wait 10 second ...
-	std::this_thread::sleep_for(std::chrono::seconds(10));
+	ethread::sleepMilliSeconds(std::chrono::seconds(10));
 	// stop the stream
 	interface->stop();
 	//! [audio_river_sample_read_start_stop]

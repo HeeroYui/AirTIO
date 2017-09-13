@@ -63,7 +63,7 @@ namespace river_test_record_callback {
 				const int16_t* data = static_cast<const int16_t*>(_data);
 				int64_t value = 0;
 				for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {
-					value += std::abs(data[iii]);
+					value += etk::abs(data[iii]);
 				}
 				value /= (_nbChunk*_map.size());
 				TEST_INFO("Get data ... average=" << int32_t(value));
@@ -75,7 +75,7 @@ namespace river_test_record_callback {
 				}
 				m_interface->start();
 				// wait 2 second ...
-				std::this_thread::sleep_for(std::chrono::seconds(20));
+				ethread::sleepMilliSeconds(std::chrono::seconds(20));
 				m_interface->stop();
 			}
 	};
@@ -88,7 +88,7 @@ namespace river_test_record_callback {
 		ememory::SharedPtr<testInCallback> process = ememory::makeShared<testInCallback>(manager);
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 

@@ -14,7 +14,7 @@ int32_t audio::river::io::NodeFile::recordCallback(const void* _inputBuffer,
                                                    const audio::Time& _timeInput,
                                                    uint32_t _nbChunk,
                                                    const etk::Vector<audio::orchestra::status>& _status) {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 	newInput(_inputBuffer, _nbChunk, _timeInput);
@@ -25,7 +25,7 @@ int32_t audio::river::io::NodeFile::playbackCallback(void* _outputBuffer,
                                                      const audio::Time& _timeOutput,
                                                      uint32_t _nbChunk,
                                                      const etk::Vector<audio::orchestra::status>& _status) {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	// TODO : Manage status ...
 	RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 	newOutput(_outputBuffer, _nbChunk, _timeOutput);
@@ -228,7 +228,7 @@ audio::river::io::NodeFile::NodeFile(const etk::String& _name, const ejson::Obje
 }
 
 audio::river::io::NodeFile::~NodeFile() {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	RIVER_INFO("close input stream");
 	if (m_interface.isStreamOpen() ) {
 		m_interface.closeStream();
@@ -240,13 +240,13 @@ void audio::river::io::NodeFile::threadCallback() {
 	// open the file
 	
 	while (m_alive == true) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		ethread::sleepMilliSeconds((100));
 	}
 	
 }
 
 void audio::river::io::NodeFile::start() {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	if (m_thread != nullptr) {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"read":"write") << " ==> already started ..." );
 		return;
@@ -258,7 +258,7 @@ void audio::river::io::NodeFile::start() {
 }
 
 void audio::river::io::NodeFile::stop() {
-	std::unique_lock<ethread::Mutex> lock(m_mutex);
+	ethread::UniqueLock lock(m_mutex);
 	m_alive = false;
 	RIVER_INFO("Stop stream : '" << m_name << "' mode=" << (m_isInput?"read":"write") );
 	// TODO : Need join ...

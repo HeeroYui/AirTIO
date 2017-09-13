@@ -147,7 +147,7 @@ void audio::river::io::Node::registerAsRemote(const ememory::SharedPtr<audio::ri
 
 void audio::river::io::Node::interfaceAdd(const ememory::SharedPtr<audio::river::Interface>& _interface) {
 	{
-		std::unique_lock<ethread::Mutex> lock(m_mutex);
+		ethread::UniqueLock lock(m_mutex);
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				return;
@@ -163,7 +163,7 @@ void audio::river::io::Node::interfaceAdd(const ememory::SharedPtr<audio::river:
 
 void audio::river::io::Node::interfaceRemove(const ememory::SharedPtr<audio::river::Interface>& _interface) {
 	{
-		std::unique_lock<ethread::Mutex> lock(m_mutex);
+		ethread::UniqueLock lock(m_mutex);
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
 			if (_interface == m_list[iii]) {
 				m_list.erase(m_list.begin()+iii);
@@ -392,7 +392,7 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 	return;
 }
 
-static void link(etk::FSNode& _node, const etk::String& _first, const etk::String& _op, const std::string& _second) {
+static void link(etk::FSNode& _node, const etk::String& _first, const etk::String& _op, const etk::String& _second) {
 	if (_op == "->") {
 		_node << "			" << _first << " -> " << _second << ";\n";
 	} else if (_op == "<-") {

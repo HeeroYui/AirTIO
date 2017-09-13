@@ -103,7 +103,7 @@ namespace river_test_muxer {
 				}
 				m_interfaceOut->start();
 				m_interfaceIn->start();
-				std::this_thread::sleep_for(std::chrono::seconds(10));
+				ethread::sleepMilliSeconds(std::chrono::seconds(10));
 				m_interfaceIn->stop();
 				m_interfaceOut->stop();
 			}
@@ -168,7 +168,7 @@ namespace river_test_muxer {
 		ememory::SharedPtr<TestClass> process = ememory::makeShared<TestClass>(manager);
 		process->run();
 		process.reset();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		ethread::sleepMilliSeconds((500));
 		audio::river::unInit();
 	}
 };

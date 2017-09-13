@@ -203,7 +203,7 @@ namespace river_test_aec {
 		ememory::SharedPtr<Linker> processLink2 = ememory::makeShared<Linker>(manager, "microphone", "speaker-test");
 		processLink1->start();
 		processLink2->start();
-		std::this_thread::sleep_for(std::chrono::seconds(20));
+		ethread::sleepMilliSeconds(std::chrono::seconds(20));
 		processLink1->stop();
 		processLink2->stop();
 		
