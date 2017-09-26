@@ -41,14 +41,14 @@ namespace river_test_record_callback {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setInputCallback(std::bind(&testInCallback::onDataReceived,
-				                                          this,
-				                                          std::placeholders::_1,
-				                                          std::placeholders::_2,
-				                                          std::placeholders::_3,
-				                                          std::placeholders::_4,
-				                                          std::placeholders::_5,
-				                                          std::placeholders::_6));
+				m_interface->setInputCallback([=](const void* _data,
+				                                    const audio::Time& _time,
+				                                    size_t _nbChunk,
+				                                    enum audio::format _format,
+				                                    uint32_t _frequency,
+				                                    const etk::Vector<audio::channel>& _map) {
+				                                    	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                    });
 			}
 			void onDataReceived(const void* _data,
 			                    const audio::Time& _time,
@@ -75,7 +75,7 @@ namespace river_test_record_callback {
 				}
 				m_interface->start();
 				// wait 2 second ...
-				ethread::sleepMilliSeconds(std::chrono::seconds(20));
+				ethread::sleepMilliSeconds(1000*(20));
 				m_interface->stop();
 			}
 	};

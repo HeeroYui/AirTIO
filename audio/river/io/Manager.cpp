@@ -15,10 +15,11 @@
 #include <etk/os/FSNode.hpp>
 #include <ememory/memory.hpp>
 #include <etk/types.hpp>
-#include <utility>
 
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO
-	#include <portaudio/portaudio.h>
+	extern "C" {
+		#include <portaudio/portaudio.h>
+	}
 #endif
 
 static etk::String basicAutoConfig =
@@ -68,7 +69,7 @@ audio::river::io::Manager::Manager() {
 
 void audio::river::io::Manager::init(const etk::String& _filename) {
 	RIVER_ERROR("kjqsdhfkjqshdfkjqhsdskjdfhfkqjshqhskdjfhqsdfqsdqsdfqsdqsdfqsdfqsdfqsdfqsdfqsd");
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	if (_filename == "") {
 		if (m_config.load(pathToTheRiverConfigInHome) == false) {
 			RIVER_INFO("Load default config");
@@ -82,12 +83,12 @@ void audio::river::io::Manager::init(const etk::String& _filename) {
 }
 
 void audio::river::io::Manager::initString(const etk::String& _data) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	m_config.parse(_data);
 }
 
 void audio::river::io::Manager::unInit() {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	// TODO : ...
 }
 
@@ -110,7 +111,7 @@ ememory::SharedPtr<audio::river::io::Manager> audio::river::io::Manager::getInst
 
 
 etk::Vector<etk::String> audio::river::io::Manager::getListStreamInput() {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	etk::Vector<etk::String> output;
 	etk::Vector<etk::String> keys = m_config.getKeys();
 	for (auto &it : keys) {
@@ -127,7 +128,7 @@ etk::Vector<etk::String> audio::river::io::Manager::getListStreamInput() {
 }
 
 etk::Vector<etk::String> audio::river::io::Manager::getListStreamOutput() {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	etk::Vector<etk::String> output;
 	etk::Vector<etk::String> keys = m_config.getKeys();
 	for (auto &it : keys) {
@@ -144,7 +145,7 @@ etk::Vector<etk::String> audio::river::io::Manager::getListStreamOutput() {
 }
 
 etk::Vector<etk::String> audio::river::io::Manager::getListStreamVirtual() {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	etk::Vector<etk::String> output;
 	etk::Vector<etk::String> keys = m_config.getKeys();
 	for (auto &it : keys) {
@@ -164,7 +165,7 @@ etk::Vector<etk::String> audio::river::io::Manager::getListStreamVirtual() {
 }
 
 etk::Vector<etk::String> audio::river::io::Manager::getListStream() {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	etk::Vector<etk::String> output;
 	etk::Vector<etk::String> keys = m_config.getKeys();
 	for (auto &it : keys) {
@@ -180,7 +181,7 @@ etk::Vector<etk::String> audio::river::io::Manager::getListStream() {
 }
 
 ememory::SharedPtr<audio::river::io::Node> audio::river::io::Manager::getNode(const etk::String& _name) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	RIVER_WARNING("Get node : " << _name);
 	// search in the standalone list :
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
@@ -193,7 +194,7 @@ ememory::SharedPtr<audio::river::io::Node> audio::river::io::Manager::getNode(co
 	}
 	// search in the group list:
 	{
-		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::iterator it(m_listGroup.begin());
+		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != nullptr) {
@@ -267,7 +268,7 @@ ememory::SharedPtr<audio::river::io::Node> audio::river::io::Manager::getNode(co
 }
 
 ememory::SharedPtr<audio::drain::VolumeElement> audio::river::io::Manager::getVolumeGroup(const etk::String& _name) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	if (_name == "") {
 		RIVER_ERROR("Try to create an audio group with no name ...");
 		return ememory::SharedPtr<audio::drain::VolumeElement>();
@@ -287,7 +288,7 @@ ememory::SharedPtr<audio::drain::VolumeElement> audio::river::io::Manager::getVo
 }
 
 bool audio::river::io::Manager::setVolume(const etk::String& _volumeName, float _valuedB) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
@@ -309,7 +310,7 @@ bool audio::river::io::Manager::setVolume(const etk::String& _volumeName, float 
 }
 
 float audio::river::io::Manager::getVolume(const etk::String& _volumeName) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
@@ -323,7 +324,7 @@ etk::Pair<float,float> audio::river::io::Manager::getVolumeRange(const etk::Stri
 }
 
 void audio::river::io::Manager::setMute(const etk::String& _volumeName, bool _mute) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
@@ -339,7 +340,7 @@ void audio::river::io::Manager::setMute(const etk::String& _volumeName, bool _mu
 }
 
 bool audio::river::io::Manager::getMute(const etk::String& _volumeName) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
 	if (volume == nullptr) {
 		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
@@ -349,7 +350,7 @@ bool audio::river::io::Manager::getMute(const etk::String& _volumeName) {
 }
 
 void audio::river::io::Manager::generateDot(const etk::String& _filename) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	etk::FSNode node(_filename);
 	RIVER_INFO("Generate the DOT files: " << node);
 	if (node.fileOpenWrite() == false) {
@@ -369,7 +370,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 				}
 			}
 		}
-		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::iterator it(m_listGroup.begin());
+		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != nullptr) {
@@ -388,7 +389,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 				}
 			}
 		}
-		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::iterator it(m_listGroup.begin());
+		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != nullptr) {
@@ -403,16 +404,15 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 }
 
 ememory::SharedPtr<audio::river::io::Group> audio::river::io::Manager::getGroup(const etk::String& _name) {
-	Ethread::RecursiveLock lock(m_mutex);
+	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::river::io::Group> out;
-	etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::iterator it = m_listGroup.find(_name);
+	etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it = m_listGroup.find(_name);
 	if (it == m_listGroup.end()) {
 		RIVER_INFO("Create a new group: " << _name << " (START)");
 		out = ememory::makeShared<audio::river::io::Group>();
 		if (out != nullptr) {
 			out->createFrom(m_config, _name);
-			etk::Pair<etk::String, ememory::SharedPtr<audio::river::io::Group> > plop(etk::String(_name), out);
-			m_listGroup.insert(plop);
+			m_listGroup.add(_name, out);
 			RIVER_INFO("Create a new group: " << _name << " ( END )");
 		} else {
 			RIVER_ERROR("Can not create new group: " << _name << " ( END )");

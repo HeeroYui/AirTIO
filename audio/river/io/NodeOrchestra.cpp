@@ -198,29 +198,39 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const etk::String& _name, const e
 	if (m_isInput == true) {
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
-		err = m_interface.openStream(nullptr, &params,
-		                             hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                             std::bind(&audio::river::io::NodeOrchestra::recordCallback,
-		                                       this,
-		                                       std::placeholders::_1,
-		                                       std::placeholders::_2,
-		                                       std::placeholders::_5,
-		                                       std::placeholders::_6),
-		                            option
-		                            );
+		err = m_interface.openStream(nullptr,
+		                             &params,
+		                             hardwareFormat.getFormat(),
+		                             hardwareFormat.getFrequency(),
+		                             &m_rtaudioFrameSize,
+		                             [=] (const void* _inputBuffer,
+		                                  const audio::Time& _timeInput,
+		                                  void* _outputBuffer,
+		                                  const audio::Time& _timeOutput,
+		                                  uint32_t _nbChunk,
+		                                  const etk::Vector<audio::orchestra::status>& _status) {
+		                                  	return recordCallback(_inputBuffer, _timeInput, _nbChunk, _status);
+		                                  },
+		                             option
+		                             );
 	} else {
 		m_process.setInputConfig(interfaceFormat);
 		m_process.setOutputConfig(hardwareFormat);
-		err = m_interface.openStream(&params, nullptr,
-		                             hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                             std::bind(&audio::river::io::NodeOrchestra::playbackCallback,
-		                                       this,
-		                                       std::placeholders::_3,
-		                                       std::placeholders::_4,
-		                                       std::placeholders::_5,
-		                                       std::placeholders::_6),
-		                            option
-		                            );
+		err = m_interface.openStream(&params,
+		                             nullptr,
+		                             hardwareFormat.getFormat(),
+		                             hardwareFormat.getFrequency(),
+		                             &m_rtaudioFrameSize,
+		                             [=] (const void* _inputBuffer,
+		                                  const audio::Time& _timeInput,
+		                                  void* _outputBuffer,
+		                                  const audio::Time& _timeOutput,
+		                                  uint32_t _nbChunk,
+		                                  const etk::Vector<audio::orchestra::status>& _status) {
+		                                  	return playbackCallback(_outputBuffer, _timeOutput, _nbChunk, _status);
+		                                  },
+		                             option
+		                             );
 	}
 	if (err != audio::orchestra::error_none) {
 		RIVER_ERROR("Create stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") << " can not create stream " << err);

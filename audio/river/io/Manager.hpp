@@ -8,10 +8,7 @@
 #include <etk/String.hpp>
 #include <etk/Vector.hpp>
 #include <etk/Map.hpp>
-#include <list>
-#include <cstdint>
 #include <ethread/Mutex.hpp>
-#include <chrono>
 #include <etk/Function.hpp>
 #include <ememory/memory.hpp>
 #include <audio/format.hpp>
@@ -19,6 +16,7 @@
 #include <ejson/ejson.hpp>
 #include <audio/drain/Volume.hpp>
 #include <audio/river/io/Group.hpp>
+#include <ethread/MutexRecursive.hpp>
 
 namespace audio {
 	namespace river {
@@ -30,7 +28,7 @@ namespace audio {
 			 */
 			class Manager : public ememory::EnableSharedFromThis<Manager> {
 				private:
-					mutable std::recursive_mutex m_mutex; //!< prevent multiple access
+					mutable ethread::MutexRecursive m_mutex; //!< prevent multiple access
 				private:
 					/**
 					 * @brief Constructor

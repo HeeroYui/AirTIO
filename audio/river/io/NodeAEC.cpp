@@ -103,28 +103,27 @@ audio::river::io::NodeAEC::NodeAEC(const etk::String& _name, const ejson::Object
 	}
 	
 	// set callback mode ...
-	m_interfaceFeedBack->setInputCallback(std::bind(&audio::river::io::NodeAEC::onDataReceivedFeedBack,
-	                                                  this,
-	                                                  std::placeholders::_1,
-	                                                  std::placeholders::_2,
-	                                                  std::placeholders::_3,
-	                                                  std::placeholders::_4,
-	                                                  std::placeholders::_5,
-	                                                  std::placeholders::_6));
+	m_interfaceFeedBack->setInputCallback([=](const void* _data,
+	                                          const audio::Time& _time,
+	                                          size_t _nbChunk,
+	                                          enum audio::format _format,
+	                                          uint32_t _frequency,
+	                                          const etk::Vector<audio::channel>& _map) {
+	                                          	onDataReceivedFeedBack(_data, _time, _nbChunk, _format, _frequency, _map);
+	                                          });
 	// set callback mode ...
-	m_interfaceMicrophone->setInputCallback(std::bind(&audio::river::io::NodeAEC::onDataReceivedMicrophone,
-	                                                    this,
-	                                                    std::placeholders::_1,
-	                                                    std::placeholders::_2,
-	                                                    std::placeholders::_3,
-	                                                    std::placeholders::_4,
-	                                                    std::placeholders::_5,
-	                                                    std::placeholders::_6));
-	
-	m_bufferMicrophone.setCapacity(std::chrono::milliseconds(1000),
+	m_interfaceMicrophone->setInputCallback([=](const void* _data,
+	                                            const audio::Time& _time,
+	                                            size_t _nbChunk,
+	                                            enum audio::format _format,
+	                                            uint32_t _frequency,
+	                                            const etk::Vector<audio::channel>& _map) {
+	                                            	onDataReceivedMicrophone(_data, _time, _nbChunk, _format, _frequency, _map);
+	                                            });
+	m_bufferMicrophone.setCapacity(echrono::milliseconds(1000),
 	                               audio::getFormatBytes(hardwareFormat.getFormat())*hardwareFormat.getMap().size(),
 	                               hardwareFormat.getFrequency());
-	m_bufferFeedBack.setCapacity(std::chrono::milliseconds(1000),
+	m_bufferFeedBack.setCapacity(echrono::milliseconds(1000),
 	                             audio::getFormatBytes(hardwareFormat.getFormat()), // only one channel ...
 	                             hardwareFormat.getFrequency());
 	
@@ -212,7 +211,7 @@ void audio::river::io::NodeAEC::process() {
 		delta = MicTime - fbTime;
 	}
 	
-	RIVER_INFO("check delta " << delta.count() << " > " << m_sampleTime.count());
+	RIVER_INFO("check delta " << delta << " > " << m_sampleTime);
 	if (delta > m_sampleTime) {
 		// Synchronize if possible
 		if (MicTime < fbTime) {
@@ -238,7 +237,7 @@ void audio::river::io::NodeAEC::process() {
 	fbTime = m_bufferFeedBack.getReadTimeStamp();
 	
 	if (MicTime-fbTime > m_sampleTime) {
-		RIVER_ERROR("Can not synchronize flow ... : " << MicTime << " != " << fbTime << "  delta = " << (MicTime-fbTime).count()/1000 << " µs");
+		RIVER_ERROR("Can not synchronize flow ... : " << MicTime << " != " << fbTime << "  delta = " << (MicTime-fbTime));
 		return;
 	}
 	etk::Vector<uint8_t> dataMic;
@@ -248,7 +247,7 @@ void audio::river::io::NodeAEC::process() {
 	while (true) {
 		MicTime = m_bufferMicrophone.getReadTimeStamp();
 		fbTime = m_bufferFeedBack.getReadTimeStamp();
-		RIVER_INFO(" process 256 samples ... micTime=" << MicTime << " fbTime=" << fbTime << " delta = " << (MicTime-fbTime).count());
+		RIVER_INFO(" process 256 samples ... micTime=" << MicTime << " fbTime=" << fbTime << " delta = " << (MicTime-fbTime));
 		m_bufferMicrophone.read(&dataMic[0], m_nbChunk);
 		m_bufferFeedBack.read(&dataFB[0], m_nbChunk);
 		RIVER_SAVE_FILE_MACRO(int16_t, "REC_Microphone_sync.raw", &dataMic[0], m_nbChunk*getHarwareFormat().getMap().size());

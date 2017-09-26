@@ -6,11 +6,11 @@
 
 #include <audio/river/io/Group.hpp>
 #include <audio/river/debug.hpp>
-#include "Node.hpp"
-#include "NodeAEC.hpp"
-#include "NodeOrchestra.hpp"
-#include "NodePortAudio.hpp"
-#include "Node.hpp"
+#include <audio/river/io/Node.hpp>
+#include <audio/river/io/NodeAEC.hpp>
+#include <audio/river/io/NodeOrchestra.hpp>
+#include <audio/river/io/NodePortAudio.hpp>
+#include <audio/river/io/Node.hpp>
 
 void audio::river::io::Group::createFrom(const ejson::Document& _obj, const etk::String& _name) {
 	RIVER_INFO("Create Group[" << _name << "] (START)    ___________________________");

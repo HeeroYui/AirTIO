@@ -26,7 +26,7 @@ namespace river_test_aec {
 					channelMap.pushBack(audio::channel_frontLeft);
 					channelMap.pushBack(audio::channel_frontRight);
 				}
-				m_buffer.setCapacity(std::chrono::milliseconds(2000), sizeof(int16_t)*channelMap.size(), 48000);
+				m_buffer.setCapacity(echrono::milliseconds(2000), sizeof(int16_t)*channelMap.size(), 48000);
 				
 				m_interfaceOut = m_manager->createOutput(48000,
 				                                         channelMap,
@@ -37,14 +37,14 @@ namespace river_test_aec {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceOut->setOutputCallback(std::bind(&Linker::onDataNeeded,
-				                                              this,
-				                                              std::placeholders::_1,
-				                                              std::placeholders::_2,
-				                                              std::placeholders::_3,
-				                                              std::placeholders::_4,
-				                                              std::placeholders::_5,
-				                                              std::placeholders::_6));
+				m_interfaceOut->setOutputCallback([=](void* _data,
+				                                      const audio::Time& _time,
+				                                      size_t _nbChunk,
+				                                      enum audio::format _format,
+				                                      uint32_t _frequency,
+				                                      const etk::Vector<audio::channel>& _map) {
+				                                      	onDataNeeded(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                      });
 				m_interfaceOut->addVolumeGroup("FLOW");
 				if ("speaker" == _output) {
 					m_interfaceOut->setParameter("volume", "FLOW", "0dB");
@@ -59,14 +59,14 @@ namespace river_test_aec {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceIn->setInputCallback(std::bind(&Linker::onDataReceived,
-				                                            this,
-				                                            std::placeholders::_1,
-				                                            std::placeholders::_2,
-				                                            std::placeholders::_3,
-				                                            std::placeholders::_4,
-				                                            std::placeholders::_5,
-				                                            std::placeholders::_6));
+				m_interfaceIn->setInputCallback([=](const void* _data,
+				                                    const audio::Time& _time,
+				                                    size_t _nbChunk,
+				                                    enum audio::format _format,
+				                                    uint32_t _frequency,
+				                                    const etk::Vector<audio::channel>& _map) {
+				                                    	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                    });
 				
 			}
 			void onDataNeeded(void* _data,
@@ -203,7 +203,7 @@ namespace river_test_aec {
 		ememory::SharedPtr<Linker> processLink2 = ememory::makeShared<Linker>(manager, "microphone", "speaker-test");
 		processLink1->start();
 		processLink2->start();
-		ethread::sleepMilliSeconds(std::chrono::seconds(20));
+		ethread::sleepMilliSeconds(1000*(20));
 		processLink1->stop();
 		processLink2->stop();
 		

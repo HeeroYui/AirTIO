@@ -197,28 +197,40 @@ audio::river::io::NodeFile::NodeFile(const etk::String& _name, const ejson::Obje
 	if (m_isInput == true) {
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
-		err = m_interface.openStream(nullptr, &params,
-		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&audio::river::io::NodeFile::recordCallback,
-		                                    this,
-		                                    std::placeholders::_1,
-		                                    std::placeholders::_2,
-		                                    std::placeholders::_5,
-		                                    std::placeholders::_6),
-		                        option
-		                        );
+		err = m_interface.openStream(nullptr,
+		                             &params,
+		                             hardwareFormat.getFormat(),
+		                             hardwareFormat.getFrequency(),
+		                             &m_rtaudioFrameSize,
+		                             [=](const void* _data,
+		                                 const audio::Time& _time,
+		                                 size_t _nbChunk,
+		                                 enum audio::format _format,
+		                                 uint32_t _frequency,
+		                                 const etk::Vector<audio::channel>& _map
+		                                 ) {
+		                             	recordCallback(_data, _time, _nbChunk, _map);
+		                             },
+		                             option
+		                             );
 	} else {
 		m_process.setInputConfig(interfaceFormat);
 		m_process.setOutputConfig(hardwareFormat);
-		err = m_interface.openStream(&params, nullptr,
-		                        hardwareFormat.getFormat(), hardwareFormat.getFrequency(), &m_rtaudioFrameSize,
-		                        std::bind(&audio::river::io::NodeFile::playbackCallback,
-		                                    this,
-		                                    std::placeholders::_3,
-		                                    std::placeholders::_4,
-		                                    std::placeholders::_5,
-		                                    std::placeholders::_6),
-		                        option
+		err = m_interface.openStream(&params,
+		                             nullptr,
+		                             hardwareFormat.getFormat(),
+		                             hardwareFormat.getFrequency(),
+		                             &m_rtaudioFrameSize,
+		                             [=](const void* _data,
+		                                 const audio::Time& _time,
+		                                 size_t _nbChunk,
+		                                 enum audio::format _format,
+		                                 uint32_t _frequency,
+		                                 const etk::Vector<audio::channel>& _map
+		                                 ) {
+		                             	playbackCallback(_data, _time, _nbChunk, _map);
+		                             },
+		                             option
 		                        );
 	}
 	if (err != audio::orchestra::error_none) {

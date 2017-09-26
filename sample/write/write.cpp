@@ -44,9 +44,9 @@ void onDataNeeded(void* _data,
 	static double phase[8] = {0,0,0,0,0,0,0,0};
 	
 	if (_format != audio::format_int16) {
-		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
+		TEST_ERROR("Call wrong type ... (need int16_t)");
 	}
-	//std::cout << "Map " << _map << std::endl;
+	//TEST_VERBOSE("Map " << _map);
 	int16_t* data = static_cast<int16_t*>(_data);
 	double baseCycle = 2.0*M_PI/double(48000) * double(440);
 	for (int32_t iii=0; iii<_nbChunk; iii++) {
@@ -68,8 +68,8 @@ int main(int _argc, const char **_argv) {
 		etk::String data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
-			std::cout << "Help : " << std::endl;
-			std::cout << "    ./xxx ---" << std::endl;
+			TEST_PRINT("Help:");
+			TEST_PRINT("    ./xxx ---");
 			exit(0);
 		}
 	}
@@ -86,24 +86,25 @@ int main(int _argc, const char **_argv) {
 	                                  audio::format_int16,
 	                                  "speaker");
 	if(interface == nullptr) {
-		std::cout << "nullptr interface" << std::endl;
+		TEST_ERROR("nullptr interface");
 		return -1;
 	}
 	//! [audio_river_sample_create_write_interface]
 	//! [audio_river_sample_set_callback]
 	// set callback mode ...
-	interface->setOutputCallback(std::bind(&onDataNeeded,
-	                                         std::placeholders::_1,
-	                                         std::placeholders::_2,
-	                                         std::placeholders::_3,
-	                                         std::placeholders::_4,
-	                                         std::placeholders::_5,
-	                                         std::placeholders::_6));
+	interface->setOutputCallback([=](const void* _data,
+	                                 const audio::Time& _time,
+	                                 size_t _nbChunk,
+	                                 enum audio::format _format,
+	                                 uint32_t _frequency,
+	                                 const etk::Vector<audio::channel>& _map) {
+	                                 	onDataNeeded(_data, _time, _nbChunk, _format, _frequency, _map);
+	                                 });
 	//! [audio_river_sample_set_callback]
 	// start the stream
 	interface->start();
 	// wait 10 second ...
-	ethread::sleepMilliSeconds(std::chrono::seconds(10));
+	ethread::sleepMilliSeconds(1000*(10));
 	// stop the stream
 	interface->stop();
 	// remove interface and manager.

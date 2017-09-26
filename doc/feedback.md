@@ -21,7 +21,7 @@ What change:
 ```{.cpp}
 //Get the generic feedback on speaker:
 interface = manager->createFeedback(48000,
-                                    std::vector<audio::channel>(),
+                                    etk::Vector<audio::channel>(),
                                     audio::format_int16,
                                     "speaker");
 ```

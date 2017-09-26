@@ -122,7 +122,7 @@ size_t audio::river::io::Node::getNumberOfInterface(enum audio::river::modeInter
 size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river::modeInterface _interfaceType) {
 	size_t out = 0;
 	for (size_t iii=0; iii<m_listAvaillable.size(); ++iii) {
-		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
+		auto element = m_listAvaillable[iii].lock();
 		if (element == nullptr) {
 			continue;
 		}
@@ -134,7 +134,7 @@ size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river:
 }
 
 void audio::river::io::Node::registerAsRemote(const ememory::SharedPtr<audio::river::Interface>& _interface) {
-	etk::Vector<ememory::WeakPtr<audio::river::Interface> >::iterator it = m_listAvaillable.begin();
+	auto it = m_listAvaillable.begin();
 	while (it != m_listAvaillable.end()) {
 		if (it->expired() == true) {
 			it = m_listAvaillable.erase(it);
@@ -181,7 +181,7 @@ void audio::river::io::Node::interfaceRemove(const ememory::SharedPtr<audio::riv
 
 void audio::river::io::Node::volumeChange() {
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
-		ememory::SharedPtr<audio::river::Interface> node = m_listAvaillable[iii].lock();
+		auto node = m_listAvaillable[iii].lock();
 		if (node != nullptr) {
 			node->systemVolumeChange();
 		}

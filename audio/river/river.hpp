@@ -6,6 +6,7 @@
 #pragma once
 
 #include <etk/types.hpp>
+#include <etk/String.hpp>
 /**
  * @brief Audio library namespace
  */

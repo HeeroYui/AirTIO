@@ -33,8 +33,9 @@
 #include <etest/etest.hpp>
 #include <etk/etk.hpp>
 #include <etk/os/FSNode.hpp>
-#include <cmath>
-#include <sstream>
+extern "C" {
+	#include <math.h>
+}
 
 #include <ethread/Thread.hpp>
 #include "testAEC.hpp"

@@ -66,14 +66,14 @@ namespace river_test_format {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setOutputCallback(std::bind(&testOutCallbackType::onDataNeeded,
-				                                           this,
-				                                           std::placeholders::_1,
-				                                           std::placeholders::_2,
-				                                           std::placeholders::_3,
-				                                           std::placeholders::_4,
-				                                           std::placeholders::_5,
-				                                           std::placeholders::_6));
+				m_interface->setOutputCallback([=](const void* _data,
+				                                   const audio::Time& _time,
+				                                   size_t _nbChunk,
+				                                   enum audio::format _format,
+				                                   uint32_t _frequency,
+				                                   const etk::Vector<audio::channel>& _map) {
+				                                   	onDataNeeded(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                   });
 			}
 			void onDataNeeded(void* _data,
 			                  const audio::Time& _time,
@@ -136,7 +136,7 @@ namespace river_test_format {
 				}
 				m_interface->start();
 				// wait 2 second ...
-				ethread::sleepMilliSeconds(std::chrono::seconds(1));
+				ethread::sleepMilliSeconds(1000*(1));
 				m_interface->stop();
 				ethread::sleepMilliSeconds((100));
 			}

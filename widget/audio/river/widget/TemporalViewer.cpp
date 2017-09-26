@@ -40,7 +40,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
                                                           const etk::Vector<audio::channel>& _map) {
 	ethread::UniqueLock lock(m_mutex);
 	if (_format != audio::format_float) {
-		std::cout << "[ERROR] call wrong type ... (need int16_t)" << std::endl;
+		ARW_ERROR("call wrong type ... (need int16_t)");
 	}
 	// get the curent power of the signal.
 	const float* data = static_cast<const float*>(_data);
@@ -70,14 +70,14 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 			return;
 		}
 		// set callback mode ...
-		m_interface->setInputCallback(std::bind(&audio::river::widget::TemporalViewer::onDataReceived,
-		                                          this,
-		                                          std::placeholders::_1,
-		                                          std::placeholders::_2,
-		                                          std::placeholders::_3,
-		                                          std::placeholders::_4,
-		                                          std::placeholders::_5,
-		                                          std::placeholders::_6));
+		m_interface->setInputCallback([=](const void* _data,
+		                                  const audio::Time& _time,
+		                                  size_t _nbChunk,
+		                                  enum audio::format _format,
+		                                  uint32_t _frequency,
+		                                  const etk::Vector<audio::channel>& _map) {
+		                                  	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map);
+		                                  });
 		// start the stream
 		m_interface->start();
 		periodicCallEnable();

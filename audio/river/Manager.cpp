@@ -6,8 +6,6 @@
 
 #include "Manager.hpp"
 #include "Interface.hpp"
-#include <stdexcept>
-
 #include "io/Manager.hpp"
 #include "io/Node.hpp"
 #include "debug.hpp"

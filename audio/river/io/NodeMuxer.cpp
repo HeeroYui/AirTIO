@@ -128,28 +128,28 @@ audio::river::io::NodeMuxer::NodeMuxer(const etk::String& _name, const ejson::Ob
 	}
 	
 	// set callback mode ...
-	m_interfaceInput1->setInputCallback(std::bind(&audio::river::io::NodeMuxer::onDataReceivedInput1,
-	                                                this,
-	                                                std::placeholders::_1,
-	                                                std::placeholders::_2,
-	                                                std::placeholders::_3,
-	                                                std::placeholders::_4,
-	                                                std::placeholders::_5,
-	                                                std::placeholders::_6));
+	m_interfaceInput1->setInputCallback([=](const void* _data,
+	                                        const audio::Time& _time,
+	                                        size_t _nbChunk,
+	                                        enum audio::format _format,
+	                                        uint32_t _frequency,
+	                                        const etk::Vector<audio::channel>& _map) {
+	                                        	onDataReceivedInput1(_data, _time, _nbChunk, _format, _frequency, _map);
+	                                        });
 	// set callback mode ...
-	m_interfaceInput2->setInputCallback(std::bind(&audio::river::io::NodeMuxer::onDataReceivedInput2,
-	                                                this,
-	                                                std::placeholders::_1,
-	                                                std::placeholders::_2,
-	                                                std::placeholders::_3,
-	                                                std::placeholders::_4,
-	                                                std::placeholders::_5,
-	                                                std::placeholders::_6));
+	m_interfaceInput2->setInputCallback([=](const void* _data,
+	                                        const audio::Time& _time,
+	                                        size_t _nbChunk,
+	                                        enum audio::format _format,
+	                                        uint32_t _frequency,
+	                                        const etk::Vector<audio::channel>& _map) {
+	                                        	onDataReceivedInput2(_data, _time, _nbChunk, _format, _frequency, _map);
+	                                        });
 	
-	m_bufferInput1.setCapacity(std::chrono::milliseconds(1000),
+	m_bufferInput1.setCapacity(echrono::milliseconds(1000),
 	                           audio::getFormatBytes(hardwareFormat.getFormat())*m_mapInput1.size(),
 	                           hardwareFormat.getFrequency());
-	m_bufferInput2.setCapacity(std::chrono::milliseconds(1000),
+	m_bufferInput2.setCapacity(echrono::milliseconds(1000),
 	                           audio::getFormatBytes(hardwareFormat.getFormat())*m_mapInput2.size(),
 	                           hardwareFormat.getFrequency());
 	
@@ -243,7 +243,7 @@ void audio::river::io::NodeMuxer::process() {
 	} else {
 		delta = in1Time - in2Time;
 	}
-	RIVER_VERBOSE("check delta " << delta.count() << " > " << m_sampleTime.count());
+	RIVER_VERBOSE("check delta " << delta << " > " << m_sampleTime);
 	if (delta > m_sampleTime) {
 		// Synchronize if possible
 		if (in1Time < in2Time) {
@@ -271,7 +271,7 @@ void audio::river::io::NodeMuxer::process() {
 	in2Time = m_bufferInput2.getReadTimeStamp();
 	
 	if (in1Time-in2Time > m_sampleTime) {
-		RIVER_ERROR("Can not synchronize flow ... : " << in1Time << " != " << in2Time << "  delta = " << (in1Time-in2Time).count()/1000 << " µs");
+		RIVER_ERROR("Can not synchronize flow ... : " << in1Time << " != " << in2Time << "  delta = " << (in1Time-in2Time));
 		return;
 	}
 	etk::Vector<uint8_t> dataIn1;
@@ -282,7 +282,7 @@ void audio::river::io::NodeMuxer::process() {
 	while (true) {
 		in1Time = m_bufferInput1.getReadTimeStamp();
 		in2Time = m_bufferInput2.getReadTimeStamp();
-		//RIVER_INFO(" process 256 samples ... in1Time=" << in1Time << " in2Time=" << in2Time << " delta = " << (in1Time-in2Time).count());
+		//RIVER_INFO(" process 256 samples ... in1Time=" << in1Time << " in2Time=" << in2Time << " delta = " << (in1Time-in2Time));
 		m_bufferInput1.read(&dataIn1[0], 256);
 		m_bufferInput2.read(&dataIn2[0], 256);
 		//RIVER_SAVE_FILE_MACRO(int16_t, "REC_muxer_output_1.raw", &dataIn1[0], 256 * m_mapInput1.size());

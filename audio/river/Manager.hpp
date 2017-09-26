@@ -6,7 +6,6 @@
 #pragma once
 
 #include <etk/String.hpp>
-#include <cstdint>
 #include <ememory/memory.hpp>
 #include <audio/river/Interface.hpp>
 #include <audio/format.hpp>

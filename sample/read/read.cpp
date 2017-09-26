@@ -45,7 +45,7 @@ void onDataReceived(const void* _data,
                     etk::FSNode* _outputNode) {
 	if (    _format != audio::format_int16
 	     && _format != audio::format_float) {
-		std::cout << "[ERROR] call wrong type ... (need int16_t.float)" << std::endl;
+		TEST_ERROR("Call wrong type ... (need int16_t.float)");
 		return;
 	}
 	//! [audio_river_sample_callback_implement]
@@ -58,7 +58,7 @@ void onDataReceived(const void* _data,
 				value += etk::abs(data[iii]);
 			}
 			value /= (_nbChunk*_map.size());
-			std::cout << "Get data ... average=" << int32_t(value) << std::endl;
+			TEST_PRINT("Get data ... average=" << int32_t(value));
 		} else {
 			// get the curent power of the signal.
 			const float* data = static_cast<const float*>(_data);
@@ -67,11 +67,11 @@ void onDataReceived(const void* _data,
 				value += etk::abs(data[iii]);
 			}
 			value /= (_nbChunk*_map.size());
-			std::cout << "Get data ... average=" << float(value) << std::endl;
+			TEST_PRINT("Get data ... average=" << float(value));
 		}
 	} else {
 		// just write data
-		//std::cout << "Get data ... chunks=" << _nbChunk << " time=" << _time << std::endl;
+		TEST_VERBOSE("Get data ... chunks=" << _nbChunk << " time=" << _time);
 		_outputNode->fileWrite(_data, _map.size()*audio::getFormatBytes(_format), _nbChunk);
 	}
 }
@@ -89,20 +89,20 @@ int main(int _argc, const char **_argv) {
 		etk::String data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
-			std::cout << "Help : " << std::endl;
-			std::cout << "    --conf=xxx.json Input/output configuration" << std::endl;
-			std::cout << "    --io=xxx        name configuration input" << std::endl;
-			std::cout << "    --file=yyy.raw  File name to store data" << std::endl;
+			TEST_PRINT("Help : ")
+			TEST_PRINT("    --conf=xxx.json Input/output configuration");
+			TEST_PRINT("    --io=xxx        name configuration input");
+			TEST_PRINT("    --file=yyy.raw  File name to store data");
 			exit(0);
 		} else if (etk::start_with(data, "--conf=") == true) {
 			configFile = etk::String(data.begin()+7, data.end());
-			std::cout << "Select config: " << configFile << std::endl;
+			TEST_PRINT("Select config: " << configFile);
 		} else if (etk::start_with(data, "--io=") == true) {
 			ioName = etk::String(data.begin()+5, data.end());
-			std::cout << "Select io: " << ioName << std::endl;
+			TEST_PRINT("Select io: " << ioName);
 		} else if (etk::start_with(data, "--file=") == true) {
 			outputFileName = etk::String(data.begin()+7, data.end());
-			std::cout << "Select output file name: " << outputFileName << std::endl;
+			TEST_PRINT("Select output file name: " << outputFileName);
 		}
 	}
 	// initialize river interface
@@ -124,7 +124,7 @@ int main(int _argc, const char **_argv) {
 	                                 audio::format_int16,
 	                                 ioName);
 	if(interface == nullptr) {
-		std::cout << "nullptr interface" << std::endl;
+		TEST_ERROR("nullptr interface");
 		return -1;
 	}
 	//! [audio_river_sample_create_read_interface]
@@ -136,20 +136,20 @@ int main(int _argc, const char **_argv) {
 	}
 	//! [audio_river_sample_set_callback]
 	// set callback mode ...
-	interface->setInputCallback(std::bind(&onDataReceived,
-	                                      std::placeholders::_1,
-	                                      std::placeholders::_2,
-	                                      std::placeholders::_3,
-	                                      std::placeholders::_4,
-	                                      std::placeholders::_5,
-	                                      std::placeholders::_6,
-	                                      &outputNode));
+	interface->setInputCallback([=](const void* _data,
+	                                const audio::Time& _time,
+	                                size_t _nbChunk,
+	                                enum audio::format _format,
+	                                uint32_t _frequency,
+	                                const etk::Vector<audio::channel>& _map) {
+	                                	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map, &outputNode);
+	                                });
 	//! [audio_river_sample_set_callback]
 	//! [audio_river_sample_read_start_stop]
 	// start the stream
 	interface->start();
 	// wait 10 second ...
-	ethread::sleepMilliSeconds(std::chrono::seconds(10));
+	ethread::sleepMilliSeconds(1000*(10));
 	// stop the stream
 	interface->stop();
 	//! [audio_river_sample_read_start_stop]

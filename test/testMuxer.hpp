@@ -30,14 +30,14 @@ namespace river_test_muxer {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceOut->setOutputCallback(std::bind(&TestClass::onDataNeeded,
-				                                              this,
-				                                              std::placeholders::_1,
-				                                              std::placeholders::_2,
-				                                              std::placeholders::_3,
-				                                              std::placeholders::_4,
-				                                              std::placeholders::_5,
-				                                              std::placeholders::_6));
+				m_interfaceOut->setOutputCallback([=](const void* _data,
+				                                      const audio::Time& _time,
+				                                      size_t _nbChunk,
+				                                      enum audio::format _format,
+				                                      uint32_t _frequency,
+				                                      const etk::Vector<audio::channel>& _map) {
+				                                      	onDataNeeded(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                      });
 				m_interfaceOut->addVolumeGroup("FLOW");
 				//m_interfaceOut->setParameter("volume", "FLOW", "-6dB");
 				
@@ -51,14 +51,14 @@ namespace river_test_muxer {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceIn->setInputCallback(std::bind(&TestClass::onDataReceived,
-				                                            this,
-				                                            std::placeholders::_1,
-				                                            std::placeholders::_2,
-				                                            std::placeholders::_3,
-				                                            std::placeholders::_4,
-				                                            std::placeholders::_5,
-				                                            std::placeholders::_6));
+				m_interfaceIn->setInputCallback([=](const void* _data,
+				                                    const audio::Time& _time,
+				                                    size_t _nbChunk,
+				                                    enum audio::format _format,
+				                                    uint32_t _frequency,
+				                                    const etk::Vector<audio::channel>& _map) {
+				                                    	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                    });
 				m_manager->generateDotAll("activeProcess.dot");
 			}
 			
@@ -103,7 +103,7 @@ namespace river_test_muxer {
 				}
 				m_interfaceOut->start();
 				m_interfaceIn->start();
-				ethread::sleepMilliSeconds(std::chrono::seconds(10));
+				ethread::sleepMilliSeconds(1000*(10));
 				m_interfaceIn->stop();
 				m_interfaceOut->stop();
 			}

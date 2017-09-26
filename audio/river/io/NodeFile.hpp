@@ -42,7 +42,7 @@ namespace audio {
 					audio::format m_format; //!< Format of the file
 					etk::Vector<audio::channel> m_map; //!< Map of the file
 					ememory::SharedPtr<ethread::Thread> m_thread; //!< playing thread of the flow
-					std::atomic<bool> m_alive; //!< thread is active
+					bool m_alive; //!< thread is active
 				protected:
 					virtual void start();
 					virtual void stop();

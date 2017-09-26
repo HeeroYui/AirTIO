@@ -119,13 +119,13 @@ namespace river_test_playback_write {
 					return;
 				}
 				m_interface->setReadwrite();
-				m_interface->setWriteCallback(std::bind(&testOutWriteCallback::onDataNeeded,
-				                                          this,
-				                                          std::placeholders::_1,
-				                                          std::placeholders::_2,
-				                                          std::placeholders::_3,
-				                                          std::placeholders::_4,
-				                                          std::placeholders::_5));
+				m_interface->setWriteCallback([=](const audio::Time& _time,
+				                                  size_t _nbChunk,
+				                                  enum audio::format _format,
+				                                  uint32_t _frequency,
+				                                  const etk::Vector<audio::channel>& _map) {
+				                                  	onDataNeeded(_time, _nbChunk, _format, _frequency, _map);
+				                                  });
 			}
 			void onDataNeeded(const audio::Time& _time,
 			                  size_t _nbChunk,
@@ -156,7 +156,7 @@ namespace river_test_playback_write {
 					return;
 				}
 				m_interface->start();
-				ethread::sleepMilliSeconds(std::chrono::seconds(1));
+				ethread::sleepMilliSeconds(1000*(1));
 				m_interface->stop();
 			}
 	};
