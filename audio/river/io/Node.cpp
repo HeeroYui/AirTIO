@@ -175,7 +175,6 @@ void audio::river::io::Node::interfaceRemove(const ememory::SharedPtr<audio::riv
 	if (m_list.size() == 0) {
 		stopInGroup();
 	}
-	return;
 }
 
 
