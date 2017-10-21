@@ -11,7 +11,7 @@
 #include <etk/Function.hpp>
 
 ememory::SharedPtr<audio::river::io::NodeAEC> audio::river::io::NodeAEC::create(const etk::String& _name, const ejson::Object& _config) {
-	return ememory::SharedPtr<audio::river::io::NodeAEC>(new audio::river::io::NodeAEC(_name, _config));
+	return ememory::SharedPtr<audio::river::io::NodeAEC>(ETK_NEW(audio::river::io::NodeAEC, _name, _config));
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeAEC::createInput(float _freq,

@@ -54,7 +54,7 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
 
 
 ememory::SharedPtr<audio::river::io::NodePortAudio> audio::river::io::NodePortAudio::create(const etk::String& _name, const ejson::Object& _config) {
-	return ememory::SharedPtr<audio::river::io::NodePortAudio>(new audio::river::io::NodePortAudio(_name, _config));
+	return ememory::SharedPtr<audio::river::io::NodePortAudio>(ETK_NEW(audio::river::io::NodePortAudio,_name, _config));
 }
 
 audio::river::io::NodePortAudio::NodePortAudio(const etk::String& _name, const ejson::Object& _config) :

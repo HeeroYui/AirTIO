@@ -35,7 +35,7 @@ int32_t audio::river::io::NodeFile::playbackCallback(void* _outputBuffer,
 
 
 ememory::SharedPtr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const etk::String& _name, const ejson::Object& _config) {
-	return ememory::SharedPtr<audio::river::io::NodeFile>(new audio::river::io::NodeFile(_name, _config));
+	return ememory::SharedPtr<audio::river::io::NodeFile>(ETK_NEW(audio::river::io::NodeFile, _name, _config));
 }
 
 audio::river::io::NodeFile::NodeFile(const etk::String& _name, const ejson::Object& _config) :

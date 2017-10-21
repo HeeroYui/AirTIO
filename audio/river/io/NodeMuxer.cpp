@@ -11,7 +11,7 @@
 #include <etk/Function.hpp>
 
 ememory::SharedPtr<audio::river::io::NodeMuxer> audio::river::io::NodeMuxer::create(const etk::String& _name, const ejson::Object& _config) {
-	return ememory::SharedPtr<audio::river::io::NodeMuxer>(new audio::river::io::NodeMuxer(_name, _config));
+	return ememory::SharedPtr<audio::river::io::NodeMuxer>(ETK_NEW(audio::river::io::NodeMuxer, _name, _config));
 }
 
 ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeMuxer::createInput(float _freq,

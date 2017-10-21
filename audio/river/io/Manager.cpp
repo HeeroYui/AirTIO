@@ -105,7 +105,7 @@ ememory::SharedPtr<audio::river::io::Manager> audio::river::io::Manager::getInst
 	if (audio::river::isInit() == false) {
 		return ememory::SharedPtr<audio::river::io::Manager>();
 	}
-	static ememory::SharedPtr<audio::river::io::Manager> manager(new Manager());
+	static ememory::SharedPtr<audio::river::io::Manager> manager(ETK_NEW(Manager));
 	return manager;
 }
 
