@@ -41,6 +41,12 @@ namespace audio {
 				public: // herited function
 					virtual void onDraw();
 					virtual void onRegenerateDisplay();
+				protected:
+					esignal::Connection m_PCH; //!< Periodic Call Handle to remove it when needed
+					/**
+					 * @brief Periodic call to update grapgic display
+					 * @param[in] _event Time generic event
+					 */
 					virtual void periodicCall(const ewol::event::Time& _event);
 				private:
 					ememory::SharedPtr<audio::river::Manager> m_manager;

@@ -13,6 +13,8 @@
 #include <etk/os/FSNode.hpp>
 #include <etk/etk.hpp>
 #include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
+#include <test-debug/debug.hpp>
 
 
 
@@ -89,7 +91,7 @@ int main(int _argc, const char **_argv) {
 		etk::String data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
-			TEST_PRINT("Help : ")
+			TEST_PRINT("Help : ");
 			TEST_PRINT("    --conf=xxx.json Input/output configuration");
 			TEST_PRINT("    --io=xxx        name configuration input");
 			TEST_PRINT("    --file=yyy.raw  File name to store data");
@@ -136,7 +138,7 @@ int main(int _argc, const char **_argv) {
 	}
 	//! [audio_river_sample_set_callback]
 	// set callback mode ...
-	interface->setInputCallback([=](const void* _data,
+	interface->setInputCallback([&](const void* _data,
 	                                const audio::Time& _time,
 	                                size_t _nbChunk,
 	                                enum audio::format _format,

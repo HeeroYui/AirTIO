@@ -3,7 +3,21 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license MPL v2.0 (see license file)
  */
-#pragma once
+
+#include <test-debug/debug.hpp>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
+#include <etest/etest.hpp>
+#include <etk/etk.hpp>
+#include <etk/os/FSNode.hpp>
+extern "C" {
+	#include <math.h>
+}
+
+#include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
+#include "main.hpp"
 
 namespace river_test_playback_callback {
 	
@@ -29,14 +43,14 @@ namespace river_test_playback_callback {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setOutputCallback([=](const void* _data,
-				                                      const audio::Time& _time,
-				                                      size_t _nbChunk,
-				                                      enum audio::format _format,
-				                                      uint32_t _frequency,
-				                                      const etk::Vector<audio::channel>& _map) {
-				                                      	onDataNeeded(_data, _time, _nbChunk, _format, _frequency, _map);
-				                                      });
+				m_interface->setOutputCallback([=](void* _data,
+				                                   const audio::Time& _time,
+				                                   size_t _nbChunk,
+				                                   enum audio::format _format,
+				                                   uint32_t _frequency,
+				                                   const etk::Vector<audio::channel>& _map) {
+				                                    	onDataNeeded(_data, _time, _nbChunk, _format, _frequency, _map);
+				                                   });
 			}
 			void onDataNeeded(void* _data,
 			                  const audio::Time& _time,

@@ -96,7 +96,7 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Interface::create(floa
                                                                             audio::format _format,
                                                                             const ememory::SharedPtr<audio::river::io::Node>& _node,
                                                                             const ejson::Object& _config) {
-	ememory::SharedPtr<audio::river::Interface> out = ememory::SharedPtr<audio::river::Interface>(ETK_NEW(audio::river::Interface()));
+	ememory::SharedPtr<audio::river::Interface> out = ememory::SharedPtr<audio::river::Interface>(ETK_NEW(audio::river::Interface));
 	out->init(_freq, _map, _format, _node, _config);
 	return out;
 }

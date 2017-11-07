@@ -3,7 +3,21 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license MPL v2.0 (see license file)
  */
-#pragma once
+
+#include <test-debug/debug.hpp>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
+#include <etest/etest.hpp>
+#include <etk/etk.hpp>
+#include <etk/os/FSNode.hpp>
+extern "C" {
+	#include <math.h>
+}
+
+#include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
+#include "main.hpp"
 
 namespace river_test_format {
 	static const etk::String configurationRiver =
@@ -66,7 +80,7 @@ namespace river_test_format {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setOutputCallback([=](const void* _data,
+				m_interface->setOutputCallback([=](void* _data,
 				                                   const audio::Time& _time,
 				                                   size_t _nbChunk,
 				                                   enum audio::format _format,
@@ -141,89 +155,59 @@ namespace river_test_format {
 				ethread::sleepMilliSeconds((100));
 			}
 	};
+	etk::Vector<float> listFreq = {4000, 8000, 16000, 32000, 48000, 48001, 64000, 96000, 11250, 2250, 44100, 88200};
+	etk::Vector<int32_t> listChannel = {1, 2, 4};
+	etk::Vector<audio::format> listFormat = {audio::format_int16, audio::format_int16_on_int32, audio::format_int32, audio::format_float};
 	
-	
-	class testResampling : public ::testing::TestWithParam<float> {};
-	TEST_P(testResampling, base) {
+	TEST(testResampling, base) {
 		audio::river::initString(configurationRiver);
 		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, GetParam(), 2, audio::format_int16);
-		process->run();
-		process.reset();
-		ethread::sleepMilliSeconds((500));
+		for (auto itFrequency: listFreq) {
+			ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, itFrequency, 2, audio::format_int16);
+			process->run();
+			process.reset();
+			ethread::sleepMilliSeconds((500));
+		}
 		audio::river::unInit();
 	}
 	
-	INSTANTIATE_TEST_CASE_P(InstantiationName,
-	                        testResampling,
-	                        ::testing::Values(4000, 8000, 16000, 32000, 48000, 48001, 64000, 96000, 11250, 2250, 44100, 88200));
-	
-	
-	class testFormat : public ::testing::TestWithParam<audio::format> {};
-	TEST_P(testFormat, base) {
+	TEST(testFormat, base) {
 		audio::river::initString(configurationRiver);
 		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, 48000, 2, GetParam());
-		process->run();
-		process.reset();
-		ethread::sleepMilliSeconds((500));
+		for (auto itFormat: listFormat) {
+			ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, 48000, 2, itFormat);
+			process->run();
+			process.reset();
+			ethread::sleepMilliSeconds((500));
+		}
 		audio::river::unInit();
 	}
-	INSTANTIATE_TEST_CASE_P(InstantiationName,
-	                        testFormat,
-	                        ::testing::Values(audio::format_int16, audio::format_int16_on_int32, audio::format_int32, audio::format_float));
 	
-	
-	class testChannels : public ::testing::TestWithParam<int32_t> {};
-	TEST_P(testChannels, base) {
+	TEST(testChannels, base) {
 		audio::river::initString(configurationRiver);
 		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
-		ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, 48000, GetParam(), audio::format_int16);
-		process->run();
-		process.reset();
-		ethread::sleepMilliSeconds((500));
+		for (auto itChannel: listChannel) {
+			ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, 48000, itChannel, audio::format_int16);
+			process->run();
+			process.reset();
+			ethread::sleepMilliSeconds((500));
+		}
 		audio::river::unInit();
 	}
-	INSTANTIATE_TEST_CASE_P(InstantiationName,
-	                        testChannels,
-	                        ::testing::Values(1,2,4));
-	
 	
 	TEST(TestALL, testChannelsFormatResampling) {
 		audio::river::initString(configurationRiver);
 		ememory::SharedPtr<audio::river::Manager> manager;
 		manager = audio::river::Manager::create("testApplication");
 		TEST_INFO("test convert flaot to output (callback mode)");
-		etk::Vector<float> listFreq;
-		listFreq.pushBack(4000);
-		listFreq.pushBack(8000);
-		listFreq.pushBack(16000);
-		listFreq.pushBack(32000);
-		listFreq.pushBack(48000);
-		listFreq.pushBack(48001);
-		listFreq.pushBack(64000);
-		listFreq.pushBack(96000);
-		listFreq.pushBack(11250);
-		listFreq.pushBack(2250);
-		listFreq.pushBack(44100);
-		listFreq.pushBack(88200);
-		etk::Vector<int32_t> listChannel;
-		listChannel.pushBack(1);
-		listChannel.pushBack(2);
-		listChannel.pushBack(4);
-		etk::Vector<audio::format> listFormat;
-		listFormat.pushBack(audio::format_int16);
-		listFormat.pushBack(audio::format_int16_on_int32);
-		listFormat.pushBack(audio::format_int32);
-		listFormat.pushBack(audio::format_float);
-		for (size_t fff=0; fff<listFreq.size(); ++fff) {
-			for (size_t ccc=0; ccc<listChannel.size(); ++ccc) {
-				for (size_t iii=0; iii<listFormat.size(); ++iii) {
-					TEST_INFO("freq=" << listFreq[fff] << " channel=" << listChannel[ccc] << " format=" << getFormatString(listFormat[iii]));
-					ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, listFreq[fff], listChannel[ccc], listFormat[iii]);
+		for (auto itFrequency: listFreq) {
+			for (auto itChannel: listChannel) {
+				for (auto itFormat: listFormat) {
+					TEST_INFO("freq=" << itFrequency << " channel=" << listChannel << " format=" << audio::getFormatString(itFormat));
+					ememory::SharedPtr<testOutCallbackType> process = ememory::makeShared<testOutCallbackType>(manager, itFrequency, itChannel, itFormat);
 					process->run();
 					process.reset();
 					ethread::sleepMilliSeconds((500));
@@ -232,6 +216,6 @@ namespace river_test_format {
 		}
 		audio::river::unInit();
 	}
-};
+}
 
 

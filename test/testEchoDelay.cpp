@@ -3,9 +3,21 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license MPL v2.0 (see license file)
  */
-#pragma once
 
 #include <test-debug/debug.hpp>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
+#include <etest/etest.hpp>
+#include <etk/etk.hpp>
+#include <etk/os/FSNode.hpp>
+extern "C" {
+	#include <math.h>
+}
+
+#include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
+#include "main.hpp"
 
 namespace river_test_echo_delay {
 	class TestClass {
@@ -49,7 +61,7 @@ namespace river_test_echo_delay {
 					return;
 				}
 				// set callback mode ...
-				m_interfaceOut->setOutputCallback([=](const void* _data,
+				m_interfaceOut->setOutputCallback([=](void* _data,
 				                                      const audio::Time& _time,
 				                                      size_t _nbChunk,
 				                                      enum audio::format _format,
@@ -127,7 +139,7 @@ namespace river_test_echo_delay {
 					}
 					if (m_nextTick == audio::Time()) {
 						m_nextTick = _time + m_delayBetweenEvent;
-						m_nextSampleCount = m_delayBetweenEvent.count()*int64_t(_frequency)/1000;
+						m_nextSampleCount = m_delayBetweenEvent.get()*int64_t(_frequency)/1000;
 						m_phase = -1;
 					}
 					//TEST_INFO("sample : " << m_nextSampleCount);
@@ -136,7 +148,7 @@ namespace river_test_echo_delay {
 							m_nextSampleCount--;
 						} else {
 							m_phase = 0;
-							m_nextSampleCount = m_delayBetweenEvent.count()*int64_t(_frequency)/1000;
+							m_nextSampleCount = m_delayBetweenEvent.get()*int64_t(_frequency)/1000;
 							m_currentTick = m_nextTick;
 							m_nextTick += m_delayBetweenEvent;
 						}
@@ -216,7 +228,7 @@ namespace river_test_echo_delay {
 									TEST_VERBOSE("FB:  1 position -1:  " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									TEST_VERBOSE("FB:  1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									
-									TEST_WARNING("FB:  1 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
+									TEST_WARNING("FB:  1 time detected:     " << time << " delay = " << float((time-m_currentTick).get())/1000.0f << "µs");
 								}
 							} else if (m_stateFB == 2) {
 								// inverse phase
@@ -226,7 +238,7 @@ namespace river_test_echo_delay {
 									audio::Time time = getInterpolateTime(_time, iii-1, data[(iii-1)*_map.size() + jjj], data[iii*_map.size() + jjj], _frequency);
 									TEST_VERBOSE("FB:  2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									TEST_VERBOSE("FB:  2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
-									TEST_WARNING("FB:  2 time detected:     " << time << " delay = " << float((time-m_currentTick).count())/1000.0f << "µs");
+									TEST_WARNING("FB:  2 time detected:     " << time << " delay = " << float((time-m_currentTick).get())/1000.0f << "µs");
 								}
 							} else if (m_stateFB == 3) {
 								// TODO : Detect the pic ...
@@ -318,9 +330,9 @@ namespace river_test_echo_delay {
 									TEST_VERBOSE("MIC: 1 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									TEST_VERBOSE("MIC: 1 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									audio::Duration delay = time-m_currentTick;
-									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
-									TEST_WARNING("MIC: 1 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
-									m_delayListMic.pushBack(delay.count());
+									int32_t sampleDalay = (delay.get()*_frequency)/1000000000LL;
+									TEST_WARNING("MIC: 1 time detected:     " << time << " delay = " << float(delay.get())/1000.0f << "µs  samples=" << sampleDalay);
+									m_delayListMic.pushBack(delay.get());
 								}
 							} else if (m_stateMic == 2) {
 								// inverse phase
@@ -331,9 +343,9 @@ namespace river_test_echo_delay {
 									TEST_VERBOSE("MIC: 2 position -1: " << iii-1 << " " << data[(iii-1)*_map.size() + jjj]);
 									TEST_VERBOSE("MIC: 2 position  0: " << iii << " " << data[iii*_map.size() + jjj]);
 									audio::Duration delay = time-m_currentTick;
-									int32_t sampleDalay = (delay.count()*_frequency)/1000000000LL;
-									TEST_WARNING("MIC: 2 time detected:     " << time << " delay = " << float(delay.count())/1000.0f << "µs  samples=" << sampleDalay);
-									m_delayListMic.pushBack(delay.count());
+									int32_t sampleDalay = (delay.get()*_frequency)/1000000000LL;
+									TEST_WARNING("MIC: 2 time detected:     " << time << " delay = " << float(delay.get())/1000.0f << "µs  samples=" << sampleDalay);
+									m_delayListMic.pushBack(delay.get());
 								}
 							} else if (m_stateMic == 3) {
 								// TODO : Detect the pic ...

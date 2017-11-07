@@ -26,7 +26,7 @@ ememory::SharedPtr<audio::river::Manager> audio::river::Manager::create(const et
 		}
 	}
 	// create a new one:
-	ememory::SharedPtr<audio::river::Manager> out = ememory::SharedPtr<audio::river::Manager>(ETK_NEW(audio::river::Manager(_applicationUniqueId)));
+	ememory::SharedPtr<audio::river::Manager> out = ememory::SharedPtr<audio::river::Manager>(ETK_NEW(audio::river::Manager, _applicationUniqueId));
 	// add it at the list:
 	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
 		if (g_listOfAllManager[iii].expired() == true) {

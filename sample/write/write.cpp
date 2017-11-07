@@ -11,6 +11,8 @@
 #include <audio/river/Interface.hpp>
 #include <etk/etk.hpp>
 #include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
+#include <test-debug/debug.hpp>
 
 
 //! [audio_river_sample_write_config_file]
@@ -92,7 +94,7 @@ int main(int _argc, const char **_argv) {
 	//! [audio_river_sample_create_write_interface]
 	//! [audio_river_sample_set_callback]
 	// set callback mode ...
-	interface->setOutputCallback([=](const void* _data,
+	interface->setOutputCallback([=](void* _data,
 	                                 const audio::Time& _time,
 	                                 size_t _nbChunk,
 	                                 enum audio::format _format,

@@ -35,7 +35,7 @@ static const etk::String configurationRiver =
 class MainApplication : public ewol::context::Application {
 	public:
 		bool init(ewol::Context& _context, size_t _initId) {
-			APPL_INFO("==> Init APPL (START) [" << ewol::getBoardType() << "] (" << ewol::getCompilationMode() << ")");
+			APPL_INFO("==> Init APPL (START) [" << gale::getBoardType() << "] (" << gale::getCompilationMode() << ")");
 			
 			audio::river::initString(configurationRiver);
 			

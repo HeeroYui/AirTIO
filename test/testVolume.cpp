@@ -3,7 +3,21 @@
  * @copyright 2015, Edouard DUPIN, all right reserved
  * @license MPL v2.0 (see license file)
  */
-#pragma once
+
+#include <test-debug/debug.hpp>
+#include <audio/river/river.hpp>
+#include <audio/river/Manager.hpp>
+#include <audio/river/Interface.hpp>
+#include <etest/etest.hpp>
+#include <etk/etk.hpp>
+#include <etk/os/FSNode.hpp>
+extern "C" {
+	#include <math.h>
+}
+
+#include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
+#include "main.hpp"
 
 namespace river_test_volume {
 	static const etk::String configurationRiver =
@@ -44,7 +58,7 @@ namespace river_test_volume {
 					return;
 				}
 				// set callback mode ...
-				m_interface->setOutputCallback([=](const void* _data,
+				m_interface->setOutputCallback([=](void* _data,
 				                                   const audio::Time& _time,
 				                                   size_t _nbChunk,
 				                                   enum audio::format _format,

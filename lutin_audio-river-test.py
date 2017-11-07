@@ -26,7 +26,16 @@ def get_maintainer():
 
 def configure(target, my_module):
 	my_module.add_src_file([
-	    'test/main.cpp'
+	    'test/main.cpp',
+	    'test/testAEC.cpp',
+	    'test/testEchoDelay.cpp',
+	    'test/testFormat.cpp',
+	    'test/testMuxer.cpp',
+	    'test/testPlaybackCallback.cpp',
+	    'test/testPlaybackWrite.cpp',
+	    'test/testRecordCallback.cpp',
+	    'test/testRecordRead.cpp',
+	    'test/testVolume.cpp',
 	    ])
 	my_module.add_depend([
 	    'audio-river',

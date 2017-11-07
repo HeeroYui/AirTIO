@@ -7,6 +7,7 @@
 #include <audio/river/widget/debug.hpp>
 #include <audio/river/widget/TemporalViewer.hpp>
 #include <etk/tool.hpp>
+#include <ewol/object/Manager.hpp>
 
 static const int32_t nbSecond = 3;
 
@@ -70,7 +71,7 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 			return;
 		}
 		// set callback mode ...
-		m_interface->setInputCallback([=](const void* _data,
+		m_interface->setInputCallback([&](const void* _data,
 		                                  const audio::Time& _time,
 		                                  size_t _nbChunk,
 		                                  enum audio::format _format,
@@ -80,11 +81,11 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 		                                  });
 		// start the stream
 		m_interface->start();
-		periodicCallEnable();
+		m_PCH = getObjectManager().periodicCall.connect(this, &audio::river::widget::TemporalViewer::periodicCall);
 	} else {
 		m_interface->stop();
 		m_interface.reset();
-		periodicCallDisable();
+		m_PCH.disconnect();
 	}
 }
 

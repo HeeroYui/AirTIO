@@ -30,6 +30,7 @@ def configure(target, my_module):
 	    ])
 	my_module.add_depend([
 	    'audio-river',
+	    'test-debug',
 	    'etk'
 	    ])
 	return True
