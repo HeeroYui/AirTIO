@@ -58,7 +58,7 @@ void audio::river::widget::TemporalViewer::onDataReceived(const void* _data,
 
 void audio::river::widget::TemporalViewer::recordToggle() {
 	ethread::UniqueLock lock(m_mutex);
-	if (m_interface == nullptr) {
+	if (m_interface == null) {
 		//Get the generic input:
 		etk::Vector<audio::channel> channel;
 		channel.pushBack(audio::channel_frontLeft);
@@ -66,8 +66,8 @@ void audio::river::widget::TemporalViewer::recordToggle() {
 		                                     channel,
 		                                     audio::format_float,
 		                                     "microphone");
-		if(m_interface == nullptr) {
-			ARW_ERROR("nullptr interface");
+		if(m_interface == null) {
+			ARW_ERROR("null interface");
 			return;
 		}
 		// set callback mode ...

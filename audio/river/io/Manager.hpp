@@ -62,7 +62,7 @@ namespace audio {
 					/**
 					 * @brief Get a node with his name (the name is set in the description file.
 					 * @param[in] _name Name of the node
-					 * @return Pointer on the noe or a nullptr if the node does not exist in the file or an error occured.
+					 * @return Pointer on the noe or a null if the node does not exist in the file or an error occured.
 					 */
 					ememory::SharedPtr<audio::river::io::Node> getNode(const etk::String& _name);
 				private:
@@ -71,7 +71,7 @@ namespace audio {
 					/**
 					 * @brief Get a volume in the global list of vilume
 					 * @param[in] _name Name of the volume.
-					 * @return pointer on the requested volume (create it if does not exist). nullptr if the name is empty.
+					 * @return pointer on the requested volume (create it if does not exist). null if the name is empty.
 					 */
 					ememory::SharedPtr<audio::drain::VolumeElement> getVolumeGroup(const etk::String& _name);
 					/**
@@ -140,7 +140,7 @@ namespace audio {
 					/**
 					 * @brief get a low level interface group.
 					 * @param[in] _name Name of the group.
-					 * @return Pointer on the requested group or nullptr if the group does not existed.
+					 * @return Pointer on the requested group or null if the group does not existed.
 					 */
 					ememory::SharedPtr<audio::river::io::Group> getGroup(const etk::String& _name);
 					

@@ -30,7 +30,7 @@ namespace audio {
 				/**
 				 * @brief factory of the manager. Every Application will have only one maager for all his flow. this permit to manage all of it
 				 * @param[in] _applicationUniqueId Unique name of the application
-				 * @return Pointer on the manager or nullptr if an error occured
+				 * @return Pointer on the manager or null if an error occured
 				 */
 				static ememory::SharedPtr<audio::river::Manager> create(const etk::String& _applicationUniqueId);
 				/**

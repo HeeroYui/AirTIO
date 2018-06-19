@@ -42,7 +42,7 @@ ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeAEC::createInp
 	// create user iterface:
 	ememory::SharedPtr<audio::river::Interface> interface;
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
-	if (interface != nullptr) {
+	if (interface != null) {
 		interface->setName(_name);
 	}
 	return interface;
@@ -87,7 +87,7 @@ audio::river::io::NodeAEC::NodeAEC(const etk::String& _name, const ejson::Object
 	                                  hardwareFormat.getFormat(),
 	                                  "map-on-feedback",
 	                                  _name + "-AEC-feedback");
-	if (m_interfaceFeedBack == nullptr) {
+	if (m_interfaceFeedBack == null) {
 		RIVER_ERROR("Can not opne virtual device ... map-on-feedback in " << _name);
 		return;
 	}
@@ -97,7 +97,7 @@ audio::river::io::NodeAEC::NodeAEC(const etk::String& _name, const ejson::Object
 	                                    hardwareFormat.getFormat(),
 	                                    "map-on-microphone",
 	                                    _name + "-AEC-microphone");
-	if (m_interfaceMicrophone == nullptr) {
+	if (m_interfaceMicrophone == null) {
 		RIVER_ERROR("Can not opne virtual device ... map-on-microphone in " << _name);
 		return;
 	}
@@ -140,11 +140,11 @@ audio::river::io::NodeAEC::~NodeAEC() {
 void audio::river::io::NodeAEC::start() {
 	ethread::UniqueLock lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	if (m_interfaceFeedBack != nullptr) {
+	if (m_interfaceFeedBack != null) {
 		RIVER_INFO("Start FEEDBACK : ");
 		m_interfaceFeedBack->start();
 	}
-	if (m_interfaceMicrophone != nullptr) {
+	if (m_interfaceMicrophone != null) {
 		RIVER_INFO("Start Microphone : ");
 		m_interfaceMicrophone->start();
 	}
@@ -152,10 +152,10 @@ void audio::river::io::NodeAEC::start() {
 
 void audio::river::io::NodeAEC::stop() {
 	ethread::UniqueLock lock(m_mutex);
-	if (m_interfaceFeedBack != nullptr) {
+	if (m_interfaceFeedBack != null) {
 		m_interfaceFeedBack->stop();
 	}
-	if (m_interfaceMicrophone != nullptr) {
+	if (m_interfaceMicrophone != null) {
 		m_interfaceMicrophone->stop();
 	}
 }
@@ -330,10 +330,10 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 		_node << "			NODE_" << m_uid << "_HW_AEC -> " << nameIn << ";\n";
 		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
 	_node << "	}\n";
-	if (m_interfaceMicrophone != nullptr) {
+	if (m_interfaceMicrophone != null) {
 		_node << "	" << m_interfaceMicrophone->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
 	}
-	if (m_interfaceFeedBack != nullptr) {
+	if (m_interfaceFeedBack != null) {
 		_node << "	" << m_interfaceFeedBack->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
 	}
 	_node << "	\n";
@@ -343,7 +343,7 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 			continue;
 		}
 		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
-		if (element == nullptr) {
+		if (element == null) {
 			continue;
 		}
 		bool isLink = false;
@@ -352,7 +352,7 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 				isLink = true;
 			}
 		}
-		if (element != nullptr) {
+		if (element != null) {
 			if (element->getMode() == modeInterface_input) {
 				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else if (element->getMode() == modeInterface_output) {

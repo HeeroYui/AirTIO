@@ -53,8 +53,8 @@ namespace river_test_volume {
 				                                      channelMap,
 				                                      audio::format_int16,
 				                                      "speaker");
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -88,8 +88,8 @@ namespace river_test_volume {
 				}
 			}
 			void run() {
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->start();

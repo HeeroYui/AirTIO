@@ -19,7 +19,7 @@ void audio::river::init(const etk::String& _filename) {
 		river_configFile = _filename;
 		RIVER_DEBUG("init RIVER :" << river_configFile);
 		ememory::SharedPtr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
-		if (mng != nullptr) {
+		if (mng != null) {
 			mng->init(river_configFile);
 		}
 	} else {
@@ -33,7 +33,7 @@ void audio::river::initString(const etk::String& _config) {
 		river_configFile = _config;
 		RIVER_DEBUG("init RIVER with config.");
 		ememory::SharedPtr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
-		if (mng != nullptr) {
+		if (mng != null) {
 			mng->initString(river_configFile);
 		}
 	} else {
@@ -46,7 +46,7 @@ void audio::river::unInit() {
 		river_isInit = false;
 		RIVER_DEBUG("un-init RIVER.");
 		ememory::SharedPtr<audio::river::io::Manager> mng = audio::river::io::Manager::getInstance();
-		if (mng != nullptr) {
+		if (mng != null) {
 			RIVER_ERROR("Can not get on the RIVER hardware manager !!!");
 			mng->unInit();
 		}

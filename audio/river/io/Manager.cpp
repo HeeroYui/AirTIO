@@ -186,7 +186,7 @@ ememory::SharedPtr<audio::river::io::Node> audio::river::io::Manager::getNode(co
 	// search in the standalone list :
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		ememory::SharedPtr<audio::river::io::Node> tmppp = m_list[iii].lock();
-		if (    tmppp != nullptr
+		if (    tmppp != null
 		     && _name == tmppp->getName()) {
 			RIVER_WARNING(" find it ... in standalone");
 			return tmppp;
@@ -197,9 +197,9 @@ ememory::SharedPtr<audio::river::io::Node> audio::river::io::Manager::getNode(co
 		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
-			if (it->second != nullptr) {
+			if (it->second != null) {
 				ememory::SharedPtr<audio::river::io::Node> node = it->second->getNode(_name);
-				if (node != nullptr) {
+				if (node != null) {
 					RIVER_WARNING(" find it ... in group: " << it->first);
 					return node;
 				}
@@ -220,7 +220,7 @@ ememory::SharedPtr<audio::river::io::Node> audio::river::io::Manager::getNode(co
 		          || ioType == "PAinput"
 		          || ioType == "PAoutput") ) {
 			ememory::SharedPtr<audio::river::io::Group> tmpGroup = getGroup(groupName);
-			if (tmpGroup == nullptr) {
+			if (tmpGroup == null) {
 				RIVER_WARNING("Can not get group ... '" << groupName << "'");
 				return ememory::SharedPtr<audio::river::io::Node>();
 			}
@@ -274,7 +274,7 @@ ememory::SharedPtr<audio::drain::VolumeElement> audio::river::io::Manager::getVo
 		return ememory::SharedPtr<audio::drain::VolumeElement>();
 	}
 	for (size_t iii=0; iii<m_volumeGroup.size(); ++iii) {
-		if (m_volumeGroup[iii] == nullptr) {
+		if (m_volumeGroup[iii] == null) {
 			continue;
 		}
 		if (m_volumeGroup[iii]->getName() == _name) {
@@ -290,7 +290,7 @@ ememory::SharedPtr<audio::drain::VolumeElement> audio::river::io::Manager::getVo
 bool audio::river::io::Manager::setVolume(const etk::String& _volumeName, float _valuedB) {
 	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
-	if (volume == nullptr) {
+	if (volume == null) {
 		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
 		return false;
 	}
@@ -302,7 +302,7 @@ bool audio::river::io::Manager::setVolume(const etk::String& _volumeName, float 
 	volume->setVolume(_valuedB);
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		ememory::SharedPtr<audio::river::io::Node> val = m_list[iii].lock();
-		if (val != nullptr) {
+		if (val != null) {
 			val->volumeChange();
 		}
 	}
@@ -312,7 +312,7 @@ bool audio::river::io::Manager::setVolume(const etk::String& _volumeName, float 
 float audio::river::io::Manager::getVolume(const etk::String& _volumeName) {
 	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
-	if (volume == nullptr) {
+	if (volume == null) {
 		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
 		return 0.0f;
 	}
@@ -326,14 +326,14 @@ etk::Pair<float,float> audio::river::io::Manager::getVolumeRange(const etk::Stri
 void audio::river::io::Manager::setMute(const etk::String& _volumeName, bool _mute) {
 	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
-	if (volume == nullptr) {
+	if (volume == null) {
 		RIVER_ERROR("Can not set volume ... : '" << _volumeName << "'");
 		return;
 	}
 	volume->setMute(_mute);
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		ememory::SharedPtr<audio::river::io::Node> val = m_list[iii].lock();
-		if (val != nullptr) {
+		if (val != null) {
 			val->volumeChange();
 		}
 	}
@@ -342,7 +342,7 @@ void audio::river::io::Manager::setMute(const etk::String& _volumeName, bool _mu
 bool audio::river::io::Manager::getMute(const etk::String& _volumeName) {
 	ethread::RecursiveLock lock(m_mutex);
 	ememory::SharedPtr<audio::drain::VolumeElement> volume = getVolumeGroup(_volumeName);
-	if (volume == nullptr) {
+	if (volume == null) {
 		RIVER_ERROR("Can not get volume ... : '" << _volumeName << "'");
 		return false;
 	}
@@ -364,7 +364,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 		// standalone
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
 			ememory::SharedPtr<audio::river::io::Node> val = m_list[iii].lock();
-			if (val != nullptr) {
+			if (val != null) {
 				if (val->isHarwareNode() == true) {
 					val->generateDot(node);
 				}
@@ -373,7 +373,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
-			if (it->second != nullptr) {
+			if (it->second != null) {
 				it->second->generateDot(node, true);
 			}
 		}
@@ -383,7 +383,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 		// standalone
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
 			ememory::SharedPtr<audio::river::io::Node> val = m_list[iii].lock();
-			if (val != nullptr) {
+			if (val != null) {
 				if (val->isHarwareNode() == false) {
 					val->generateDot(node);
 				}
@@ -392,7 +392,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 		for (etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> >::Iterator it(m_listGroup.begin());
 		     it != m_listGroup.end();
 		     ++it) {
-			if (it->second != nullptr) {
+			if (it->second != null) {
 				it->second->generateDot(node, false);
 			}
 		}
@@ -410,7 +410,7 @@ ememory::SharedPtr<audio::river::io::Group> audio::river::io::Manager::getGroup(
 	if (it == m_listGroup.end()) {
 		RIVER_INFO("Create a new group: " << _name << " (START)");
 		out = ememory::makeShared<audio::river::io::Group>();
-		if (out != nullptr) {
+		if (out != null) {
 			out->createFrom(m_config, _name);
 			m_listGroup.add(_name, out);
 			RIVER_INFO("Create a new group: " << _name << " ( END )");

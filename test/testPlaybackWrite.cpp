@@ -51,15 +51,15 @@ namespace river_test_playback_write {
 				                                      m_channelMap,
 				                                      audio::format_int16,
 				                                      "speaker");
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->setReadwrite();
 			}
 			void run() {
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				double phase=0;
@@ -128,8 +128,8 @@ namespace river_test_playback_write {
 				                                      channelMap,
 				                                      audio::format_int16,
 				                                      "speaker");
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->setReadwrite();
@@ -165,8 +165,8 @@ namespace river_test_playback_write {
 				m_interface->write(&data[0], data.size()/_map.size());
 			}
 			void run() {
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->start();

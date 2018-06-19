@@ -13,7 +13,7 @@
 #include <etk/tool.hpp>
 
 appl::Windows::Windows() :
-  m_composer(nullptr) {
+  m_composer(null) {
 	addObjectType("appl::Windows");
 	propertyTitle.setDirectCheck("River IO viewer");
 }
@@ -38,7 +38,7 @@ void appl::Windows::init() {
 	composition += "</sizer>\n";
 	
 	m_composer = ewol::widget::Composer::create();
-	if (m_composer == nullptr) {
+	if (m_composer == null) {
 		APPL_CRITICAL(" An error occured ... in the windows creatrion ...");
 		return;
 	}
@@ -50,14 +50,14 @@ void appl::Windows::init() {
 
 void appl::Windows::onCallbackRecord() {
 	ememory::SharedPtr<audio::river::widget::TemporalViewer> tmpDisp = ememory::dynamicPointerCast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
-	if (tmpDisp != nullptr) {
+	if (tmpDisp != null) {
 		tmpDisp->recordToggle();
 	}
 }
 
 void appl::Windows::onCallbackGenerate() {
 	ememory::SharedPtr<audio::river::widget::TemporalViewer> tmpDisp = ememory::dynamicPointerCast<audio::river::widget::TemporalViewer>(getSubObjectNamed("displayer"));
-	if (tmpDisp != nullptr) {
+	if (tmpDisp != null) {
 		tmpDisp->generateToggle();
 	}
 }

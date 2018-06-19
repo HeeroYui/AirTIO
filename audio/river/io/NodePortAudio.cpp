@@ -41,11 +41,11 @@ int32_t audio::river::io::NodePortAudio::duplexCallback(const void* _inputBuffer
                                                  PaStreamCallbackFlags _status) {
 	ethread::UniqueLock lock(m_mutex);
 	// TODO : Manage status ...
-	if (_inputBuffer != nullptr) {
+	if (_inputBuffer != null) {
 		RIVER_VERBOSE("data Input size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 		newInput(_inputBuffer, _nbChunk, _timeInput);
 	}
-	if (_outputBuffer != nullptr) {
+	if (_outputBuffer != null) {
 		RIVER_VERBOSE("data Output size request :" << _nbChunk << " [BEGIN] status=" << _status << " nbIO=" << m_list.size());
 		newOutput(_outputBuffer, _nbChunk, _timeOutput);
 	}

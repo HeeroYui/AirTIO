@@ -47,8 +47,8 @@ namespace river_test_record_callback {
 				                                     channelMap,
 				                                     audio::format_int16,
 				                                     _input);
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -80,8 +80,8 @@ namespace river_test_record_callback {
 				TEST_INFO("Get data ... average=" << int32_t(value));
 			}
 			void run() {
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->start();

@@ -36,8 +36,8 @@ namespace river_test_muxer {
 				                                         channelMap,
 				                                         audio::format_int16,
 				                                         "speaker");
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -57,8 +57,8 @@ namespace river_test_muxer {
 				                                       etk::Vector<audio::channel>(),
 				                                       audio::format_int16,
 				                                       "microphone-muxed");
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -104,12 +104,12 @@ namespace river_test_muxer {
 				TEST_ERROR("Receive data ... " << _nbChunk << " map=" << _map);
 			}
 			void run() {
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interfaceOut->start();

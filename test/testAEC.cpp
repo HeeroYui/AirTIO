@@ -44,8 +44,8 @@ namespace river_test_aec {
 				                                         channelMap,
 				                                         audio::format_int16,
 				                                         _output);
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -66,8 +66,8 @@ namespace river_test_aec {
 				                                       channelMap,
 				                                       audio::format_int16,
 				                                       _input);
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -104,24 +104,24 @@ namespace river_test_aec {
 				m_buffer.write(_data, _nbChunk);
 			}
 			void start() {
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interfaceOut->start();
 				m_interfaceIn->start();
 			}
 			void stop() {
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_manager->generateDotAll("activeProcess.dot");

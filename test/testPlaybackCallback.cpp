@@ -38,8 +38,8 @@ namespace river_test_playback_callback {
 				                                      channelMap,
 				                                      audio::format_int16,
 				                                      _io);
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -74,8 +74,8 @@ namespace river_test_playback_callback {
 				}
 			}
 			void run() {
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->start();
@@ -108,7 +108,7 @@ namespace river_test_playback_callback {
 		
 		TEST_INFO("test output (callback mode)");
 		ememory::SharedPtr<testOutCallback> process = ememory::makeShared<testOutCallback>(manager, "speaker");
-		ASSERT_NE(process, nullptr);
+		ASSERT_NE(process, null);
 		process->run();
 		process.reset();
 		ethread::sleepMilliSeconds((500));

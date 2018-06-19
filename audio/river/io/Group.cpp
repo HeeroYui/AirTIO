@@ -48,7 +48,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const etk:
 		#ifdef AUDIO_RIVER_BUILD_ORCHESTRA
 			ememory::SharedPtr<audio::river::io::NodeOrchestra> linkRef = ememory::dynamicPointerCast<audio::river::io::NodeOrchestra>(m_list[0]);
 			for (size_t iii=1; iii<m_list.size(); ++iii) {
-				if (m_list[iii] != nullptr) {
+				if (m_list[iii] != null) {
 					ememory::SharedPtr<audio::river::io::NodeOrchestra> link = ememory::dynamicPointerCast<audio::river::io::NodeOrchestra>(m_list[iii]);
 					linkRef->m_interface.isMasterOf(link->m_interface);
 				}
@@ -57,10 +57,10 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const etk:
 	}
 	/*
 	// manage Link Between Nodes :
-	if (m_link != nullptr) {
+	if (m_link != null) {
 		RIVER_INFO("********   START LINK   ************");
 		ememory::SharedPtr<audio::river::io::NodeOrchestra> link = ememory::dynamicPointerCast<audio::river::io::NodeOrchestra>(m_link);
-		if (link == nullptr) {
+		if (link == null) {
 			RIVER_ERROR("Can not link 2 Interface with not the same type (reserved for HW interface)");
 			return;
 		}
@@ -72,7 +72,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const etk:
 	RIVER_INFO("Create Group[" << _name << "] ( END )    ___________________________");
 	RIVER_INFO("Group[" << _name << "] List elements : ");
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
+		if (m_list[iii] != null) {
 			RIVER_INFO("    " << m_list[iii]->getName());
 		}
 	}
@@ -81,7 +81,7 @@ void audio::river::io::Group::createFrom(const ejson::Document& _obj, const etk:
 
 ememory::SharedPtr<audio::river::io::Node> audio::river::io::Group::getNode(const etk::String& _name) {
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
+		if (m_list[iii] != null) {
 			if (m_list[iii]->getName() == _name) {
 				return m_list[iii];
 			}
@@ -94,7 +94,7 @@ void audio::river::io::Group::start() {
 	RIVER_ERROR("request start ");
 	int32_t count = 0;
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
+		if (m_list[iii] != null) {
 			count += m_list[iii]->getNumberOfInterface();
 		}
 	}
@@ -102,7 +102,7 @@ void audio::river::io::Group::start() {
 	if (count == 1) {
 		RIVER_ERROR("GROUP :::::::::::: START() [START]");
 		for (size_t iii=0; iii<m_list.size(); ++iii) {
-			if (m_list[iii] != nullptr) {
+			if (m_list[iii] != null) {
 				m_list[iii]->start();
 			}
 		}
@@ -114,7 +114,7 @@ void audio::river::io::Group::stop() {
 	RIVER_ERROR("request stop ");
 	int32_t count = 0;
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
+		if (m_list[iii] != null) {
 			count += m_list[iii]->getNumberOfInterface();
 		}
 	}
@@ -122,7 +122,7 @@ void audio::river::io::Group::stop() {
 	if (count == 0) {
 		RIVER_ERROR("GROUP :::::::::::: STOP() [START]");
 		for (int32_t iii=m_list.size()-1; iii>=0; --iii) {
-			if (m_list[iii] != nullptr) {
+			if (m_list[iii] != null) {
 				m_list[iii]->stop();
 			}
 		}
@@ -132,7 +132,7 @@ void audio::river::io::Group::stop() {
 
 void audio::river::io::Group::generateDot(etk::FSNode& _node, bool _hardwareNode) {
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] != nullptr) {
+		if (m_list[iii] != null) {
 			if (m_list[iii]->isHarwareNode() == _hardwareNode) {
 				m_list[iii]->generateDot(_node);
 			}

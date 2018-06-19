@@ -197,7 +197,7 @@ audio::river::io::NodeFile::NodeFile(const etk::String& _name, const ejson::Obje
 	if (m_isInput == true) {
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
-		err = m_interface.openStream(nullptr,
+		err = m_interface.openStream(null,
 		                             &params,
 		                             hardwareFormat.getFormat(),
 		                             hardwareFormat.getFrequency(),
@@ -217,7 +217,7 @@ audio::river::io::NodeFile::NodeFile(const etk::String& _name, const ejson::Obje
 		m_process.setInputConfig(interfaceFormat);
 		m_process.setOutputConfig(hardwareFormat);
 		err = m_interface.openStream(&params,
-		                             nullptr,
+		                             null,
 		                             hardwareFormat.getFormat(),
 		                             hardwareFormat.getFrequency(),
 		                             &m_rtaudioFrameSize,
@@ -259,7 +259,7 @@ void audio::river::io::NodeFile::threadCallback() {
 
 void audio::river::io::NodeFile::start() {
 	ethread::UniqueLock lock(m_mutex);
-	if (m_thread != nullptr) {
+	if (m_thread != null) {
 		RIVER_ERROR("Start stream : '" << m_name << "' mode=" << (m_isInput?"read":"write") << " ==> already started ..." );
 		return;
 	}

@@ -87,8 +87,8 @@ int main(int _argc, const char **_argv) {
 	                                  etk::Vector<audio::channel>(),
 	                                  audio::format_int16,
 	                                  "speaker");
-	if(interface == nullptr) {
-		TEST_ERROR("nullptr interface");
+	if(interface == null) {
+		TEST_ERROR("null interface");
 		return -1;
 	}
 	//! [audio_river_sample_create_write_interface]

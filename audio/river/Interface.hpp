@@ -74,7 +74,7 @@ namespace audio {
 				 * @param[in] _format Sample format
 				 * @param[in] _node Low level interface to connect the flow.
 				 * @param[in] _config Special configuration of this interface.
-				 * @return nullptr The configuration does not work.
+				 * @return null The configuration does not work.
 				 * @return pointer The interface has been corectly created.
 				 */
 				static ememory::SharedPtr<Interface> create(float _freq,

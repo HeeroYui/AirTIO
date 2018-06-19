@@ -56,8 +56,8 @@ namespace river_test_echo_delay {
 				                                         channelMap,
 				                                         audio::format_int16,
 				                                         "speaker");
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -76,8 +76,8 @@ namespace river_test_echo_delay {
 				                                       channelMap,
 				                                       audio::format_int16,
 				                                       "microphone");
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -94,8 +94,8 @@ namespace river_test_echo_delay {
 				                                          channelMap,
 				                                          audio::format_int16,
 				                                          "speaker");
-				if(m_interfaceFB == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceFB == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -356,16 +356,16 @@ namespace river_test_echo_delay {
 				}
 			}
 			void run() {
-				if(m_interfaceIn == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceIn == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
-				if(m_interfaceOut == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceOut == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
-				if(m_interfaceFB == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interfaceFB == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interfaceOut->start();

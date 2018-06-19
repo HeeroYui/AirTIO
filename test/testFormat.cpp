@@ -75,8 +75,8 @@ namespace river_test_format {
 				                                      _format,
 				                                      "speaker",
 				                                      "WriteModeCallbackType");
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				// set callback mode ...
@@ -144,8 +144,8 @@ namespace river_test_format {
 				}
 			}
 			void run() {
-				if(m_interface == nullptr) {
-					TEST_ERROR("nullptr interface");
+				if(m_interface == null) {
+					TEST_ERROR("null interface");
 					return;
 				}
 				m_interface->start();

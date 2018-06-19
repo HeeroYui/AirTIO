@@ -198,7 +198,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const etk::String& _name, const e
 	if (m_isInput == true) {
 		m_process.setInputConfig(hardwareFormat);
 		m_process.setOutputConfig(interfaceFormat);
-		err = m_interface.openStream(nullptr,
+		err = m_interface.openStream(null,
 		                             &params,
 		                             hardwareFormat.getFormat(),
 		                             hardwareFormat.getFrequency(),
@@ -217,7 +217,7 @@ audio::river::io::NodeOrchestra::NodeOrchestra(const etk::String& _name, const e
 		m_process.setInputConfig(interfaceFormat);
 		m_process.setOutputConfig(hardwareFormat);
 		err = m_interface.openStream(&params,
-		                             nullptr,
+		                             null,
 		                             hardwareFormat.getFormat(),
 		                             hardwareFormat.getFrequency(),
 		                             &m_rtaudioFrameSize,

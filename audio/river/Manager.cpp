@@ -18,7 +18,7 @@ ememory::SharedPtr<audio::river::Manager> audio::river::Manager::create(const et
 	ethread::UniqueLock lock(g_mutex);
 	for (size_t iii=0; iii<g_listOfAllManager.size() ; ++iii) {
 		ememory::SharedPtr<audio::river::Manager> tmp = g_listOfAllManager[iii].lock();
-		if (tmp == nullptr) {
+		if (tmp == null) {
 			continue;
 		}
 		if (tmp->m_applicationUniqueId == _applicationUniqueId) {
@@ -52,7 +52,7 @@ audio::river::Manager::~Manager() {
 etk::Vector<etk::String> audio::river::Manager::getListStreamInput() {
 	etk::Vector<etk::String> output;
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
 		output = manager->getListStreamInput();
@@ -63,7 +63,7 @@ etk::Vector<etk::String> audio::river::Manager::getListStreamInput() {
 etk::Vector<etk::String> audio::river::Manager::getListStreamOutput() {
 	etk::Vector<etk::String> output;
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
 		output = manager->getListStreamOutput();
@@ -74,7 +74,7 @@ etk::Vector<etk::String> audio::river::Manager::getListStreamOutput() {
 etk::Vector<etk::String> audio::river::Manager::getListStreamVirtual() {
 	etk::Vector<etk::String> output;
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
 		output = manager->getListStreamVirtual();
@@ -85,7 +85,7 @@ etk::Vector<etk::String> audio::river::Manager::getListStreamVirtual() {
 etk::Vector<etk::String> audio::river::Manager::getListStream() {
 	etk::Vector<etk::String> output;
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 	} else {
 		output = manager->getListStream();
@@ -95,7 +95,7 @@ etk::Vector<etk::String> audio::river::Manager::getListStream() {
 
 bool audio::river::Manager::setVolume(const etk::String& _volumeName, float _valuedB) {
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return false;
 	}
@@ -104,7 +104,7 @@ bool audio::river::Manager::setVolume(const etk::String& _volumeName, float _val
 
 float audio::river::Manager::getVolume(const etk::String& _volumeName) const {
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return false;
 	}
@@ -113,7 +113,7 @@ float audio::river::Manager::getVolume(const etk::String& _volumeName) const {
 
 etk::Pair<float,float> audio::river::Manager::getVolumeRange(const etk::String& _volumeName) const {
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return etk::makePair<float,float>(0.0f,0.0f);
 	}
@@ -122,7 +122,7 @@ etk::Pair<float,float> audio::river::Manager::getVolumeRange(const etk::String& 
 
 void audio::river::Manager::setMute(const etk::String& _volumeName, bool _mute) {
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return;
 	}
@@ -131,7 +131,7 @@ void audio::river::Manager::setMute(const etk::String& _volumeName, bool _mute) 
 
 bool audio::river::Manager::getMute(const etk::String& _volumeName) const {
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return false;
 	}
@@ -145,13 +145,13 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createOutput(
                                                                                 const etk::String& _options) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
 	// get the output or input channel :
 	ememory::SharedPtr<audio::river::io::Node> node = manager->getNode(_streamName);
-	if (node == nullptr) {
+	if (node == null) {
 		RIVER_ERROR("Can not get the Requested stream '" << _streamName << "' ==> not listed in : " << manager->getListStream());
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
@@ -176,13 +176,13 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createInput(f
                                                                                const etk::String& _options) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
 	// get the output or input channel :
 	ememory::SharedPtr<audio::river::io::Node> node = manager->getNode(_streamName);
-	if (node == nullptr) {
+	if (node == null) {
 		RIVER_ERROR("Can not get the Requested stream '" << _streamName << "' ==> not listed in : " << manager->getListStream());
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
@@ -208,13 +208,13 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createFeedbac
                                                                                   const etk::String& _options) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Unable to load harware IO manager ... ");
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
 	// get the output or input channel :
 	ememory::SharedPtr<audio::river::io::Node> node = manager->getNode(_streamName);
-	if (node == nullptr) {
+	if (node == null) {
 		RIVER_ERROR("Can not get the Requested stream '" << _streamName << "' ==> not listed in : " << manager->getListStream());
 		return ememory::SharedPtr<audio::river::Interface>();
 	}
@@ -235,7 +235,7 @@ ememory::SharedPtr<audio::river::Interface> audio::river::Manager::createFeedbac
 void audio::river::Manager::generateDotAll(const etk::String& _filename) {
 	// get global hardware interface:
 	ememory::SharedPtr<audio::river::io::Manager> manager = audio::river::io::Manager::getInstance();
-	if (manager == nullptr) {
+	if (manager == null) {
 		RIVER_ERROR("Can not get the harware manager");
 		return;
 	}

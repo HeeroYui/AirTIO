@@ -8,18 +8,18 @@
 
 #define TEST_SAVE_FILE_MACRO(type,fileName,dataPointer,nbElement) \
 	do { \
-		static FILE *pointerOnFile = nullptr; \
+		static FILE *pointerOnFile = null; \
 		static bool errorOpen = false; \
-		if (pointerOnFile == nullptr) { \
+		if (pointerOnFile == null) { \
 			TEST_WARNING("open file '" << fileName << "' type=" << #type); \
 			pointerOnFile = fopen(fileName,"w"); \
 			if (    errorOpen == false \
-			     && pointerOnFile == nullptr) { \
+			     && pointerOnFile == null) { \
 				TEST_ERROR("ERROR OPEN file ... '" << fileName << "' type=" << #type); \
 				errorOpen=true; \
 			} \
 		} \
-		if (pointerOnFile != nullptr) { \
+		if (pointerOnFile != null) { \
 			fwrite((dataPointer), sizeof(type), (nbElement), pointerOnFile); \
 			/* fflush(pointerOnFile);*/ \
 		} \

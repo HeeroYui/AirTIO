@@ -110,7 +110,7 @@ audio::river::io::Node::~Node() {
 size_t audio::river::io::Node::getNumberOfInterface(enum audio::river::modeInterface _interfaceType) {
 	size_t out = 0;
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
-		if (m_list[iii] == nullptr) {
+		if (m_list[iii] == null) {
 			continue;
 		}
 		if (m_list[iii]->getMode() == _interfaceType) {
@@ -123,7 +123,7 @@ size_t audio::river::io::Node::getNumberOfInterfaceAvaillable(enum audio::river:
 	size_t out = 0;
 	for (size_t iii=0; iii<m_listAvaillable.size(); ++iii) {
 		auto element = m_listAvaillable[iii].lock();
-		if (element == nullptr) {
+		if (element == null) {
 			continue;
 		}
 		if (element->getMode() == _interfaceType) {
@@ -181,7 +181,7 @@ void audio::river::io::Node::interfaceRemove(const ememory::SharedPtr<audio::riv
 void audio::river::io::Node::volumeChange() {
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
 		auto node = m_listAvaillable[iii].lock();
-		if (node != nullptr) {
+		if (node != null) {
 			node->systemVolumeChange();
 		}
 	}
@@ -190,11 +190,11 @@ void audio::river::io::Node::volumeChange() {
 void audio::river::io::Node::newInput(const void* _inputBuffer,
                                       uint32_t _nbChunk,
                                       const audio::Time& _time) {
-	if (_inputBuffer == nullptr) {
+	if (_inputBuffer == null) {
 		return;
 	}
 	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		if (m_list[iii] == nullptr) {
+		if (m_list[iii] == null) {
 			continue;
 		}
 		if (m_list[iii]->getMode() != audio::river::modeInterface_input) {
@@ -210,7 +210,7 @@ void audio::river::io::Node::newInput(const void* _inputBuffer,
 void audio::river::io::Node::newOutput(void* _outputBuffer,
                                        uint32_t _nbChunk,
                                        const audio::Time& _time) {
-	if (_outputBuffer == nullptr) {
+	if (_outputBuffer == null) {
 		return;
 	}
 	enum audio::format muxerFormatType = m_process.getInputConfig().getFormat();
@@ -228,9 +228,9 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
 		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
 		// $$$$ change the int16
-		const int16_t* outputTmp = nullptr;
+		const int16_t* outputTmp = null;
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (m_list[iii] == nullptr) {
+			if (m_list[iii] == null) {
 				continue;
 			}
 			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
@@ -260,9 +260,9 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 		etk::Vector<int32_t> output;
 		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
 		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-		const int32_t* outputTmp = nullptr;
+		const int32_t* outputTmp = null;
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (m_list[iii] == nullptr) {
+			if (m_list[iii] == null) {
 				continue;
 			}
 			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
@@ -290,9 +290,9 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 		etk::Vector<int64_t> output;
 		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
 		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-		const int64_t* outputTmp = nullptr;
+		const int64_t* outputTmp = null;
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (m_list[iii] == nullptr) {
+			if (m_list[iii] == null) {
 				continue;
 			}
 			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
@@ -320,9 +320,9 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 		etk::Vector<float> output;
 		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
 		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-		const float* outputTmp = nullptr;
+		const float* outputTmp = null;
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (m_list[iii] == nullptr) {
+			if (m_list[iii] == null) {
 				continue;
 			}
 			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
@@ -349,9 +349,9 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 		etk::Vector<double> output;
 		RIVER_VERBOSE("resize=" << _nbChunk*m_process.getInputConfig().getMap().size());
 		output.resize(_nbChunk*m_process.getInputConfig().getMap().size(), 0);
-		const double* outputTmp = nullptr;
+		const double* outputTmp = null;
 		for (size_t iii=0; iii< m_list.size(); ++iii) {
-			if (m_list[iii] == nullptr) {
+			if (m_list[iii] == null) {
 				continue;
 			}
 			if (m_list[iii]->getMode() != audio::river::modeInterface_output) {
@@ -378,7 +378,7 @@ void audio::river::io::Node::newOutput(void* _outputBuffer,
 	// The feedback get the real output data (after processing ...==> then no nneed to specify for each channels
 	RIVER_VERBOSE("    Feedback :");
 	for (size_t iii=0; iii< m_list.size(); ++iii) {
-		if (m_list[iii] == nullptr) {
+		if (m_list[iii] == null) {
 			continue;
 		}
 		if (m_list[iii]->getMode() != audio::river::modeInterface_feedback) {
@@ -454,7 +454,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 			continue;
 		}
 		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
-		if (element == nullptr) {
+		if (element == null) {
 			continue;
 		}
 		bool isLink = false;
@@ -463,7 +463,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 				isLink = true;
 			}
 		}
-		if (element != nullptr) {
+		if (element != null) {
 			if (element->getMode() == modeInterface_input) {
 				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else if (element->getMode() == modeInterface_output) {
@@ -480,7 +480,7 @@ void audio::river::io::Node::generateDot(etk::FSNode& _node) {
 
 void audio::river::io::Node::startInGroup() {
 	ememory::SharedPtr<audio::river::io::Group> group = m_group.lock();
-	if (group != nullptr) {
+	if (group != null) {
 		group->start();
 	} else {
 		start();
@@ -489,7 +489,7 @@ void audio::river::io::Node::startInGroup() {
 
 void audio::river::io::Node::stopInGroup() {
 	ememory::SharedPtr<audio::river::io::Group> group = m_group.lock();
-	if (group != nullptr) {
+	if (group != null) {
 		group->stop();
 	} else {
 		stop();

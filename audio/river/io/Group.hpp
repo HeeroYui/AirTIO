@@ -45,7 +45,7 @@ namespace audio {
 					/**
 					 * @brief Get a node in the group (if the node is not in the group nothing append).
 					 * @param[in] _name Name of the node requested.
-					 * @return nullptr The node named _name was not found.
+					 * @return null The node named _name was not found.
 					 * @return pointer The node was find in this group.
 					 */
 					ememory::SharedPtr<audio::river::io::Node> getNode(const etk::String& _name);

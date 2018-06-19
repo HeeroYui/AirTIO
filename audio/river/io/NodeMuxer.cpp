@@ -42,7 +42,7 @@ ememory::SharedPtr<audio::river::Interface> audio::river::io::NodeMuxer::createI
 	// create user iterface:
 	ememory::SharedPtr<audio::river::Interface> interface;
 	interface = audio::river::Interface::create(_freq, _map, _format, node, tmppp);
-	if (interface != nullptr) {
+	if (interface != null) {
 		interface->setName(_name);
 	}
 	return interface;
@@ -81,7 +81,7 @@ audio::river::io::NodeMuxer::NodeMuxer(const etk::String& _name, const ejson::Ob
 	                                hardwareFormat.getFormat(),
 	                                "map-on-input-1",
 	                                _name + "-muxer-in1");
-	if (m_interfaceInput1 == nullptr) {
+	if (m_interfaceInput1 == null) {
 		RIVER_ERROR("Can not opne virtual device ... map-on-input-1 in " << _name);
 		return;
 	}
@@ -107,7 +107,7 @@ audio::river::io::NodeMuxer::NodeMuxer(const etk::String& _name, const ejson::Ob
 	                                hardwareFormat.getFormat(),
 	                                "map-on-input-2",
 	                                _name + "-muxer-in2");
-	if (m_interfaceInput2 == nullptr) {
+	if (m_interfaceInput2 == null) {
 		RIVER_ERROR("Can not opne virtual device ... map-on-input-2 in " << _name);
 		return;
 	}
@@ -166,11 +166,11 @@ audio::river::io::NodeMuxer::~NodeMuxer() {
 void audio::river::io::NodeMuxer::start() {
 	ethread::UniqueLock lock(m_mutex);
 	RIVER_INFO("Start stream : '" << m_name << "' mode=" << (m_isInput?"input":"output") );
-	if (m_interfaceInput1 != nullptr) {
+	if (m_interfaceInput1 != null) {
 		RIVER_INFO("Start FEEDBACK : ");
 		m_interfaceInput1->start();
 	}
-	if (m_interfaceInput2 != nullptr) {
+	if (m_interfaceInput2 != null) {
 		RIVER_INFO("Start Microphone : ");
 		m_interfaceInput2->start();
 	}
@@ -178,10 +178,10 @@ void audio::river::io::NodeMuxer::start() {
 
 void audio::river::io::NodeMuxer::stop() {
 	ethread::UniqueLock lock(m_mutex);
-	if (m_interfaceInput1 != nullptr) {
+	if (m_interfaceInput1 != null) {
 		m_interfaceInput1->stop();
 	}
-	if (m_interfaceInput2 != nullptr) {
+	if (m_interfaceInput2 != null) {
 		m_interfaceInput2->stop();
 	}
 }
@@ -450,10 +450,10 @@ void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 		_node << "			NODE_" << m_uid << "_HW_MUXER -> " << nameIn << ";\n";
 		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
 	_node << "	}\n";
-	if (m_interfaceInput2 != nullptr) {
+	if (m_interfaceInput2 != null) {
 		_node << "	" << m_interfaceInput2->getDotNodeName() << " -> NODE_" << m_uid << "_HW_MUXER;\n";
 	}
-	if (m_interfaceInput1 != nullptr) {
+	if (m_interfaceInput1 != null) {
 		_node << "	" << m_interfaceInput1->getDotNodeName() << " -> NODE_" << m_uid << "_HW_MUXER;\n";
 	}
 	_node << "	\n";
@@ -462,7 +462,7 @@ void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 			continue;
 		}
 		ememory::SharedPtr<audio::river::Interface> element = m_listAvaillable[iii].lock();
-		if (element == nullptr) {
+		if (element == null) {
 			continue;
 		}
 		bool isLink = false;
@@ -471,7 +471,7 @@ void audio::river::io::NodeMuxer::generateDot(etk::FSNode& _node) {
 				isLink = true;
 			}
 		}
-		if (element != nullptr) {
+		if (element != null) {
 			if (element->getMode() == modeInterface_input) {
 				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else if (element->getMode() == modeInterface_output) {
