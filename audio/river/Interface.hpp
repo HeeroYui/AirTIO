@@ -18,7 +18,6 @@
 #include <audio/drain/EndPointCallback.hpp>
 #include <audio/drain/EndPointWrite.hpp>
 #include <ejson/ejson.hpp>
-#include <etk/os/FSNode.hpp>
 #include <audio/Time.hpp>
 
 namespace audio {
@@ -298,11 +297,11 @@ namespace audio {
 			public:
 				/**
 				 * @brief Create the dot in the FileNode stream.
-				 * @param[in,out] _node File node to write data.
+				 * @param[in,out] _io File interafce to write data.
 				 * @param[in] _nameIO Name to link the interface node
 				 * @param[in] _isLink True if the node is connected on the current interface.
 				 */
-				virtual void generateDot(etk::FSNode& _node, const etk::String& _nameIO, bool _isLink=true);
+				virtual void generateDot(ememory::SharedPtr<etk::io::Interface>& _io, const etk::String& _nameIO, bool _isLink=true);
 				/**
 				 * @brief Get the current 'dot' name of the interface
 				 * @return The anme requested.

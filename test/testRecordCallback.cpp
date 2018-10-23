@@ -9,14 +9,12 @@
 #include <audio/river/Interface.hpp>
 #include <etest/etest.hpp>
 #include <etk/etk.hpp>
-#include <etk/os/FSNode.hpp>
 extern "C" {
 	#include <math.h>
 }
 
 #include <ethread/Thread.hpp>
 #include <ethread/tools.hpp>
-#include "main.hpp"
 
 namespace river_test_record_callback {
 	static const etk::String configurationRiver =
@@ -70,7 +68,7 @@ namespace river_test_record_callback {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				TEST_SAVE_FILE_MACRO(int16_t, "REC_INPUT.raw", _data, _nbChunk * _map.size());
+				//TEST_SAVE_FILE_MACRO(int16_t, "REC_INPUT.raw", _data, _nbChunk * _map.size());
 				const int16_t* data = static_cast<const int16_t*>(_data);
 				int64_t value = 0;
 				for (size_t iii=0; iii<_nbChunk*_map.size(); ++iii) {

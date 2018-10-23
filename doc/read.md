@@ -31,7 +31,7 @@ With a file:
 
 ```{.cpp}
 	// initialize river interface
-	river::init("DATA:configFileName.json");
+	river::init("DATA:///configFileName.json");
 ```
 
 With a json string:

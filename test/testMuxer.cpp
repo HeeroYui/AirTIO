@@ -9,14 +9,12 @@
 #include <audio/river/Interface.hpp>
 #include <etest/etest.hpp>
 #include <etk/etk.hpp>
-#include <etk/os/FSNode.hpp>
 extern "C" {
 	#include <math.h>
 }
 
 #include <ethread/Thread.hpp>
 #include <ethread/tools.hpp>
-#include "main.hpp"
 
 namespace river_test_muxer {
 	class TestClass {
@@ -100,7 +98,7 @@ namespace river_test_muxer {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				TEST_SAVE_FILE_MACRO(int16_t, "REC_MicrophoneMuxed.raw", _data, _nbChunk*_map.size());
+				//TEST_SAVE_FILE_MACRO(int16_t, "REC_MicrophoneMuxed.raw", _data, _nbChunk*_map.size());
 				TEST_ERROR("Receive data ... " << _nbChunk << " map=" << _map);
 			}
 			void run() {

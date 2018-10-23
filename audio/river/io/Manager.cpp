@@ -12,9 +12,10 @@
 #include <audio/river/io/NodeMuxer.hpp>
 #include <audio/river/io/NodeOrchestra.hpp>
 #include <audio/river/io/NodePortAudio.hpp>
-#include <etk/os/FSNode.hpp>
 #include <ememory/memory.hpp>
 #include <etk/types.hpp>
+#include <etk/path/fileSystem.hpp>
+#include <etk/uri/uri.hpp>
 
 #ifdef AUDIO_RIVER_BUILD_PORTAUDIO
 	extern "C" {
@@ -56,7 +57,7 @@ static etk::String basicAutoConfig =
 	"}\n";
 
 
-static etk::String pathToTheRiverConfigInHome("HOME:.local/share/audio-river/config.json");
+static etk::Uri pathToTheRiverConfigInHome(etk::path::getHomePath() / ".local" / "share" / "audio-river" / "config.json");
 
 audio::river::io::Manager::Manager() {
 	#ifdef AUDIO_RIVER_BUILD_PORTAUDIO
@@ -67,18 +68,18 @@ audio::river::io::Manager::Manager() {
 	#endif
 }
 
-void audio::river::io::Manager::init(const etk::String& _filename) {
+void audio::river::io::Manager::init(const etk::Uri& _uri) {
 	RIVER_ERROR("kjqsdhfkjqshdfkjqhsdskjdfhfkqjshqhskdjfhqsdfqsdqsdfqsdqsdfqsdfqsdfqsdfqsdfqsd");
 	ethread::RecursiveLock lock(m_mutex);
-	if (_filename == "") {
+	if (_uri.isEmpty() == true) {
 		if (m_config.load(pathToTheRiverConfigInHome) == false) {
 			RIVER_INFO("Load default config");
 			m_config.parse(basicAutoConfig);
 		} else {
 			RIVER_INFO("Load default user configuration: " << pathToTheRiverConfigInHome);
 		}
-	} else if (m_config.load(_filename) == false) {
-		RIVER_ERROR("you must set a basic configuration file for harware configuration: '" << _filename << "'");
+	} else if (m_config.load(_uri) == false) {
+		RIVER_ERROR("you must set a basic configuration file for harware configuration: " << _uri);
 	}
 }
 
@@ -349,16 +350,16 @@ bool audio::river::io::Manager::getMute(const etk::String& _volumeName) {
 	return volume->getMute();
 }
 
-void audio::river::io::Manager::generateDot(const etk::String& _filename) {
+void audio::river::io::Manager::generateDot(const etk::Uri& _uri) {
 	ethread::RecursiveLock lock(m_mutex);
-	etk::FSNode node(_filename);
-	RIVER_INFO("Generate the DOT files: " << node);
-	if (node.fileOpenWrite() == false) {
-		RIVER_ERROR("Can not Write the dot file (fail to open) : " << node);
+	ememory::SharedPtr<etk::io::Interface> ioFile = etk::uri::get(_uri);
+	RIVER_INFO("Generate the DOT files: " << _uri);
+	if (ioFile->open(etk::io::OpenMode::Write) == false) {
+		RIVER_ERROR("Can not Write the dot file (fail to open) : " << _uri);
 		return;
 	}
-	node << "digraph G {" << "\n";
-	node << "	rankdir=\"LR\";\n";
+	*ioFile << "digraph G {" << "\n";
+	*ioFile << "	rankdir=\"LR\";\n";
 	// First Step : Create all HW interface:
 	{
 		// standalone
@@ -366,7 +367,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 			ememory::SharedPtr<audio::river::io::Node> val = m_list[iii].lock();
 			if (val != null) {
 				if (val->isHarwareNode() == true) {
-					val->generateDot(node);
+					val->generateDot(ioFile);
 				}
 			}
 		}
@@ -374,7 +375,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != null) {
-				it->second->generateDot(node, true);
+				it->second->generateDot(ioFile, true);
 			}
 		}
 	}
@@ -385,7 +386,7 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 			ememory::SharedPtr<audio::river::io::Node> val = m_list[iii].lock();
 			if (val != null) {
 				if (val->isHarwareNode() == false) {
-					val->generateDot(node);
+					val->generateDot(ioFile);
 				}
 			}
 		}
@@ -393,14 +394,14 @@ void audio::river::io::Manager::generateDot(const etk::String& _filename) {
 		     it != m_listGroup.end();
 		     ++it) {
 			if (it->second != null) {
-				it->second->generateDot(node, false);
+				it->second->generateDot(ioFile, false);
 			}
 		}
 	}
 	
-	node << "}" << "\n";
-	node.fileClose();
-	RIVER_INFO("Generate the DOT files: " << node << " (DONE)");
+	*ioFile << "}" << "\n";
+	ioFile->close();
+	RIVER_INFO("Generate the DOT files: " << _uri << " (DONE)");
 }
 
 ememory::SharedPtr<audio::river::io::Group> audio::river::io::Manager::getGroup(const etk::String& _name) {

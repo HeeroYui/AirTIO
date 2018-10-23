@@ -34,12 +34,12 @@ int32_t audio::river::io::NodeFile::playbackCallback(void* _outputBuffer,
 
 
 
-ememory::SharedPtr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const etk::String& _name, const ejson::Object& _config) {
-	return ememory::SharedPtr<audio::river::io::NodeFile>(ETK_NEW(audio::river::io::NodeFile, _name, _config));
+ememory::SharedPtr<audio::river::io::NodeFile> audio::river::io::NodeFile::create(const etk::Path& _path, const ejson::Object& _config) {
+	return ememory::SharedPtr<audio::river::io::NodeFile>(ETK_NEW(audio::river::io::NodeFile, _path, _config));
 }
 
-audio::river::io::NodeFile::NodeFile(const etk::String& _name, const ejson::Object& _config) :
-  Node(_name, _config) {
+audio::river::io::NodeFile::NodeFile(const etk::Path& _path, const ejson::Object& _config) :
+  Node(_path.getString(), _config) {
 	audio::drain::IOFormatInterface interfaceFormat = getInterfaceFormat();
 	audio::drain::IOFormatInterface hardwareFormat = getHarwareFormat();
 	/**

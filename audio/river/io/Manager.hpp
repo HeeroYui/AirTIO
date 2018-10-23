@@ -42,9 +42,9 @@ namespace audio {
 					~Manager();
 					/**
 					 * @brief Called by audio::river::init() to set the hardware configuration file.
-					 * @param[in] _filename Name of the file to initialize.
+					 * @param[in] _uri Uri file to initialize.
 					 */
-					void init(const etk::String& _filename);
+					void init(const etk::Uri& _uri);
 					/**
 					 * @brief Called by audio::river::initString() to set the hardware configuration string.
 					 * @param[in] _data json configuration string.
@@ -132,9 +132,9 @@ namespace audio {
 					bool getMute(const etk::String& _volumeName);
 					/**
 					 * @brief Generate the dot file corresponding at the actif nodes.
-					 * @param[in] _filename Name of the file to write data.
+					 * @param[in] _uri Uri of the file to write data.
 					 */
-					void generateDot(const etk::String& _filename);
+					void generateDot(const etk::Uri& _uri);
 				private:
 					etk::Map<etk::String, ememory::SharedPtr<audio::river::io::Group> > m_listGroup; //!< List of all groups
 					/**

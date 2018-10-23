@@ -87,7 +87,7 @@ namespace audio {
 					 */
 					void processAEC(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time);
 				public:
-					virtual void generateDot(etk::FSNode& _node);
+					virtual void generateDot(ememory::SharedPtr<etk::io::Interface>& _io);
 				private:
 					int32_t m_nbChunk;
 					int32_t m_gainValue;

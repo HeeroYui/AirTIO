@@ -12,9 +12,7 @@
 #include <audio/drain/EndPointRead.hpp>
 #include <audio/drain/Volume.hpp>
 
-audio::river::Interface::Interface(void) :
-  m_node(),
-  m_name("") {
+audio::river::Interface::Interface(void) {
 	static uint32_t uid = 0;
 	m_uid = uid++;
 	
@@ -460,19 +458,19 @@ void audio::river::Interface::systemVolumeChange() {
 	algo->volumeChange();
 }
 
-static void link(etk::FSNode& _node, const etk::String& _first, const etk::String& _op, const etk::String& _second, bool _isLink=true) {
+static void link(ememory::SharedPtr<etk::io::Interface>& _io, const etk::String& _first, const etk::String& _op, const etk::String& _second, bool _isLink=true) {
 	if (_op == "->") {
 		if (_isLink) {
-			_node << "			" << _first << " -> " << _second << ";\n";
+			*_io << "			" << _first << " -> " << _second << ";\n";
 		} else {
-			_node << "			" << _first << " -> " << _second << " [style=dashed];\n";
+			*_io << "			" << _first << " -> " << _second << " [style=dashed];\n";
 		}
 	} else if (_op == "<-") {
-		_node << "			" << _first << " -> " <<_second<< " [color=transparent];\n";
+		*_io << "			" << _first << " -> " <<_second<< " [color=transparent];\n";
 		if (_isLink) {
-			_node << "			" << _second << " -> " << _first << " [constraint=false];\n";
+			*_io << "			" << _second << " -> " << _first << " [constraint=false];\n";
 		} else {
-			_node << "			" << _second << " -> " << _first << " [constraint=false, style=dashed];\n";
+			*_io << "			" << _second << " -> " << _first << " [constraint=false, style=dashed];\n";
 		}
 	}
 }
@@ -488,37 +486,37 @@ etk::String audio::river::Interface::getDotNodeName() const {
 	return "error";
 }
 
-void audio::river::Interface::generateDot(etk::FSNode& _node, const etk::String& _nameIO, bool _isLink) {
-	_node << "	subgraph clusterInterface_" << m_uid << " {\n";
-	_node << "		color=orange;\n";
-	_node << "		label=\"[" << m_uid << "] Interface : " << m_name << "\";\n";
+void audio::river::Interface::generateDot(ememory::SharedPtr<etk::io::Interface>& _io, const etk::String& _nameIO, bool _isLink) {
+	*_io << "	subgraph clusterInterface_" << m_uid << " {\n";
+	*_io << "		color=orange;\n";
+	*_io << "		label=\"[" << m_uid << "] Interface : " << m_name << "\";\n";
 	etk::String nameIn;
 	etk::String nameOut;
 	if (    m_mode == audio::river::modeInterface_input
 	     || m_mode == audio::river::modeInterface_feedback) {
-		m_process.generateDot(_node, 3, 10000+m_uid, nameIn, nameOut, false);
+		m_process.generateDot(_io, 3, 10000+m_uid, nameIn, nameOut, false);
 	} else {
-		m_process.generateDot(_node, 3, 10000+m_uid, nameOut, nameIn, true);
+		m_process.generateDot(_io, 3, 10000+m_uid, nameOut, nameIn, true);
 	}
 	
 	
 	if (    m_mode == audio::river::modeInterface_input
 	     || m_mode == audio::river::modeInterface_feedback) {
-		link(_node, _nameIO,                                           "->", nameIn, _isLink);
+		link(_io, _nameIO,                                           "->", nameIn, _isLink);
 	} else {
-		link(_node, _nameIO,                                            "<-", nameOut, _isLink);
+		link(_io, _nameIO,                                            "<-", nameOut, _isLink);
 	}
-	_node << "		node [shape=Mdiamond];\n";
+	*_io << "		node [shape=Mdiamond];\n";
 	if (m_mode == audio::river::modeInterface_input) {
-		_node << "			" << getDotNodeName() << " [ label=\"API\\nINPUT\" ];\n";
-		link(_node, nameOut, "->", getDotNodeName());
+		*_io << "			" << getDotNodeName() << " [ label=\"API\\nINPUT\" ];\n";
+		link(_io, nameOut, "->", getDotNodeName());
 	} else if (m_mode == audio::river::modeInterface_feedback) {
-		_node << "			" << getDotNodeName() << " [ label=\"API\\nFEEDBACK\" ];\n";
-		link(_node, nameOut, "->", getDotNodeName());
+		*_io << "			" << getDotNodeName() << " [ label=\"API\\nFEEDBACK\" ];\n";
+		link(_io, nameOut, "->", getDotNodeName());
 	} else if (m_mode == audio::river::modeInterface_output) {
-		_node << "			" << getDotNodeName() << " [ label=\"API\\nOUTPUT\" ];\n";
-		link(_node, nameIn, "<-", getDotNodeName());
+		*_io << "			" << getDotNodeName() << " [ label=\"API\\nOUTPUT\" ];\n";
+		link(_io, nameIn, "<-", getDotNodeName());
 	}
-	_node << "	}\n	\n";
+	*_io << "	}\n	\n";
 }
 

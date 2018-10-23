@@ -24,9 +24,9 @@ namespace audio {
 					/**
 					 * @brief Constructor
 					 */
-					NodeFile(const etk::String& _name, const ejson::Object& _config);
+					NodeFile(const etk::Path& _path, const ejson::Object& _config);
 				public:
-					static ememory::SharedPtr<NodeFile> create(const etk::String& _name, const ejson::Object& _config);
+					static ememory::SharedPtr<NodeFile> create(const etk::Path& _path, const ejson::Object& _config);
 					/**
 					 * @brief Destructor
 					 */
@@ -36,7 +36,7 @@ namespace audio {
 					};
 				protected:
 					audio::Time m_time; //!< time of the flow
-					etk::FSNode m_file; //!< File interface
+					ememory::SharedPtr<etk::io::Interface>& m_file; //!< File interface
 					bool m_restartAtEnd; //!< The read is done in loop
 					uint32_t m_sampleRate; //!< Sample Rate of the Raw file
 					audio::format m_format; //!< Format of the file

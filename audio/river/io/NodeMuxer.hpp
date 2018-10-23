@@ -56,7 +56,7 @@ namespace audio {
 					void processMuxer(void* _dataMic, void* _dataFB, uint32_t _nbChunk, const audio::Time& _time);
 					etk::Vector<uint8_t> m_data;
 				public:
-					virtual void generateDot(etk::FSNode& _node);
+					virtual void generateDot(ememory::SharedPtr<etk::io::Interface>& _io);
 				private:
 					void reorder(void* _output, uint32_t _nbChunk, void* _input, const etk::Vector<audio::channel>& _mapInput);
 			};

@@ -9,7 +9,7 @@
 #include <etk/String.hpp>
 #include <etk/Vector.hpp>
 #include <ejson/ejson.hpp>
-#include <etk/os/FSNode.hpp>
+#include <etk/io/Interface.hpp>
 
 namespace audio {
 	namespace river {
@@ -65,7 +65,7 @@ namespace audio {
 					 * @param[in] _hardwareNode true if user want only display the hardware
 					 *                          node and not the software node. false The oposite.
 					 */
-					void generateDot(etk::FSNode& _node, bool _hardwareNode);
+					void generateDot(ememory::SharedPtr<etk::io::Interface>& _node, bool _hardwareNode);
 			};
 		}
 	}

@@ -10,14 +10,12 @@
 #include <audio/river/Interface.hpp>
 #include <etest/etest.hpp>
 #include <etk/etk.hpp>
-#include <etk/os/FSNode.hpp>
 extern "C" {
 	#include <math.h>
 }
 
 #include <ethread/Thread.hpp>
 #include <ethread/tools.hpp>
-#include "main.hpp"
 
 namespace river_test_playback_callback {
 	

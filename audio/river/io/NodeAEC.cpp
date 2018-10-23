@@ -316,27 +316,27 @@ void audio::river::io::NodeAEC::processAEC(void* _dataMic, void* _dataFB, uint32
 }
 
 
-void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
-	_node << "	subgraph clusterNode_" << m_uid << " {\n";
-	_node << "		color=blue;\n";
-	_node << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
-		_node << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\\n channelMap=" << etk::toString(getInterfaceFormat().getMap()) << "\" ];\n";
+void audio::river::io::NodeAEC::generateDot(ememory::SharedPtr<etk::io::Interface>& _io) {
+	*_io << "	subgraph clusterNode_" << m_uid << " {\n";
+	*_io << "		color=blue;\n";
+	*_io << "		label=\"[" << m_uid << "] IO::Node : " << m_name << "\";\n";
+		*_io << "			NODE_" << m_uid << "_HW_AEC [ label=\"AEC\\n channelMap=" << etk::toString(getInterfaceFormat().getMap()) << "\" ];\n";
 		etk::String nameIn;
 		etk::String nameOut;
-		m_process.generateDot(_node, 3, m_uid, nameIn, nameOut, false);
-		_node << "		node [shape=square];\n";
-		_node << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::toString(m_process.getOutputConfig().getFormat()) << "\" ];\n";
+		m_process.generateDot(_io, 3, m_uid, nameIn, nameOut, false);
+		*_io << "		node [shape=square];\n";
+		*_io << "			NODE_" << m_uid << "_demuxer [ label=\"DEMUXER\\n format=" << etk::toString(m_process.getOutputConfig().getFormat()) << "\" ];\n";
 		// Link all nodes :
-		_node << "			NODE_" << m_uid << "_HW_AEC -> " << nameIn << ";\n";
-		_node << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
-	_node << "	}\n";
+		*_io << "			NODE_" << m_uid << "_HW_AEC -> " << nameIn << ";\n";
+		*_io << "			" << nameOut << " -> NODE_" << m_uid << "_demuxer;\n";
+	*_io << "	}\n";
 	if (m_interfaceMicrophone != null) {
-		_node << "	" << m_interfaceMicrophone->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
+		*_io << "	" << m_interfaceMicrophone->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
 	}
 	if (m_interfaceFeedBack != null) {
-		_node << "	" << m_interfaceFeedBack->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
+		*_io << "	" << m_interfaceFeedBack->getDotNodeName() << " -> NODE_" << m_uid << "_HW_AEC;\n";
 	}
-	_node << "	\n";
+	*_io << "	\n";
 	
 	for (size_t iii=0; iii< m_listAvaillable.size(); ++iii) {
 		if (m_listAvaillable[iii].expired() == true) {
@@ -354,11 +354,11 @@ void audio::river::io::NodeAEC::generateDot(etk::FSNode& _node) {
 		}
 		if (element != null) {
 			if (element->getMode() == modeInterface_input) {
-				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
+				element->generateDot(_io, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else if (element->getMode() == modeInterface_output) {
-				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_muxer", isLink);
+				element->generateDot(_io, "NODE_" + etk::toString(m_uid) + "_muxer", isLink);
 			} else if (element->getMode() == modeInterface_feedback) {
-				element->generateDot(_node, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
+				element->generateDot(_io, "NODE_" + etk::toString(m_uid) + "_demuxer", isLink);
 			} else {
 				
 			}

@@ -10,8 +10,6 @@
 #include <audio/river/Interface.hpp>
 #include <etest/etest.hpp>
 #include <etk/etk.hpp>
-#include <etk/os/FSNode.hpp>
-#include "main.hpp"
 extern "C" {
 	#include <math.h>
 }

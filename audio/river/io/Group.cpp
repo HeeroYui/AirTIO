@@ -130,11 +130,11 @@ void audio::river::io::Group::stop() {
 	}
 }
 
-void audio::river::io::Group::generateDot(etk::FSNode& _node, bool _hardwareNode) {
+void audio::river::io::Group::generateDot(ememory::SharedPtr<etk::io::Interface>& _io, bool _hardwareNode) {
 	for (size_t iii=0; iii<m_list.size(); ++iii) {
 		if (m_list[iii] != null) {
 			if (m_list[iii]->isHarwareNode() == _hardwareNode) {
-				m_list[iii]->generateDot(_node);
+				m_list[iii]->generateDot(_io);
 			}
 		}
 	}

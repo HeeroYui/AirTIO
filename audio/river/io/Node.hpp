@@ -15,7 +15,7 @@
 #include <audio/river/Interface.hpp>
 #include <audio/drain/IOFormatInterface.hpp>
 #include <audio/drain/Volume.hpp>
-#include <etk/os/FSNode.hpp>
+#include <etk/io/Interface.hpp>
 
 namespace audio {
 	namespace river {
@@ -209,9 +209,9 @@ namespace audio {
 				public:
 					/**
 					 * @brief Generate the node dot file section
-					 * @param[in] _node File node to generate the data.
+					 * @param[in] _io File interface to dump data.
 					 */
-					virtual void generateDot(etk::FSNode& _node);
+					virtual void generateDot(ememory::SharedPtr<etk::io::Interface>& _io);
 			};
 		}
 	}

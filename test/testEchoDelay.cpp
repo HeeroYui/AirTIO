@@ -10,14 +10,12 @@
 #include <audio/river/Interface.hpp>
 #include <etest/etest.hpp>
 #include <etk/etk.hpp>
-#include <etk/os/FSNode.hpp>
 extern "C" {
 	#include <math.h>
 }
 
 #include <ethread/Thread.hpp>
 #include <ethread/tools.hpp>
-#include "main.hpp"
 
 namespace river_test_echo_delay {
 	class TestClass {
@@ -202,7 +200,7 @@ namespace river_test_echo_delay {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				TEST_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
+				//TEST_SAVE_FILE_MACRO(int16_t, "REC_FeedBack.raw", _data, _nbChunk*_map.size());
 				if (m_estimateVolumeInput == true) {
 					// nothing to do ...
 				} else {
@@ -257,7 +255,7 @@ namespace river_test_echo_delay {
 				if (_format != audio::format_int16) {
 					TEST_ERROR("call wrong type ... (need int16_t)");
 				}
-				TEST_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
+				//TEST_SAVE_FILE_MACRO(int16_t, "REC_Microphone.raw", _data, _nbChunk*_map.size());
 				const int16_t* data = static_cast<const int16_t*>(_data);
 				if (m_estimateVolumeInput == true) {
 					m_stateMic ++;

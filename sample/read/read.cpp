@@ -10,11 +10,11 @@
 #include <audio/river/Manager.hpp>
 #include <audio/river/Interface.hpp>
 //! [audio_river_sample_include]
-#include <etk/os/FSNode.hpp>
 #include <etk/etk.hpp>
 #include <ethread/Thread.hpp>
 #include <ethread/tools.hpp>
 #include <test-debug/debug.hpp>
+#include <etk/uri/uri.hpp>
 
 
 
@@ -44,14 +44,14 @@ void onDataReceived(const void* _data,
                     enum audio::format _format,
                     uint32_t _frequency,
                     const etk::Vector<audio::channel>& _map,
-                    etk::FSNode* _outputNode) {
+                    ememory::SharedPtr<etk::io::Interface> _fileIO) {
 	if (    _format != audio::format_int16
 	     && _format != audio::format_float) {
 		TEST_ERROR("Call wrong type ... (need int16_t.float)");
 		return;
 	}
 	//! [audio_river_sample_callback_implement]
-	if (_outputNode->fileIsOpen() == false) {
+	if (_fileIO->isOpen() == false) {
 		if (_format != audio::format_int16) {
 			// get the curent power of the signal.
 			const int16_t* data = static_cast<const int16_t*>(_data);
@@ -74,7 +74,7 @@ void onDataReceived(const void* _data,
 	} else {
 		// just write data
 		TEST_VERBOSE("Get data ... chunks=" << _nbChunk << " time=" << _time);
-		_outputNode->fileWrite(_data, _map.size()*audio::getFormatBytes(_format), _nbChunk);
+		_fileIO->write(_data, _map.size()*audio::getFormatBytes(_format), _nbChunk);
 	}
 }
 
@@ -86,7 +86,7 @@ int main(int _argc, const char **_argv) {
 	// local parameter:
 	etk::String configFile;
 	etk::String ioName="microphone";
-	etk::String outputFileName = "";
+	etk::Path outputFileName = "";
 	for (int32_t iii=0; iii<_argc ; ++iii) {
 		etk::String data = _argv[iii];
 		if (    data == "-h"
@@ -130,11 +130,10 @@ int main(int _argc, const char **_argv) {
 		return -1;
 	}
 	//! [audio_river_sample_create_read_interface]
-	etk::FSNode outputNode;
+	ememory::SharedPtr<etk::io::Interface> fileIO = etk::uri::get(outputFileName);
 	// open output file if needed:
-	if (outputFileName != "") {
-		outputNode.setName(outputFileName);
-		outputNode.fileOpenWrite();
+	if (outputFileName.isEmpty() == false) {
+		fileIO->open(etk::io::OpenMode::Write);
 	}
 	//! [audio_river_sample_set_callback]
 	// set callback mode ...
@@ -144,7 +143,7 @@ int main(int _argc, const char **_argv) {
 	                                enum audio::format _format,
 	                                uint32_t _frequency,
 	                                const etk::Vector<audio::channel>& _map) {
-	                                	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map, &outputNode);
+	                                	onDataReceived(_data, _time, _nbChunk, _format, _frequency, _map, fileIO);
 	                                });
 	//! [audio_river_sample_set_callback]
 	//! [audio_river_sample_read_start_stop]
@@ -162,7 +161,7 @@ int main(int _argc, const char **_argv) {
 	//! [audio_river_sample_read_reset]
 	// close the output file
 	if (outputFileName != "") {
-		outputNode.fileClose();
+		fileIO->close();
 	}
 	return 0;
 }
