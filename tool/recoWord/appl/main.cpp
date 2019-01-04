@@ -14,7 +14,7 @@
 #include <ewol/object/Object.hpp>
 #include <ewol/widget/Manager.hpp>
 #include <ewol/context/Context.hpp>
-#include <audio/river/widget/TemporalViewer.hpp>
+#include <appl/widget/DataViewer.hpp>
 #include <etk/theme/theme.hpp>
 
 static const etk::String configurationRiver =
@@ -75,7 +75,7 @@ class MainApplication : public ewol::context::Application {
 			_context.getFontDefault().setUseExternal(true);
 			_context.getFontDefault().setSize(19);
 			
-			audio::river::widget::TemporalViewer::createManagerWidget(_context.getWidgetManager());
+			appl::widget::DataViewer::createManagerWidget(_context.getWidgetManager());
 			
 			ememory::SharedPtr<ewol::widget::Windows> basicWindows = appl::Windows::create();
 			if (basicWindows == null) {
